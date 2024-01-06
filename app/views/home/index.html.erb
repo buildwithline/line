@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
+
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+</head>
+<body>
+
+  <div>
+    <div>
+      <%= image_tag 'logo.jpg', class: 'my-8' %> 
+    </div>
+    <p>
+      <%= "Hello, #{@user.name}, welcome to Line - The Developers Marketplace " %>
+    </p>
+  </div>
+</body>
+</html>

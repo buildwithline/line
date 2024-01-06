@@ -5,6 +5,5 @@ class Users::SessionsController < ApplicationController
   end
 
   def create
-    user_info = request.env['omniauth.auth']
   end
 end

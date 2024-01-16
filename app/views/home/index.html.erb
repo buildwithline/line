@@ -18,6 +18,19 @@
     <p>
       <%= "Hello, #{@user.name}, welcome to Line - The Developers Marketplace " %>
     </p>
+
+     <p>
+      <% if @organizations.present? %>
+        <strong>Organizations:</strong>
+        <ul>
+          <% @organizations.each do |organization| %>
+            <li><%= organization['login'] %></li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p>No organizations found.</p>
+      <% end %>
+    </p>
   </div>
 </body>
 </html>

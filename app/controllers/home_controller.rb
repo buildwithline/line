@@ -5,10 +5,12 @@ class HomeController < ApplicationController
     @user = current_user
     @github_user_data = GithubApiHelper.fetch_github_data(@user.nickname)
     @organizations = GithubApiHelper.organizations
-    
+    @repos = GithubApiHelper.repos
+    @avatar = GithubApiHelper.user_avatar
+
     respond_to do |format|
       format.html
-      format.json { render json: { user: @github_user_data, organizations: @organizations } }
+      format.json { render json: { user: @github_user_data, organizations: @organizations, repos: @repos } }
     end
   end
 end

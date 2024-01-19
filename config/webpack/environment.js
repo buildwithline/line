@@ -1,3 +1,9 @@
-const { environment } = require('@rails/webpacker')
+// config/webpack.config.js
 
-module.exports = environment
+const { environment } = require('@rails/webpacker');
+const tailwindcss = require('tailwindcss');
+
+// Add the tailwindcss plugin to the environment
+environment.plugins.prepend('tailwindcss', tailwindcss);
+
+module.exports = environment;

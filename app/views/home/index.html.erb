@@ -5,34 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
-  <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
+  
+  <!-- Tailwind CSS -->
+  <%= stylesheet_link_tag 'tailwind', 'inter-font', media: 'all', 'data-turbo-track': 'reload' %>
+  
+  <!-- Application Stylesheets -->
   <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+  
+  <!-- JavaScript -->
   <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
 </head>
 
+
 <body>
-  <%= "Hello, #{@avatar}" %>
   <div>
-    <div>
-      <%= image_tag 'logo.jpg', class: 'my-8' %>
+    <div class="flex items-center space-x-4">
+      <%= image_tag 'logo.jpg', class: 'my-6' %>
+      <%= image_tag @avatar, class: 'w-9 h-9 rounded-full' %>
+
+
     </div>
     <p>
       <%= "Hello, #{@user.name}, welcome to Line - The Developers Marketplace " %>
     </p>
 
     <p>
-      <% if @organizations.present? %>
+      <% if @organization_memberships.present? %>
         <strong>Organizations:</strong>
         <ul>
-          <% @organizations.each do |organization| %>
-            <li><%= organization['login'] %></li>
+          <% @organization_memberships.each do |org_login, details| %>
+            <li><%= org_login %></li>
+            <li><%= details[:role] %></li>
           <% end %>
         </ul>
       <% else %>
         <p>No organizations found.</p>
       <% end %>
-    </p>
-
     <p>
       <% if @repos.present? %>
         <strong>Repos:</strong>

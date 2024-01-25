@@ -1,10 +1,5 @@
-// Entry point for the build script in your package.json
-import Rails from "@rails/ujs"
-import Turbolinks from "turbolinks"
-import * as ActiveStorage from "@rails/activestorage"
-import "./channels"
-import "./controllers"
-
-Rails.start()
-Turbolinks.start()
-ActiveStorage.start()
+// Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
+import "@rails/actioncable"
+import "@rails/activestorage"
+import "@rails/actiontext"
+import "trix"

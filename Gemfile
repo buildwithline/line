@@ -46,7 +46,6 @@ gem 'omniauth-oauth2-generic'
 
 gem 'omniauth-rails_csrf_protection'
 
-gem 'jsbundling-rails'
 
 group :development, :test do
   # Call 'byebug' or 'binding.pry' anywhere in the code to stop execution and get a debugger console
@@ -79,3 +78,5 @@ end
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 gem 'tailwindcss-rails', '~> 2.3.0'
+
+gem "importmap-rails", "~> 2.0"

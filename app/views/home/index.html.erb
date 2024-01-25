@@ -6,17 +6,16 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "tailwind", "inter-font", media: 'all', "data-turbo-track": "reload" %>
-
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+    <%= javascript_importmap_tags "application", "data-turbo-track": "reload", defer: true %>
 </head>
 
 
 <body>
   <div>
     <div class="flex items-center space-x-4">
-      <%= image_tag 'logo.jpg', class: 'my-6' %>
-      <%= image_tag @avatar, class: 'w-24 h-24 rounded-full' %>
+      <%= image_tag 'logo.jpg', alt: "Logo", class: 'my-6' %>
+      <%= image_tag @avatar, alt: "Avatar", class: 'w-24 h-24 rounded-full' %>
 
 
     </div>
@@ -76,13 +75,24 @@
 
     <script>
       function copyToClipboard(text) {
-        const input = document.createElement('textarea');
-        input.value = text;
-        document.body.appendChild(input);
-        input.select();
-        document.execCommand('copy');
-        document.body.removeChild(input);
-        alert('Link copied to clipboard!');
+        if (typeof document !== 'undefined') {
+          const input = document.createElement('textarea');
+          input.value = text;
+          document.body.appendChild(input);
+          input.select();
+
+          try {
+            document.execCommand('copy');
+            alert('Link copied to clipboard!');
+          } catch (err) {
+            console.error('Unable to copy to clipboard:', err);
+          } finally {
+            document.body.removeChild(input);
+          }
+        } else {
+          // Handle non-browser environment (e.g., Node.js)
+          console.warn('Clipboard copying not supported in non-browser environments.');
+        }
       }
     </script>
   </div>

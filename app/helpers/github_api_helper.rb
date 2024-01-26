@@ -1,106 +1,83 @@
 module GithubApiHelper
+  require 'octokit'
 
-  require 'rest-client'
-  require 'json'
   class << self
     attr_accessor :organizations, :repos, :organization_memberships, :user_avatar
 
-    def user_admin_for_organization?(user, organization)
-      owner_or_admin_response = RestClient.get(
-        "https://api.github.com/orgs/#{organization}/members?role=admin"
-      )
-      members = JSON.parse(owner_or_admin_response.body)
-      # pp members
+    def fetch_github_data(user)
+      return unless user
 
-      case owner_or_admin_response.code
-      when 200
-        members = JSON.parse(owner_or_admin_response.body)
-        return members.any? { |member| member['login'] == user.nickname }
-      when 403
-        # Forbidden, user doesn't have permission to access the organization members
-        puts "Forbidden: User #{user.nickname} doesn't have permission to access members in #{organization}"
-      else
-        # Handle other response codes
-        puts "GitHub API request failed: #{owner_or_admin_response.code} - #{owner_or_admin_response.body}"
+      # Instantiate Octokit client with the user's GitHub access token
+      client = Octokit::Client.new(access_token: user.github_access_token, scope: "read:org")
+
+      # Fetch user information
+      user_info = client.user
+      
+      # Fetch personal repositories
+      personal_repos = client.repositories(user_info.login).map do |repo|
+        repo_details = client.repository(repo.full_name)
+        { repo: repo_details, org_avatar_url: repo_details.organization&.avatar_url }
       end
 
-      return false
-    end
-  
-    def fetch_github_data(user)
-      client_id = Rails.application.credentials.dig(:github, :client_id)
-      client_secret = Rails.application.credentials.dig(:github, :client_secret)
-      # return unless check_token_validity(client_id, user.github_access_token)
+      # Fetch organizations the user is a member of
+      organizations = client.organizations(user_info.login)
+      @organizations = organizations
+      @organizations_names = organizations.map(&:login) # Extracting login names of organizations
 
-      user_data_response = RestClient.get("https://api.github.com/users/#{user.nickname}", { params: {
-        client_id: client_id,
-        client_secret: client_secret
-      } })
+      # Fetch repositories from each organization
+      org_repos = organizations.flat_map do |org|
+        client.organization_repositories(org.login).map do |repo|
+          repo_details = client.repository(repo.full_name)
+          { repo: repo_details, org_avatar_url: repo_details.organization&.avatar_url }
+        end
+      end
 
-      user_data = JSON.parse(user_data_response.body)
+      # Combine personal and organization repositories
+      self.repos = personal_repos + org_repos
+
+      # Fetch user's avatar URL
       @user_avatar = "https://github.com/users/#{user.nickname}.png"
 
-      organizations_data_response = RestClient.get("https://api.github.com/users/#{user.nickname}/orgs", { params: {
-        client_id: client_id,
-        client_secret: client_secret 
-      } })
-
-      @organizations = JSON.parse(organizations_data_response.body)
-
-      @repos = []
-      @organization_memberships = {} # To store membership information for each repository
-
-      @organizations.each do |organization|
-        admin_response = RestClient.get("https://api.github.com/orgs/#{organization['login']}/members?role=admin"
-        )
-
-        case admin_response.code
-        when 200
-          members = JSON.parse(admin_response.body)
-          if members.any? { |member| member['login'] == user.nickname }
-            # User is an admin or owner in this organization
-            puts "User #{user.nickname} is an admin or owner in #{organization['login']}"
-          else
-            # User is not an admin or owner in this organization
-            puts "User #{user.nickname} is not an admin or owner in #{organization['login']}"
-          end
-        when 403
-          # Forbidden, user doesn't have permission to access the organization members
-          puts "Forbidden: User #{user.nickname} doesn't have permission to access members in #{organization['login']}"
-        else
-          # Handle other response codes
-          puts "GitHub API request failed: #{admin_response.code} - #{admin_response.body}"
-        end
-        
-        repos_response = RestClient.get("https://api.github.com/orgs/#{organization['login']}/repos")
-        organization_repos = JSON.parse(repos_response.body)
-        pp organization_repos
-        @repos += organization_repos
-      end
-
-      user_data
+      # Return the fetched data
+      {
+        user_info: user_info,
+        organizations: organizations,
+        repos: repos,
+        organization_memberships: organization_memberships,
+        user_avatar: user_avatar
+      }
+    rescue Octokit::Unauthorized => e
+      puts "Error: Unauthorized - #{e.message}"
+      nil
+    rescue Octokit::NotFound => e
+      puts "Error: User not found - #{e.message}"
+      nil
+    rescue Octokit::Error => e
+      puts "Error: #{e.class} - #{e.message}"
+      nil
     end
-  end
 
+    def user_admin_for_repo?(owner, repo, user)
+      client = Octokit::Client.new(:access_token => user.github_access_token)
 
-  private
+      begin
+        # Check if the user is an admin for the repository using Octokit
+        admin_status = client.collaborator?(File.join(owner, repo), user.login, affiliation: 'direct', role: 'admin')
 
-  def check_token_validity(client_id, access_token)
-    token_response = RestClient.get(
-      "https://api.github.com/applications/#{client_id}/tokens/#{access_token}",
-      headers: { 'Accept': 'application/vnd.github.v3+json' }
-    )
-  
-    case token_response.code
-    when 200
-      puts 'Token is valid'
-      return true
-    when 404
-      puts 'Token is not valid'
-      return false
-    else
-      puts "Unexpected response: #{token_response.code}"
-      return false
+        if admin_status
+          puts "User #{user.login} is an admin in #{owner}/#{repo}"
+          return true
+        else
+          puts "User #{user.login} is not an admin in #{owner}/#{repo}"
+          return false
+        end
+      rescue Octokit::Unauthorized => e
+        puts "Error: Unauthorized - #{e.message}"
+        return false
+      rescue Octokit::Error => e
+        puts "Error: #{e.class} - #{e.message}"
+        return false
+      end
     end
   end
 end

@@ -14,6 +14,9 @@ class HomeController < ApplicationController
         @organization_memberships = @github_user_data[:organization_memberships]
         @avatar = current_user.avatar_url
 
+        # Prepare admin flags for each repo
+        prepare_admin_flags
+
         respond_to do |format|
           format.html
           format.json { render json: { user: @github_user_data, organizations: @organizations, repos: @repos, organization_memberships: @organization_memberships } }
@@ -33,15 +36,9 @@ class HomeController < ApplicationController
 
   private
 
-  # def render_repo_admin_status(user, repos)
-  #   @admin_statuses = {}
-
-  #   repos.each do |repo|
-  #     owner = repo.owner.login
-  #     repo_name = repo.name
-  #     @admin_statuses["#{owner}/#{repo_name}"] = GithubApiHelper.user_admin_for_repo?(owner, repo_name, user)
-  #   end
-
-  #   @admin_statuses
-  # end
+  def prepare_admin_flags
+    @repos.each do |repo_data|
+      repo_data[:admin] = GithubApiHelper.repo_admin?(repo_data[:repo])
+    end
+  end
 end

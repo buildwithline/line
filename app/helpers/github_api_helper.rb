@@ -12,7 +12,7 @@ module GithubApiHelper
 
       # Fetch user information
       user_info = client.user
-      
+
       # Fetch personal repositories
       personal_repos = client.repositories(user_info.login).map do |repo|
         repo_details = client.repository(repo.full_name)
@@ -55,29 +55,10 @@ module GithubApiHelper
     rescue Octokit::Error => e
       puts "Error: #{e.class} - #{e.message}"
       nil
-    end
+    end 
+  end
 
-    def user_admin_for_repo?(owner, repo, user)
-      client = Octokit::Client.new(:access_token => user.github_access_token)
-
-      begin
-        # Check if the user is an admin for the repository using Octokit
-        admin_status = client.collaborator?(File.join(owner, repo), user.login, affiliation: 'direct', role: 'admin')
-
-        if admin_status
-          puts "User #{user.login} is an admin in #{owner}/#{repo}"
-          return true
-        else
-          puts "User #{user.login} is not an admin in #{owner}/#{repo}"
-          return false
-        end
-      rescue Octokit::Unauthorized => e
-        puts "Error: Unauthorized - #{e.message}"
-        return false
-      rescue Octokit::Error => e
-        puts "Error: #{e.class} - #{e.message}"
-        return false
-      end
-    end
+  def self.repo_admin?(repo)
+    repo[:permissions] && repo[:permissions][:admin]
   end
 end

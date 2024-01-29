@@ -13,16 +13,14 @@ class HomeController < ApplicationController
         @repos = @github_user_data[:repos]
         @organization_memberships = @github_user_data[:organization_memberships]
         @avatar = current_user.avatar_url
-
-        # Prepare admin flags for each repo
-        prepare_admin_flags
+        @repos.each do |repo|
+          repo[:user_permission] = GithubApiHelper.user_repo_permission(repo[:repo])
+        end
 
         respond_to do |format|
           format.html
           format.json { render json: { user: @github_user_data, organizations: @organizations, repos: @repos, organization_memberships: @organization_memberships } }
         end
-
-        # render_repo_admin_status(@user, @repos)
       else
         # Handle the case when GitHub data retrieval fails
         flash[:alert] = 'Failed to retrieve GitHub data. Please try again later.'
@@ -31,14 +29,6 @@ class HomeController < ApplicationController
     else
       # Handle the case when there's no signed-in user
       redirect_to new_user_session_path
-    end
-  end
-
-  private
-
-  def prepare_admin_flags
-    @repos.each do |repo_data|
-      repo_data[:admin] = GithubApiHelper.repo_admin?(repo_data[:repo])
     end
   end
 end

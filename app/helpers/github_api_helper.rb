@@ -64,8 +64,4 @@ module GithubApiHelper
     
     'member' # default to 'member' if neither 'admin' nor 'maintain' permissions are true
   end
-  
-  # def self.repo_admin?(repo)
-  #   repo[:permissions] && repo[:permissions][:admin]
-  # end
 end

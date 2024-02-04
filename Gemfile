@@ -50,7 +50,7 @@ gem 'omniauth-rails_csrf_protection'
 gem 'importmap-rails'
 
 #  GitHub API client
-gem "octokit", "~> 5.0"
+gem 'octokit', '~> 5.0'
 
 group :development, :test do
   # Call 'byebug' or 'binding.pry' anywhere in the code to stop execution and get a debugger console

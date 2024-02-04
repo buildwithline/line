@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 
 # Set the RAILS_ENV environment variable
-ENV["RAILS_ENV"] ||= "development"
+ENV['RAILS_ENV'] ||= 'development'
 
 # Load the Rails environment
-require_relative "../config/environment"
+require_relative '../config/environment'
 
 # Add any other setup you need
 
 # Start the development server
-exec("rails s")
+exec('rails s')

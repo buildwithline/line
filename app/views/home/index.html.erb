@@ -15,7 +15,7 @@
         <%= image_tag @avatar, alt: "Avatar", class: 'w-24 h-24 rounded-full' %>
       </div>
       <p>
-        <%= "Hello, #{@user.name}, welcome to Line - The Developers Marketplace " %>
+        <%= "Hello, #{current_user.name}, welcome to Line - The Developers Marketplace " %>
       </p>
       <p>
         <% if @organizations.present? %>
@@ -65,17 +65,6 @@
                           </svg>
                         </button>
                       </td>
-                      <% if repo[:user_permission] == 'admin' || repo[:user_permission] == 'maintainer' %>
-                        <td>
-                          <a href="#" class="inline-block">
-                            <button class="bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-center">
-                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                              </svg>
-                            </button>
-                          </a>
-                        </td>
-                      <% end %>
                     </div>
                   </td>
                 </tr>
@@ -88,23 +77,29 @@
       </div>
       <script>
         function copyToClipboard(text) {
-          if (typeof document !== 'undefined') {
-            const input = document.createElement('textarea');
-            input.value = text;
-            document.body.appendChild(input);
-            input.select();
+          if (navigator.clipboard && window.isSecureContext) {
+            // Use the Clipboard API
+            navigator.clipboard.writeText(text)
+              .then(() => alert('Link copied to clipboard!'))
+              .catch(err => console.error('Could not copy text to clipboard:', err));
+          } else {
+            // Fallback for older browsers
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
 
             try {
-              document.execCommand('copy');
-              alert('Link copied to clipboard!');
+              const successful = document.execCommand('copy');
+              const msg = successful ? 'successful' : 'unsuccessful';
+              console.log('Fallback: Copying text command was ' + msg);
+              if (successful) alert('Link copied to clipboard!');
             } catch (err) {
-              console.error('Unable to copy to clipboard:', err);
-            } finally {
-              document.body.removeChild(input);
+              console.error('Fallback: Oops, unable to copy', err);
             }
-          } else {
-            // Handle non-browser environment (e.g., Node.js)
-            console.warn('Clipboard copying not supported in non-browser environments.');
+
+            document.body.removeChild(textArea);
           }
         }
       </script>

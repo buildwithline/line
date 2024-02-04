@@ -1,34 +1,52 @@
-class HomeController < ApplicationController
-  include GithubApiHelper
+# frozen_string_literal: true
 
+class HomeController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    if user_signed_in?
-      @user = current_user
-      @github_user_data = GithubApiHelper.fetch_github_data(@user)
+    fetch_and_prepare_github_data
 
+    respond_to do |format|
       if @github_user_data
-        @organizations = @github_user_data[:organizations]
-        @repos = @github_user_data[:repos]
-        @organization_memberships = @github_user_data[:organization_memberships]
-        @avatar = current_user.avatar_url
-        @repos.each do |repo|
-          repo[:user_permission] = GithubApiHelper.user_repo_permission(repo[:repo])
-        end
-
-        respond_to do |format|
-          format.html
-          format.json { render json: { user: @github_user_data, organizations: @organizations, repos: @repos, organization_memberships: @organization_memberships } }
-        end
+        format.html # default view
+        format.json { render_github_data_as_json }
       else
-        # Handle the case when GitHub data retrieval fails
-        flash[:alert] = 'Failed to retrieve GitHub data. Please try again later.'
-        redirect_to root_path
+        handle_github_data_failure
       end
-    else
-      # Handle the case when there's no signed-in user
-      redirect_to new_user_session_path
     end
+  end
+
+  private
+
+  def fetch_and_prepare_github_data
+    @github_user_data = GithubApiHelper.fetch_github_data(current_user)
+    return unless @github_user_data
+
+    @organizations = @github_user_data[:organizations]
+    @repos = @github_user_data[:repos]
+    @organization_memberships = @github_user_data[:organization_memberships]
+    @avatar = current_user.avatar_url
+
+    set_repo_permissions
+  end
+
+  def set_repo_permissions
+    @repos.each do |repo|
+      repo[:user_permission] = GithubApiHelper.user_repo_permission(repo[:repo])
+    end
+  end
+
+  def render_github_data_as_json
+    render json: {
+      user: @github_user_data,
+      organizations: @organizations,
+      repos: @repos,
+      organization_memberships: @organization_memberships
+    }
+  end
+
+  def handle_github_data_failure
+    flash[:alert] = 'Failed to retrieve GitHub data. Please try again later.'
+    redirect_to root_path
   end
 end

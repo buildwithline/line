@@ -1,3 +1,5 @@
-web: env RUBY_DEBUG_OPEN=true bin/rails server -p 3000
+web: env RUBY_DEBUG_OPEN=true bin/rails server -p $PORT
 css: bin/rails tailwindcss:watch
+js: bin/rails jsbundling:build --watch
 js: yarn build --watch
+js: bun run build --watch

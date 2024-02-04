@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
@@ -46,7 +48,11 @@ gem 'omniauth-oauth2-generic'
 
 gem 'omniauth-rails_csrf_protection'
 
-gem 'jsbundling-rails'
+# replacing webpacker with importmap-rails
+gem 'importmap-rails'
+
+#  GitHub API client
+gem 'octokit', '~> 5.0'
 
 group :development, :test do
   # Call 'byebug' or 'binding.pry' anywhere in the code to stop execution and get a debugger console

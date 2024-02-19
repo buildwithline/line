@@ -26,14 +26,6 @@ class HomeController < ApplicationController
     @repos = @github_user_data[:repos]
     @organization_memberships = @github_user_data[:organization_memberships]
     @avatar = current_user.avatar_url
-
-    set_repo_permissions
-  end
-
-  def set_repo_permissions
-    @repos.each do |repo|
-      repo[:user_permission] = GithubApiHelper.user_repo_permission(repo[:repo])
-    end
   end
 
   def render_github_data_as_json

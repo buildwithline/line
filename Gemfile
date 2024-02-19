@@ -51,6 +51,8 @@ gem 'omniauth-rails_csrf_protection'
 # replacing webpacker with importmap-rails
 gem 'importmap-rails'
 
+gem 'stimulus-rails'
+
 #  GitHub API client
 gem 'octokit', '~> 5.0'
 

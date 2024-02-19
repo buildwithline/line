@@ -19,7 +19,7 @@ module GithubApiHelper
       # Fetch organization repositories
       org_repos = fetch_organization_repos(client, organizations)
 
-      # Combine personal and organization repositories
+      # Combine personal and organization repositories of who user is owner or admin
       self.repos = personal_repos + org_repos
 
       # Assign fetched data to accessors
@@ -48,6 +48,7 @@ module GithubApiHelper
     def fetch_personal_repos(client, login)
       client.repositories(login).map do |repo|
         repo_details = client.repository(repo.full_name)
+
         { repo: repo_details, org_avatar_url: repo_details.organization&.avatar_url }
       end
     end
@@ -58,11 +59,12 @@ module GithubApiHelper
 
     def fetch_organization_repos(client, organizations)
       organizations.flat_map do |org|
-        client.organization_repositories(org.login).map do |repo|
+        client.organization_repositories(org.login).filter_map do |repo|
           repo_details = client.repository(repo.full_name)
-          { repo: repo_details, org_avatar_url: repo_details.organization&.avatar_url }
+
+          { repo: repo_details, org_avatar_url: repo_details.organization&.avatar_url } if repo_details.permissions.admin
         end
-      end
+      end.compact
     end
 
     def assign_fetched_data(user_info, organizations)
@@ -85,12 +87,5 @@ module GithubApiHelper
       puts "Error: #{type} - #{message}"
       nil
     end
-  end
-
-  def self.user_repo_permission(repo)
-    return 'admin' if repo[:permissions][:admin]
-    return 'maintainer' if repo[:permissions][:maintain]
-
-    'member' # default to 'member' if neither 'admin' nor 'maintain' permissions are true
   end
 end

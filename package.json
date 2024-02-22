@@ -18,12 +18,14 @@
   "version": "0.1.0",
   "devDependencies": {
     "autoprefixer": "^9.8.8",
+    "dotenv": "^16.4.5",
     "postcss": "^8.0.9",
     "postcss-load-config": "^3.1.0",
     "postcss-loader": "^8.0.0",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17"
   },
   "scripts": {
-    "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets"
+    "build": "node esbuild.config.js",
+    "build:watch": "node esbuild.config.js --watch"
   }
 }

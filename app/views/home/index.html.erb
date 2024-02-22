@@ -5,6 +5,11 @@
   </div>
   <p>
     <%= "Hello, #{current_user.name}, welcome to Line - The Developers Marketplace " %>
+  </p>
+  <div data-controller="wallet">
+    <button data-wallet-target="openModal" data-action="click->wallet#openConnectModal">Open Modal</button>
+  </div>
+  <p>
     <% if @organizations.present? %>
       <ul>
         <% @organizations.each do |org| %>

@@ -1,13 +1,11 @@
-#!/usr/bin/env ruby
-# frozen_string_literal: true
+#!/usr/bin/env sh
 
-# Set the RAILS_ENV environment variable
-ENV['RAILS_ENV'] ||= 'development'
+if gem list --no-installed --exact --silent foreman; then
+  echo "Installing foreman..."
+  gem install foreman
+fi
 
-# Load the Rails environment
-require_relative '../config/environment'
+# Default to port 3000 if not specified
+export PORT="${PORT:-3000}"
 
-# Add any other setup you need
-
-# Start the development server
-exec('rails s')
+exec foreman start -f Procfile.dev "$@"

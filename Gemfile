@@ -18,8 +18,8 @@ gem 'puma', '~> 6.4.1'
 # Use SCSS for stylesheets
 gem 'sass-rails', '>= 6'
 
-# Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
-gem 'turbolinks', '~> 5.2.0'
+# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
+gem "turbo-rails"
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.11.5'
 # Use Redis adapter to run Action Cable in production
@@ -48,13 +48,24 @@ gem 'omniauth-oauth2-generic'
 
 gem 'omniauth-rails_csrf_protection'
 
-# replacing webpacker with importmap-rails
-gem 'importmap-rails'
+# replace webpacker with jsbundling-rails
+gem 'jsbundling-rails'
 
 gem 'stimulus-rails'
 
 #  GitHub API client
 gem 'octokit', '~> 5.0'
+
+# Use Active Model has_secure_password
+gem 'bcrypt', '~> 3.1.19'
+
+# Authorization tokens
+gem 'jwt'
+
+# Cross-Origin Resource Sharing Middleware
+gem 'rack-cors'
+
+gem 'active_model_serializers', '~> 0.10.12'
 
 group :development, :test do
   # Call 'byebug' or 'binding.pry' anywhere in the code to stop execution and get a debugger console
@@ -87,3 +98,5 @@ end
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 gem 'tailwindcss-rails', '~> 2.3.0'
+
+gem "add", "~> 0.3.2"

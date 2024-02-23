@@ -19,7 +19,7 @@ gem 'puma', '~> 6.4.1'
 gem 'sass-rails', '>= 6'
 
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
-gem "turbo-rails"
+gem 'turbo-rails'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.11.5'
 # Use Redis adapter to run Action Cable in production
@@ -70,6 +70,7 @@ gem 'active_model_serializers', '~> 0.10.12'
 group :development, :test do
   # Call 'byebug' or 'binding.pry' anywhere in the code to stop execution and get a debugger console
   # gem "pry-byebug" #does not play well with 'pry-remote'
+  gem 'dotenv'
   gem 'pry-remote'
   gem 'rubocop', require: false
   gem 'rubocop-rails', require: false
@@ -99,4 +100,4 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 gem 'tailwindcss-rails', '~> 2.3.0'
 
-gem "add", "~> 0.3.2"
+gem 'add', '~> 0.3.2'

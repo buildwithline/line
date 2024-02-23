@@ -3,7 +3,7 @@ require('dotenv').config(); // Load environment variables
 const esbuild = require('esbuild');
 
 esbuild.build({
-  entryPoints: ['app/javascript/application.js'], // Adjust if you have multiple entry points
+  entryPoints: ['app/javascript/application.js'],
   bundle: true,
   sourcemap: true,
   format: 'esm',
@@ -12,5 +12,11 @@ esbuild.build({
   define: {
     'process.env.PROJECT_ID': JSON.stringify(process.env.PROJECT_ID),
   },
-  // Add more configurations or plugins as needed
 }).catch(() => process.exit(1));
+  }
+}).then(() => {
+  console.log('Build completed successfully.');
+}).catch(() => {
+  console.error('Build failed.');
+  process.exit(1);
+});

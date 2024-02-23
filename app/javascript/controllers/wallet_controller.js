@@ -6,7 +6,7 @@ export default class extends Controller {
 
   connect(){
     // 1. Get projectId at https://cloud.walletconnect.com
-     const projectId = process.env.PROJECT_ID
+    const projectId = process.env.PROJECT_ID
 
     // 2. Set chains
     const mainnet = {

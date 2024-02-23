@@ -6,7 +6,7 @@
   <p>
     <%= "Hello, #{current_user.name}, welcome to Line - The Developers Marketplace " %>
   </p>
-  <div data-controller="wallet">
+  <div data-controller="wallet" data-wallet-project-id-value="<%= Rails.application.credentials.dig(:wallet_connect, :project_id)%>">
     <button data-wallet-target="openModal" data-action="click->wallet#openConnectModal">Open Modal</button>
   </div>
   <p>

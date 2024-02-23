@@ -3,10 +3,13 @@ import { createWeb3Modal, defaultConfig } from "@web3modal/ethers"
 
 export default class extends Controller {
   static targets = [ "openModal" ]
+  static values = { 
+    projectId: String
+  }
 
   connect(){
     // 1. Get projectId at https://cloud.walletconnect.com
-    const projectId = process.env.PROJECT_ID
+    const projectId = this.projectIdValue
 
     // 2. Set chains
     const mainnet = {

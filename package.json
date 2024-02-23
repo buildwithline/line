@@ -25,7 +25,6 @@
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17"
   },
   "scripts": {
-    "build": "node esbuild.config.js",
-    "build:watch": "node esbuild.config.js --watch"
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets"
   }
 }

@@ -9,6 +9,7 @@
     "@rails/actioncable": "^7.1.2",
     "@rails/activestorage": "^7.1.2",
     "@tailwindcss/postcss7-compat": "npm:@tailwindcss/postcss7-compat",
+    "@walletconnect/web3-provider": "^1.8.0",
     "@web3modal/ethers": "^4.0.7",
     "ethers": "^6.11.1",
     "heroicon": "^0.0.2",

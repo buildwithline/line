@@ -3,7 +3,11 @@
 one:
   user: one
   address: MyString
+  chain_id: 1
+  nickname: MyString
 
 two:
   user: two
   address: MyString
+  chain_id: 1
+  nickname: MyString

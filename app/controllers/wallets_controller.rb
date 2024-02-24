@@ -1,26 +1,27 @@
+# frozen_string_literal: true
+
 class WalletsController < ApplicationController
-  before_action :authenticate_user! # Assuming authentication is required
+  before_action :authenticate_user!
+  before_action :set_user
 
-  def index
-    @wallets = current_user.wallets
-  end
-
-  def new
-    @wallet = current_user.wallets.build
-  end
-
+  # Captures wallet details post WalletConnect connection
   def create
-    @wallet = current_user.wallets.build(wallet_params)
-    if @wallet.save
-      redirect_to wallets_path, notice: 'Wallet created successfully.'
+    wallet = @user.wallets.create(wallet_params)
+    if wallet.persisted?
+      render json: { status: :ok, message: 'Wallet connected successfully.' }
     else
-      render :new
+      render json: { status: :unprocessable_entity, errors: wallet.errors.full_messages }
     end
   end
 
   private
 
+  def set_user
+    @user = current_user
+    # authorize! :update, @user # Example using CanCanCan for authorization? needed?
+  end
+
   def wallet_params
-    params.require(:wallet).permit(:address)
+    params.require(:wallet).permit(:address, :chain_id) # Include any other parameters you expect from WalletConnect
   end
 end

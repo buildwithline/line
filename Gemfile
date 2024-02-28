@@ -71,7 +71,10 @@ group :development, :test do
   # Call 'byebug' or 'binding.pry' anywhere in the code to stop execution and get a debugger console
   # gem "pry-byebug" #does not play well with 'pry-remote'
   gem 'dotenv'
+  gem 'factory_bot_rails'
+  gem 'faker'
   gem 'pry-remote'
+  gem 'rspec-rails'
   gem 'rubocop', require: false
   gem 'rubocop-rails', require: false
 end

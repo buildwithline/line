@@ -1,86 +1,162 @@
 import { Controller } from "@hotwired/stimulus"
-import { ethers } from "ethers";
-import Web3Modal from "web3modal";
-import WalletConnectProvider from "@walletconnect/web3-provider";
+import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi'
+import { mainnet, arbitrum } from 'viem/chains'
+import { reconnect, getAccount } from '@wagmi/core'
+import { useAccount } from 'wagmi'
 
 export default class extends Controller {
+  static targets = [ "openModal" ]
   static values = {
     projectId: String,
-    userId: Number 
+    userId: Number
   }
 
-  async connect() {
-    this.initializeWeb3Modal();
-  }
+  connect() {
+    // Your existing setup for wagmiConfig remains the same
+    const projectId = this.projectIdValue;
+    const chains = [mainnet, arbitrum];
+    
+    const metadata = {
+      name: 'Web3Modal',
+      description: 'Web3Modal Example',
+      url: 'https://web3modal.com', // origin must match your domain & subdomain
+      icons: ['https://avatars.githubusercontent.com/u/37784886']
+    }
+    
 
-  async initializeWeb3Modal() {
-    const providerOptions = {
-      walletconnect: {
-        package: WalletConnectProvider,
-        options: {
-          infuraId: this.projectIdValue
-        }
-      }
-    };
+    const wagmiConfig = defaultWagmiConfig({
+      chains, // required
+      projectId, // required
+      metadata, // required
+      enableWalletConnect: true, // Optional - true by default
+      enableInjected: true, // Optional - true by default
+      enableEIP6963: true, // Optional - true by default
+      enableCoinbase: true, // Optional - true by default
+    })
 
-    const web3Modal = new Web3Modal({
-      network: "mainnet", // Optional. If you want to connect to a specific network by default
-      cacheProvider: true, // Optional. If you wish to cache the provider chosen by the user
-      providerOptions // Required
+
+    // Create modal and configure event listeners for wallet connection
+    console.log('create modal')
+
+    this.modal = createWeb3Modal({
+      wagmiConfig,
+      projectId,
+      enableAnalytics: true // Optional - defaults to your Cloud configuration
     });
 
+    // Listen for the event indicating the wallet has connected
+    const account = useAccount()
+
+    console.log(account)
+    // this.modal.on('connect', (provider) => {
+    //   console.log('on connect')
+    //   // Now that the wallet is connected, get the address
+    //   const address = this.modal.getAddress(); // Using getAddress as you intended
+    //   console.log("Connected address:", address);
+
+    //   // Perform any additional actions with the address, such as sending it to your backend
+    //   this.sendAddressToBackend(address);
+    // });
+  }
+
+  // openConnectModal() {
+  //   try {
+  //     const modalResult = await this.modal.open();
+  //     console.log('Modal result:', modalResult); // Debugging: Check what the modal returns upon opening
+
+  //     // Assuming modalResult.provider should have the provider, adjust as per actual API response
+  //     if (!this.modal.provider) {
+  //         console.error('Provider is undefined. Make sure the connection is established correctly.');
+  //         return;
+  //     }
+
+  //     const provider = new ethers.providers.Web3Provider(this.modal.provider);
+  //     const signer = provider.getSigner();
+  //     const address = await signer.getAddress();
+  //     const network = await provider.getNetwork();
+      
+  //     console.log('in try', network, address, provider, signer);
+      
+  //     this.sendWalletDetailsToServer(address, network.chainId);
+  // } catch (error) {
+  //     console.error('Error connecting to the wallet:', error);
+  // }
+
+  async openConnectModal() {
     try {
-      const connection = await web3Modal.connect();
-      const provider = new ethers.providers.Web3Provider(connection);
-      this.handleProvider(provider);
+      await this.modal.open();
+      console.log("modal opened")
+      // Assuming you have a way to access the connected provider from the modal
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const address = await signer.getAddress();
+      console.log("Connected address:", address);
+      // Perform actions with the address, like sending it to your backend
     } catch (error) {
-      console.error("Could not get a wallet connection", error);
+      console.error('Error connecting to the wallet:', error);
     }
   }
 
-  async handleProvider(provider) {
-    const signer = provider.getSigner();
-    const address = await signer.getAddress();
-    const network = await provider.getNetwork();
+  // openConnectModal() {
+  //   this.modal.open();
+  // }
+//   connect(){
+//     console.log('connect')
+//     // 1. Get projectId at https://cloud.walletconnect.com
+//     const projectId = this.projectIdValue
 
-    this.sendWalletInfoToBackend(address, network.chainId);
-  }
+//     // 2. Set chains
+//     const mainnet = {
+//       chainId: 1,
+//       name: 'Ethereum',
+//       currency: 'ETH',
+//       explorerUrl: 'https://etherscan.io',
+//       rpcUrl: 'https://cloudflare-eth.com'
+//     }
 
-  sendWalletInfoToBackend(address, chainId) {
-    const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
-    const userId = this.userIdValue;
+//     // 3. Create modal
+//     const metadata = {
+//       name: 'My Website',
+//       description: 'My Website description',
+//       url: 'https://mywebsite.com', // origin must match your domain & subdomain
+//       icons: ['https://avatars.mywebsite.com/']
+//     }
 
-    const data = {
-      wallet: {
-        address: address,
-        chain_id: parseInt(chainId, 16), // Convert hex chainId to integer
-        user_id: userId
-      }
-    };
-  
-    fetch(`/users/${userId}/wallets`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken
-      },
-      body: JSON.stringify(data)
-    })
-    .then(response => {
-      if (response.ok) {
-        console.log('Wallet info saved successfully');
-      } else {
-        console.error('Failed to save wallet info');
-      }
-    })
-    .catch(error => console.error('Error:', error));
-  }
+//     this.modal = createWeb3Modal({
+//       ethersConfig: defaultConfig({ metadata }),
+//       chains: [mainnet],
+//       projectId,
+//       enableAnalytics: true // Optional - defaults to your Cloud configuration
+//     })
 
-  openConnectModal() {
-    this.modal.open();
-  }
+//     console.log(this.modal.getAddress())
+//   }
 
-  closeConnectModal() {
-    this.modal.close();
-  }
+//   openConnectModal() {
+//     try {
+//       const modalResult = await this.modal.open();
+//       console.log('Modal result:', modalResult); // Debugging: Check what the modal returns upon opening
+
+//       // Assuming modalResult.provider should have the provider, adjust as per actual API response
+//       if (!this.modal.provider) {
+//           console.error('Provider is undefined. Make sure the connection is established correctly.');
+//           return;
+//       }
+
+//       const provider = new ethers.providers.Web3Provider(this.modal.provider);
+//       const signer = provider.getSigner();
+//       const address = await signer.getAddress();
+//       const network = await provider.getNetwork();
+      
+//       console.log('in try', network, address, provider, signer);
+      
+//       this.sendWalletDetailsToServer(address, network.chainId);
+//   } catch (error) {
+//       console.error('Error connecting to the wallet:', error);
+//   }
+// }
+
+  // closeConnectModal() {
+  //   this.modal.close();
+  // }
 }

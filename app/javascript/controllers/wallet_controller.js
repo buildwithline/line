@@ -1,8 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi'
 import { mainnet, arbitrum } from 'viem/chains'
-import { reconnect, getAccount } from '@wagmi/core'
-import { useAccount } from 'wagmi'
 
 export default class extends Controller {
   static targets = [ "openModal" ]
@@ -12,7 +10,7 @@ export default class extends Controller {
   }
 
   connect() {
-    // Your existing setup for wagmiConfig remains the same
+    console.log('connect method')
     const projectId = this.projectIdValue;
     const chains = [mainnet, arbitrum];
     
@@ -22,32 +20,31 @@ export default class extends Controller {
       url: 'https://web3modal.com', // origin must match your domain & subdomain
       icons: ['https://avatars.githubusercontent.com/u/37784886']
     }
-    
 
-    const wagmiConfig = defaultWagmiConfig({
+    this.wagmiConfig = defaultWagmiConfig({
       chains, // required
       projectId, // required
       metadata, // required
-      enableWalletConnect: true, // Optional - true by default
-      enableInjected: true, // Optional - true by default
-      enableEIP6963: true, // Optional - true by default
-      enableCoinbase: true, // Optional - true by default
-    })
-
-
+      enableWalletConnect: true,
+      enableInjected: true,
+      enableEIP6963: true,
+      enableCoinbase: true,
+    });
+    
+    // Then, when creating the modal...
+    this.modal = createWeb3Modal({
+      wagmiConfig: this.wagmiConfig,
+      projectId: this.projectIdValue,
+      enableAnalytics: true
+    });
     // Create modal and configure event listeners for wallet connection
     console.log('create modal')
 
-    this.modal = createWeb3Modal({
-      wagmiConfig,
-      projectId,
-      enableAnalytics: true // Optional - defaults to your Cloud configuration
-    });
 
     // Listen for the event indicating the wallet has connected
-    const account = useAccount()
+    // const account = useAccount()
 
-    console.log(account)
+    // console.log(account)
     // this.modal.on('connect', (provider) => {
     //   console.log('on connect')
     //   // Now that the wallet is connected, get the address
@@ -82,24 +79,24 @@ export default class extends Controller {
   //     console.error('Error connecting to the wallet:', error);
   // }
 
-  async openConnectModal() {
-    try {
-      await this.modal.open();
-      console.log("modal opened")
-      // Assuming you have a way to access the connected provider from the modal
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const address = await signer.getAddress();
-      console.log("Connected address:", address);
-      // Perform actions with the address, like sending it to your backend
-    } catch (error) {
-      console.error('Error connecting to the wallet:', error);
-    }
-  }
-
-  // openConnectModal() {
-  //   this.modal.open();
+  // async openConnectModal() {
+  //   try {
+  //     await this.modal.open();
+  //     console.log("modal opened")
+  //     // Assuming you have a way to access the connected provider from the modal
+  //     const provider = new ethers.providers.Web3Provider(window.ethereum);
+  //     const signer = provider.getSigner();
+  //     const address = await signer.getAddress();
+  //     console.log("Connected address:", address);
+  //     // Perform actions with the address, like sending it to your backend
+  //   } catch (error) {
+  //     console.error('Error connecting to the wallet:', error);
+  //   }
   // }
+
+  openConnectModal() {
+    this.modal.open();
+  }
 //   connect(){
 //     console.log('connect')
 //     // 1. Get projectId at https://cloud.walletconnect.com

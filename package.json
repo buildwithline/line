@@ -12,27 +12,26 @@
     "@tailwindcss/postcss7-compat": "npm:@tailwindcss/postcss7-compat",
     "@wagmi/connectors": "^4.1.14",
     "@wagmi/core": "^2.6.5",
-    "@walletconnect/web3-provider": "^1.8.0",
-    "@web3modal/ethers": "^4.0.10",
-    "@web3modal/wagmi": "^4.0.10",
+    "@web3modal/wagmi": "^4.0.11",
     "assert": "^2.1.0",
     "esbuild-plugin-polyfill-node": "^0.3.0",
-    "ethers": "^6.11.1",
     "heroicon": "^0.0.2",
     "http": "^0.0.1-security",
     "https": "^1.0.0",
     "i18next": "23.2.3",
     "os": "^0.1.2",
-    "react": "^16.8.0",
+    "react": "18",
+    "react-dom": "18",
     "react-native": "^0.73.5",
     "stimulus": "^3.2.2",
     "stream": "^0.0.2",
     "url": "^0.11.3",
     "util": "^0.12.5",
-    "viem": "^2.7.15"
+    "viem": "^2.7.16"
   },
   "version": "0.1.0",
   "devDependencies": {
+    "@babel/preset-env": "^7.24.0",
     "autoprefixer": "^9.8.8",
     "esbuild": "^0.20.1",
     "postcss": "^8.0.9",
@@ -41,6 +40,6 @@
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17"
   },
   "scripts": {
-    "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets --watch"
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --watch"
   }
 }

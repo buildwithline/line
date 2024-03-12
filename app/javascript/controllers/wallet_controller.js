@@ -13,10 +13,9 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log('connect method new')
+    console.log('connect method')
     const projectId = this.projectIdValue;
     const chains = [mainnet, arbitrum];
-    console.log('id', projectId)
     const metadata = {
       name: 'Web3Modal',
       description: 'Web3Modal Example',
@@ -37,105 +36,49 @@ export default class extends Controller {
 
     console.log('config', this.config)
     
-    // Then, when creating the modal...
     this.modal = createWeb3Modal({
       wagmiConfig: this.config,
       projectId: this.projectIdValue,
       enableAnalytics: true
     });
-    // Create modal and configure event listeners for wallet connection
     console.log('create modal')
-    console.log(this.modal)
-    
-  
-
-    // Listen for the event indicating the wallet has connected
-    // const account = useAccount()
-
-    // console.log(account)
-    // this.modal.on('connect', (provider) => {
-    //   console.log('on connect')
-    //   // Now that the wallet is connected, get the address
-    //   const address = this.modal.getAddress(); // Using getAddress as you intended
-    //   console.log("Connected address:", address);
-
-    //   // Perform any additional actions with the address, such as sending it to your backend
-    //   this.sendAddressToBackend(address);
-    // });
+    this.modal.subscribeEvents(event => {
+      console.log("new state", event.data)
+      const account = getAccount(this.config)
+      console.log('account in modal', account)
+      // conditional if address there then send to backend
+    })
   }
 
-  // openConnectModal() {
-  //   try {
-  //     const modalResult = await this.modal.open();
-  //     console.log('Modal result:', modalResult); // Debugging: Check what the modal returns upon opening
+  openConnectModal() {
+    this.modal.open();
+  }
 
-  //     // Assuming modalResult.provider should have the provider, adjust as per actual API response
-  //     if (!this.modal.provider) {
-  //         console.error('Provider is undefined. Make sure the connection is established correctly.');
-  //         return;
+  // Function to send the account address to the backend
+  // async sendAccountToBackend(account) {
+  //   console.log('account that was sent along in sendtobaackend', account)
+
+  //   const account = getAccount(this.config)
+  //   console.log('account in sendtobaackend', account)
+  //   try {
+  //     const response = await fetch('/users/:user_id/wallets', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         // Include any other headers your backend requires
+  //       },
+  //       body: JSON.stringify({ wallet_address: account }),
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error('Network response was not ok');
   //     }
 
-  //     const provider = new ethers.providers.Web3Provider(this.modal.provider);
-  //     const signer = provider.getSigner();
-  //     const address = await signer.getAddress();
-  //     const network = await provider.getNetwork();
-      
-  //     console.log('in try', network, address, provider, signer);
-      
-  //     this.sendWalletDetailsToServer(address, network.chainId);
-  // } catch (error) {
-  //     console.error('Error connecting to the wallet:', error);
-  // }
-
-  // async openConnectModal() {
-  //   try {
-  //     await this.modal.open();
-  //     console.log("modal opened")
-  //     // Assuming you have a way to access the connected provider from the modal
-  //     const provider = new ethers.providers.Web3Provider(window.ethereum);
-  //     const signer = provider.getSigner();
-  //     const address = await signer.getAddress();
-  //     console.log("Connected address:", address);
-  //     // Perform actions with the address, like sending it to your backend
+  //     const responseData = await response.json();
+  //     console.log('Successfully sent account to backend:', responseData);
+  //     // Additional actions based on the response (e.g., update UI)
   //   } catch (error) {
-  //     console.error('Error connecting to the wallet:', error);
+  //     console.error('Error sending account to backend:', error);
   //   }
   // }
-
-  // this gets me the address of the wallet when clikcing the openModal button a second time
-  openConnectModal() {
-    console.log('modal open')
-    this.modal.open();
-    const account = getAccount(this.config)
-    console.log('account', account)
-  }
-
-//   // latest adjustments that will not give me the address even after clicking the openModal button a second time
-//   
-// async openConnectModal() {
-//     console.log('Opening modal...meow');
-//     try {
-//         // Open the modal and wait for the user to connect their wallet
-//         const modalResult = await this.modal.open();
-//         console.log(this.modal.open)
-//         console.log('User completed interaction:', modalResult);
-
-//         // Check if the modalResult includes a provider directly
-//         // This step depends on how your modal and library are set up
-//         // You might need to adjust this based on the actual structure of modalResult
-//         if (modalResult && modalResult.provider) {
-//             console.log('Provider available, fetching account details...');
-
-//             const provider = new ethers.providers.Web3Provider(modalResult.provider);
-//             const signer = provider.getSigner();
-//             const accountAddress = await signer.getAddress();
-
-//             console.log('Connected account:', accountAddress);
-//         } else {
-//             console.error('Connection completed, but no provider available.');
-//         }
-//     } catch (error) {
-//         console.error('Error during wallet connection:', error);
-//     }
-// }
 }

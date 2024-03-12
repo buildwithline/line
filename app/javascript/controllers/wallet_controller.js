@@ -3,17 +3,15 @@ import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi'
 import { mainnet, arbitrum } from 'viem/chains'
 import { getAccount, reconnect } from '@wagmi/core'
 
-import { ethers } from 'ethers'
-
 export default class extends Controller {
   static targets = [ "openModal" ]
   static values = {
     projectId: String,
-    userId: Number
+    userId: Number,
+    csrfToken: String
   }
 
   connect() {
-    console.log('connect method')
     const projectId = this.projectIdValue;
     const chains = [mainnet, arbitrum];
     const metadata = {
@@ -34,19 +32,18 @@ export default class extends Controller {
     });
     reconnect(this.config)
 
-    console.log('config', this.config)
-    
     this.modal = createWeb3Modal({
       wagmiConfig: this.config,
       projectId: this.projectIdValue,
       enableAnalytics: true
     });
-    console.log('create modal')
     this.modal.subscribeEvents(event => {
-      console.log("new state", event.data)
-      const account = getAccount(this.config)
-      console.log('account in modal', account)
-      // conditional if address there then send to backend
+      if(event.data.event == 'CONNECT_SUCCESS') {
+        console.log('connected')
+        this.sendAccountToBackend(this.account)
+      } else {
+        console.log('not connected')
+      }
     })
   }
 
@@ -54,31 +51,34 @@ export default class extends Controller {
     this.modal.open();
   }
 
-  // Function to send the account address to the backend
-  // async sendAccountToBackend(account) {
-  //   console.log('account that was sent along in sendtobaackend', account)
+  async sendAccountToBackend(account) {
+    const walletData = {
+      wallet: {
+        address: account.address,
+        // chain_id: account.chain.id,
+      }
+    };
 
-  //   const account = getAccount(this.config)
-  //   console.log('account in sendtobaackend', account)
-  //   try {
-  //     const response = await fetch('/users/:user_id/wallets', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         // Include any other headers your backend requires
-  //       },
-  //       body: JSON.stringify({ wallet_address: account }),
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error('Network response was not ok');
-  //     }
-
-  //     const responseData = await response.json();
-  //     console.log('Successfully sent account to backend:', responseData);
-  //     // Additional actions based on the response (e.g., update UI)
-  //   } catch (error) {
-  //     console.error('Error sending account to backend:', error);
-  //   }
-  // }
+    try {
+      const response = await fetch(`/users/${this.userIdValue}/wallets`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': this.csrfTokenValue,
+        },
+        body: JSON.stringify(walletData),
+      });
+  
+      if (!response.ok) {
+        // If the response is not okay, throw an error with the status text
+        throw new Error(`Network response was not ok: ${response.statusText}`);
+      }
+  
+      const responseData = await response.json();
+      console.log('Successfully sent account to backend:', responseData);
+      // Additional actions based on the response (e.g., update UI)
+    } catch (error) {
+      console.error('Error sending account to backend:', error);
+    }
+  }
 }

@@ -37,12 +37,18 @@ export default class extends Controller {
       projectId: this.projectIdValue,
       enableAnalytics: true
     });
+
     this.modal.subscribeEvents(event => {
+      this.account = getAccount(this.config)
+
       if(event.data.event == 'CONNECT_SUCCESS') {
-        console.log('connected')
+        console.log('connected', event.data.event)
         this.sendAccountToBackend(this.account)
-      } else {
+        this.openModalTarget.textContent = 'Disconnect Wallet'
+      } else if(event.data.event == 'MODAL CLOSE') {
         console.log('not connected')
+        this.removeWalletFromDatabase(this.account)
+        this.openModalTarget.textContent = 'Connect Wallet'
       }
     })
   }
@@ -51,6 +57,9 @@ export default class extends Controller {
     this.modal.open();
   }
 
+  async removeWalletFromDatabase(account) {
+    console.log('disconnect wallet')
+  }
   async sendAccountToBackend(account) {
     const walletData = {
       wallet: {

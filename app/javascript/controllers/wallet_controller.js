@@ -8,6 +8,7 @@ export default class extends Controller {
   static values = {
     projectId: String,
     userId: Number,
+    walletIdValue: Number,
     csrfToken: String
   }
 
@@ -38,6 +39,10 @@ export default class extends Controller {
       enableAnalytics: true
     });
 
+    // TODO:
+    // when loading start page, button for modal needs to already be displayed correctly - wallet connected: Dicsonnect wallet, wallet not connected: Connect wallet
+    //  if dicsonnect is clicked and successful, the wallet needs to be deleted in DB
+
     this.modal.subscribeEvents(event => {
       this.account = getAccount(this.config)
 
@@ -45,7 +50,7 @@ export default class extends Controller {
         console.log('connected', event.data.event)
         this.sendAccountToBackend(this.account)
         this.openModalTarget.textContent = 'Disconnect Wallet'
-      } else if(event.data.event == 'MODAL CLOSE') {
+      } else if(event.data.event == 'MODAL_CLOSE') {
         console.log('not connected')
         this.removeWalletFromDatabase(this.account)
         this.openModalTarget.textContent = 'Connect Wallet'
@@ -58,8 +63,37 @@ export default class extends Controller {
   }
 
   async removeWalletFromDatabase(account) {
-    console.log('disconnect wallet')
+    console.log('disconnect my wallet')
+    const walletData = {
+      wallet: {
+        address: account.address,
+        // chain_id: account.chain.id,
+      }
+    };
+
+    try {
+      const response = await fetch(`/users/${this.userIdValue}/wallet`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': this.csrfTokenValue,
+        },
+        body: JSON.stringify(walletData),
+      });
+  
+      if (!response.ok) {
+        // If the response is not okay, throw an error with the status text
+        throw new Error(`Network response was not ok: ${response.statusText}`);
+      }
+  
+      const responseData = await response.json();
+      console.log('Successfully removed from DB:', responseData);
+      // Additional actions based on the response (e.g., update UI)
+    } catch (error) {
+      console.error('Error sending account to backend:', error);
+    }
   }
+
   async sendAccountToBackend(account) {
     const walletData = {
       wallet: {
@@ -69,7 +103,7 @@ export default class extends Controller {
     };
 
     try {
-      const response = await fetch(`/users/${this.userIdValue}/wallets`, {
+      const response = await fetch(`/users/${this.userIdValue}/wallet`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

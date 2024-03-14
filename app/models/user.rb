@@ -7,6 +7,10 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable, :omniauthable, omniauth_providers: [:github]
 
   has_one :wallet, dependent: :destroy
+  has_many :repos
+  has_many :campaigns, through: :repos
+  has_many :contributions
+  has_many :contributed_campaigns, through: :contributions, source: :campaign
 
   def self.from_omniauth(auth)
     where(provider: auth.provider, uid: auth.uid).first_or_create do |user|

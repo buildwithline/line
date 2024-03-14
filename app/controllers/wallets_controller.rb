@@ -4,13 +4,26 @@ class WalletsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_user
 
-  # Captures wallet details post WalletConnect connection
   def create
-    wallet = @user.wallets.create(wallet_params)
+    if @user.wallet.present?
+      render json: { error: 'User already has a wallet connected.' }, status: :unprocessable_entity
+      return
+    end
+
+    wallet = @user.create_wallet(wallet_params)
+
     if wallet.persisted?
-      render json: { status: :ok, message: 'Wallet connected successfully.' }
+      render json: { message: 'Wallet connected successfully.' }, status: :created
     else
-      render json: { status: :unprocessable_entity, errors: wallet.errors.full_messages }
+      render json: { errors: wallet.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    if @user.wallet&.destroy
+      render json: { message: 'Wallet disconnected successfully.' }, status: :ok
+    else
+      render json: { error: 'Wallet not found or could not be disconnected.' }, status: :not_found
     end
   end
 
@@ -18,10 +31,9 @@ class WalletsController < ApplicationController
 
   def set_user
     @user = current_user
-    # authorize! :update, @user # Example using CanCanCan for authorization? needed?
   end
 
   def wallet_params
-    params.require(:wallet).permit(:address, :chain_id) # Include any other parameters you expect from WalletConnect
+    params.require(:wallet).permit(:address) # add, :chain_id later?
   end
 end

@@ -4,10 +4,20 @@
     <%= image_tag @avatar, alt: "Avatar", class: 'w-24 h-24 rounded-full' %>
   </div>
   <p>
-    <%= "Hello, #{current_user.name}, welcome to Line - The Developers Marketplace " %>
+    <%= "Hello, #{current_user.nickname}, welcome to Line - The Developers Marketplace " %>
   </p>
-  <div data-controller="wallet" data-wallet-project-id-value="<%= Rails.application.credentials.dig(:wallet_connect, :project_id)%>" data-user-id="<%= current_user.id %>">
-    <button data-wallet-target="openModal" data-action="click->wallet#openConnectModal">Open Modal</button>
+  <div 
+   data-controller="wallet"
+    data-wallet-project-id-value="<%= Rails.application.credentials.dig(:wallet_connect, :project_id) %>"
+    data-wallet-user-id-value="<%= current_user.id %>"
+    data-wallet-csrf-token-value="<%= form_authenticity_token %>">
+    <button data-wallet-target="openModal" data-action="click->wallet#openConnectModal">
+      <% if current_user.wallet.present? %>
+        Disconnect Wallet
+      <% else %>
+        Connect Wallet
+      <% end %>
+    </button>
   </div>
   <p>
     <% if @organizations.present? %>

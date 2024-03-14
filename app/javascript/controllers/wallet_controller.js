@@ -13,6 +13,8 @@ export default class extends Controller {
   }
 
   connect() {
+    this.isDeleting = false
+    
     const projectId = this.projectIdValue;
     const chains = [mainnet, arbitrum];
     const metadata = {
@@ -39,10 +41,6 @@ export default class extends Controller {
       enableAnalytics: true
     });
 
-    // TODO:
-    // when loading start page, button for modal needs to already be displayed correctly - wallet connected: Dicsonnect wallet, wallet not connected: Connect wallet
-    //  if dicsonnect is clicked and successful, the wallet needs to be deleted in DB
-
     this.modal.subscribeEvents(event => {
       this.account = getAccount(this.config)
 
@@ -62,15 +60,12 @@ export default class extends Controller {
     this.modal.open();
   }
 
-  async removeWalletFromDatabase(account) {
-    console.log('disconnect my wallet')
-    const walletData = {
-      wallet: {
-        address: account.address,
-        // chain_id: account.chain.id,
-      }
-    };
-
+  async removeWalletFromDatabase() {
+    // Guard clause to prevent multiple simultaneous deletions
+    if (this.isDeleting) return;
+    this.isDeleting = true;
+  
+    console.log('Attempting to disconnect wallet for user', this.userIdValue);
     try {
       const response = await fetch(`/users/${this.userIdValue}/wallet`, {
         method: 'DELETE',
@@ -78,21 +73,22 @@ export default class extends Controller {
           'Content-Type': 'application/json',
           'X-CSRF-Token': this.csrfTokenValue,
         },
-        body: JSON.stringify(walletData),
       });
   
       if (!response.ok) {
-        // If the response is not okay, throw an error with the status text
         throw new Error(`Network response was not ok: ${response.statusText}`);
       }
   
       const responseData = await response.json();
       console.log('Successfully removed from DB:', responseData);
-      // Additional actions based on the response (e.g., update UI)
+      this.openModalTarget.textContent = 'Connect Wallet';
     } catch (error) {
-      console.error('Error sending account to backend:', error);
+      console.error('Error removing wallet from backend:', error);
+    } finally {
+      this.isDeleting = false; // Reset the flag
     }
   }
+  
 
   async sendAccountToBackend(account) {
     const walletData = {

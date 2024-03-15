@@ -10,3 +10,4 @@ config/credentials.yml.enc diff=rails_credentials
 
 # See https://bun.sh/docs/install/lockfile
 *.lockb diff=lockb
+*.yml.enc diff=enc

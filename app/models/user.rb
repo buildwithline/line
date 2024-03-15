@@ -7,8 +7,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable, :omniauthable, omniauth_providers: [:github]
 
   has_one :wallet, dependent: :destroy
-  has_many :repos
-  has_many :campaigns, through: :repos
+  has_many :campaigns
   has_many :contributions
   has_many :contributed_campaigns, through: :contributions, source: :campaign
 
@@ -23,6 +22,12 @@ class User < ApplicationRecord
       user.password = Devise.friendly_token
 
       user.github_access_token = auth.credentials.token
+    end
+  end
+
+  def github_repos
+    Rails.cache.fetch("#{cache_key_with_version}/github_repos", expires_in: 12.hours) do
+      GithubApiHelper.fetch_github_data(self)[:repos]
     end
   end
 end

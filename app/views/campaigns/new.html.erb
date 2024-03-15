@@ -1,0 +1,44 @@
+<h1>Create a New Campaign</h1>
+<div>
+  <%= form_with(model: [@user, @campaign], local: true) do |form| %>
+    <% if @campaign.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(@campaign.errors.count, "error") %> prohibited this campaign from being saved:</h2>
+        <ul>
+          <% @campaign.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <div class="field">
+      <%= form.label :title %>
+      <%= form.text_field :title %>
+    </div>
+    <div class="field">
+      <%= form.label :repo_identifier %>
+      <%= form.text_field :repo_identifier %>
+    </div>
+    <div class="field">
+      <%= form.label :repo_url %>
+      <%= form.text_field :repo_url %>
+    </div>
+    <div class="field">
+      <%= form.label :accepted_currency %>
+      <%= form.text_field :accepted_currency %>
+    </div>
+    <div class="field">
+      <%= form.label :tiers %>
+      <%= form.text_area :tiers %>
+    </div>
+    <div class="field">
+      <%= form.label :amount %>
+      <%= form.number_field :amount, step: 0.01 %>
+    </div>
+    <div class="field">
+      <%= form.label :contribution_cadence %>
+      <%= form.text_field :contribution_cadence %>
+    </div>
+    <%= form.submit 'Create Campaign' %>
+  <% end %>
+</div>

@@ -6,6 +6,9 @@
   <p>
     <%= "Hello, #{current_user.nickname}, welcome to Line - The Developers Marketplace " %>
   </p>
+  <div>
+    <%= link_to 'New personal campaign', new_user_campaign_path(current_user), class: 'btn btn-primary' %>
+  </div>
   <div 
    data-controller="wallet"
     data-wallet-project-id-value="<%= Rails.application.credentials.dig(:wallet_connect, :project_id) %>"

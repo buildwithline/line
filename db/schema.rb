@@ -17,13 +17,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_14_130547) do
   create_table "campaigns", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "repo_identifier"
-    t.string "repo_url"
     t.bigint "receiving_wallet_id", null: false
     t.string "title"
     t.text "description"
     t.string "accepted_currency"
-    t.text "tiers"
-    t.decimal "amount", precision: 10, scale: 2
+    t.string "tier_name"
+    t.decimal "tier_amount", precision: 10, scale: 2
     t.string "contribution_cadence"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

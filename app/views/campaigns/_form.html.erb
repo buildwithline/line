@@ -12,6 +12,7 @@
   <% end %>
   <div>
     <%= form.hidden_field :repo_identifier, value: @repo_name %>
+    <%= form.hidden_field :receiving_wallet_id, value: current_user.wallet.id if current_user.wallet.present? %>
     <div class="field">
       <%= form.label :creator, class: "block text-gray-700 text-sm font-bold mb-2" %>
       <p>
@@ -31,21 +32,20 @@
       <%= form.label :accepted_currency, class: "block text-gray-700 text-sm font-bold mb-2" %>
       <%= form.select :accepted_currency, ['all', 'USDC', 'BTC', 'ETH'], {}, {class: "shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"} %>
     </div>
-    <div id="tiers-section" class="border p-4 rounded space-y-4">
-      <div id="tier-1" class="flex space-x-4">
-        <div class="flex-1">
-          <%= form.label :tier, 'Tier 1 Name', class: "block text-gray-700 text-sm font-bold mb-2" %>
-          <%= form.text_field :tier, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
-        </div>
-        <div class="flex-1">
-          <%= form.label :amount, 'Amount', class: "block text-gray-700 text-sm font-bold mb-2" %>
-          <%= form.number_field :amount, step: 0.01, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
-        </div>
-      </div>
-      <div>
+    <div class="field">
+      <%= form.label :tier_name, class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <%= form.text_field :tier_name, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+    </div>
+    <div class="field">
+      <%= form.label :tier_amount, class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <%= form.number_field :tier_amount, step: 0.01, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+    </div>
+    <div class="mt-4">
+      <div class="mt-4">
         <%= form.label :contribution_cadence, 'Contribution Cadence', class: "block text-gray-700 text-sm font-bold mb-2" %>
         <%= form.select :contribution_cadence, ['both', 'recurring', 'one-time'], {}, {class: "shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"} %>
       </div>
     </div>
     <%= form.submit (@campaign.new_record? ? 'Create Campaign' : 'Edit Campaign'), class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" %>
-  <% end %>
+  </div>
+<% end %>

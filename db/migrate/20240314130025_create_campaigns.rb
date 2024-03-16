@@ -8,13 +8,12 @@ class CreateCampaigns < ActiveRecord::Migration[6.0]
       # it allows us to keep our database schema simplified while still linking campaigns to their respective GitHub repositories.
       # This approach is chosen to reduce redundancy and reliance on storing external data that might change frequently.
       t.string :repo_identifier, null: true # Allow null for user-centric campaigns
-      t.string :repo_url, null: true # Allow null
       t.references :receiving_wallet, null: false, foreign_key: { to_table: :wallets }
       t.string :title
       t.text :description
       t.string :accepted_currency
-      t.text :tiers
-      t.decimal :amount, precision: 10, scale: 2
+      t.string :tier_name
+      t.decimal :tier_amount, precision: 10, scale: 2
       t.string :contribution_cadence
 
       t.timestamps

@@ -1,0 +1,35 @@
+<h1 class="text-xl font-bold mb-4">Campaign Details</h1>
+<div class="mt-5">
+  <div class="mb-3">
+    <strong>Title:</strong>
+    <%= @campaign.title %>
+  </div>
+  <div class="mb-3">
+    <strong>Description:</strong>
+    <%= @campaign.description %>
+  </div>
+  <% if @campaign.repo_identifier.present? %>
+    <div class="mb-3">
+      <strong>Repository URL:</strong>
+      <%= link_to "https://github.com/#{@campaign.repo_identifier}", "https://github.com/#{@campaign.repo_identifier}", target: "_blank", rel: "noopener noreferrer" %>
+    </div>
+  <% end %>
+  <div class="mb-3">
+    <strong>Accepted Currency:</strong>
+    <%= @campaign.accepted_currency %>
+  </div>
+  <div class="mb-3">
+    <strong>Tier Name:</strong>
+    <%= @campaign.tier_name %>
+  </div>
+  <div class="mb-3">
+    <strong>Tier Amount:</strong>
+    <%= @campaign.tier_amount %>
+  </div>
+  <div class="mb-3">
+    <strong>Contribution Cadence:</strong>
+    <%= @campaign.contribution_cadence %>
+  </div>
+  <%= link_to 'Edit Campaign', edit_user_campaign_path(current_user, @campaign), class: "btn btn-primary mr-2" %>
+  <%= link_to 'Back to Campaigns', user_campaigns_path(current_user), class: "btn btn-secondary" %>
+</div>

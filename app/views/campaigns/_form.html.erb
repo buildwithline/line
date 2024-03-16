@@ -1,0 +1,51 @@
+<%= form_with(model: [current_user, @campaign], local: true, class: "space-y-4") do |form| %>
+  <% if @campaign.errors.any? %>
+    <div id="error_explanation" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+      <strong class="font-bold">Oops!</strong>
+      <span class="block sm:inline"><%= pluralize(@campaign.errors.count, "error") %> prohibited this campaign from being saved:</span>
+      <ul class="list-disc pl-5 mt-2">
+        <% @campaign.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div>
+    <%= form.hidden_field :repo_identifier, value: @repo_name %>
+    <div class="field">
+      <%= form.label :creator, class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <p>
+        <%= "#{current_user.nickname} project owner of #{@repo_name} verified" %>
+        <%= image_tag("verified-icon.svg", alt: "Verified Checkmark", class: "inline-block align-middle", style: "height: 20px; width: 20px;") %>
+      </p>
+    </div>
+    <div class="field">
+      <%= form.label :title, class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <%= form.text_field :title, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+    </div>
+    <div class="field">
+      <%= form.label :description, class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <%= form.text_field :description, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+    </div>
+    <div class="field">
+      <%= form.label :accepted_currency, class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <%= form.select :accepted_currency, ['all', 'USDC', 'BTC', 'ETH'], {}, {class: "shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"} %>
+    </div>
+    <div id="tiers-section" class="border p-4 rounded space-y-4">
+      <div id="tier-1" class="flex space-x-4">
+        <div class="flex-1">
+          <%= form.label :tier, 'Tier 1 Name', class: "block text-gray-700 text-sm font-bold mb-2" %>
+          <%= form.text_field :tier, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+        </div>
+        <div class="flex-1">
+          <%= form.label :amount, 'Amount', class: "block text-gray-700 text-sm font-bold mb-2" %>
+          <%= form.number_field :amount, step: 0.01, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+        </div>
+      </div>
+      <div>
+        <%= form.label :contribution_cadence, 'Contribution Cadence', class: "block text-gray-700 text-sm font-bold mb-2" %>
+        <%= form.select :contribution_cadence, ['both', 'recurring', 'one-time'], {}, {class: "shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"} %>
+      </div>
+    </div>
+    <%= form.submit (@campaign.new_record? ? 'Create Campaign' : 'Edit Campaign'), class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" %>
+  <% end %>

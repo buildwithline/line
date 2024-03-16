@@ -7,6 +7,8 @@ class Campaign < ApplicationRecord
   validates :repo_identifier, presence: true
   validates :repo_url, presence: true, format: { with: URI::DEFAULT_PARSER.make_regexp(%w[http https]) }
 
+  scope :by_repo_identifier, ->(identifier) { where(repo_identifier: identifier).first }
+
   # Optional association indicator for UI logic or elsewhere
   def repo_centric?
     repo_identifier.present?

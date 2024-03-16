@@ -20,6 +20,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_14_130547) do
     t.string "repo_url"
     t.bigint "receiving_wallet_id", null: false
     t.string "title"
+    t.text "description"
     t.string "accepted_currency"
     t.text "tiers"
     t.decimal "amount", precision: 10, scale: 2

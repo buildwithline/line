@@ -11,6 +11,7 @@ class CreateCampaigns < ActiveRecord::Migration[6.0]
       t.string :repo_url, null: true # Allow null
       t.references :receiving_wallet, null: false, foreign_key: { to_table: :wallets }
       t.string :title
+      t.text :description
       t.string :accepted_currency
       t.text :tiers
       t.decimal :amount, precision: 10, scale: 2

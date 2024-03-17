@@ -1,35 +1,69 @@
-<h1 class="text-xl font-bold mb-4">Campaign Details</h1>
-<div class="mt-5">
-  <div class="mb-3">
-    <strong>Title:</strong>
-    <%= @campaign.title %>
+<div class="container mx-auto px-4 py-8">
+  <div class="text-lg font-semibold mb-4">
+    <%= @campaign.user.nickname %> / <%= @campaign.repo_identifier %>
   </div>
-  <div class="mb-3">
-    <strong>Description:</strong>
-    <%= @campaign.description %>
-  </div>
-  <% if @campaign.repo_identifier.present? %>
-    <div class="mb-3">
-      <strong>Repository URL:</strong>
-      <%= link_to "https://github.com/#{@campaign.repo_identifier}", "https://github.com/#{@campaign.repo_identifier}", target: "_blank", rel: "noopener noreferrer" %>
+  <div class="flex flex-wrap -mx-2">
+    <!-- Left Column: Overview -->
+    <div class="w-full md:w-1/2 px-2">
+      <div class="mb-4">
+        <strong>Title:</strong>
+        <p><%= @campaign.title %></p>
+      </div>
+      <div class="mb-4">
+        <strong>Description:</strong>
+        <p><%= @campaign.description %></p>
+      </div>
+      <div class="mb-4">
+        <strong>Project Owner:</strong>
+        <p><%= @campaign.user.nickname %> project owner verified
+          <%= image_tag("verified-icon.svg", alt: "Verified", class: "inline-block ml-1", width: "20", height: "20") %>
+        </p>
+      </div>
+      <div class="mb-4">
+        <strong>Repository URL:</strong>
+        <p>
+          <%= link_to "https://github.com/#{@campaign.repo_identifier}", target: "_blank", rel: "noopener noreferrer" do %>
+            https://github.com/<%= @campaign.repo_identifier %>
+          <% end %>
+        </p>
+      </div>
     </div>
-  <% end %>
-  <div class="mb-3">
-    <strong>Accepted Currency:</strong>
-    <%= @campaign.accepted_currency %>
+    <!-- Right Column: Call to Action -->
+    <div class="w-full md:w-1/2 px-2">
+      <div class="mb-4">
+        <strong>Support Campaign:</strong>
+      </div>
+      <div class="mb-4">
+        <select class="block w-full p-2 border rounded">
+          <option>One-Time</option>
+          <option>Monthly</option>
+          <option>Yearly</option>
+        </select>
+      </div>
+      <div class="flex mb-4 space-x-2">
+        <% [25, 50, 75, 'Custom'].each do |amount| %>
+          <div class="flex-1">
+            <%= button_tag amount, class: "w-full p-2 border rounded text-center #{'bg-blue-500 text-white' if amount == 25}" %>
+          </div>
+        <% end %>
+      </div>
+      <div class="flex mb-4 space-x-2">
+        <% ['USDC', 'BTC', 'ETH'].each do |currency| %>
+          <div class="flex-1">
+            <%= button_tag currency, class: "w-full p-2 border rounded text-center #{'bg-blue-500 text-white' if currency == 'USDC'}" %>
+          </div>
+        <% end %>
+      </div>
+      <div class="mb-4">
+        <strong>Wallet:</strong>
+        <p id="wallet-address"><%= @user.wallet.address if @user.wallet.present? %></p>
+        <% unless @user.wallet.present? %>
+          <%= link_to "Add Wallet", "#", class: "text-blue-600 hover:text-blue-800", data: { action: "click->web3modal#open" } %>
+        <% end %>
+      </div>
+      <div>
+        <%= button_tag "Support", class: "w-full p-2 bg-blue-500 text-white rounded", data: { action: "click->thank#youModal" } %>
+      </div>
+    </div>
   </div>
-  <div class="mb-3">
-    <strong>Tier Name:</strong>
-    <%= @campaign.tier_name %>
-  </div>
-  <div class="mb-3">
-    <strong>Tier Amount:</strong>
-    <%= @campaign.tier_amount %>
-  </div>
-  <div class="mb-3">
-    <strong>Contribution Cadence:</strong>
-    <%= @campaign.contribution_cadence %>
-  </div>
-  <%= link_to 'Edit Campaign', edit_user_campaign_path(current_user, @campaign), class: "btn btn-primary mr-2" %>
-  <%= link_to 'Back to Campaigns', user_campaigns_path(current_user), class: "btn btn-secondary" %>
 </div>

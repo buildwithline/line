@@ -5,11 +5,12 @@ class CampaignsController < ApplicationController
   before_action :check_campaign_existence, only: %i[new create]
 
   before_action :set_campaign, only: %i[show edit update destroy]
-  before_action :set_user, only: %i[new create]
+  before_action :set_user, only: %i[new create update show]
 
-  # def index
-  #   @campaigns = Campaign.all
-  # end
+  def index
+    @campaigns = Campaign.all
+    @repo_name = params[:repo_name]
+  end
 
   def show; end
 
@@ -43,7 +44,7 @@ class CampaignsController < ApplicationController
 
   def update
     if @campaign.update(campaign_params)
-      redirect_to @campaign, notice: 'Campaign was successfully updated.'
+      redirect_to user_campaign_path(@user, @campaign), notice: 'Campaign was successfully updated.'
     else
       render :edit
     end
@@ -65,7 +66,8 @@ class CampaignsController < ApplicationController
   end
 
   def check_campaign_existence
-    return unless current_user.campaigns.exists?(repo_identifier: params[:repo_identifier])
+    repo_identifier = params[:campaign] ? params[:campaign][:repo_identifier] : params[:repo_identifier]
+    return unless current_user.campaigns.exists?(repo_identifier:)
 
     redirect_to user_campaigns_path(current_user), alert: 'A campaign for this repository already exists.'
   end

@@ -1,0 +1,40 @@
+<div class="container mx-auto px-4">
+  <div class="flex justify-between items-center py-4">
+    <h1 class="text-2xl font-semibold">Campaigns</h1>
+    <%= link_to 'New Campaign', new_user_campaign_path(current_user), class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+  </div>
+  <div class="overflow-x-auto mt-6">
+    <table class="w-full whitespace-no-wrap">
+      <thead>
+        <tr class="text-left font-bold">
+          <th class="pb-4 pt-6 px-2 bg-gray-100">Title</th>
+          <th class="pb-4 pt-6 px-2 bg-gray-100">Description</th>
+          <th class="pb-4 pt-6 px-2 bg-gray-100">Repository</th>
+          <th class="pb-4 pt-6 px-2 bg-gray-100">Tier</th>
+          <th class="pb-4 pt-6 px-2 bg-gray-100">Amount</th>
+          <th class="pb-4 pt-6 px-2 bg-gray-100">Curency</th>
+          <th class="pb-4 pt-6 px-2 bg-gray-100">Cadence</th>
+          <th class="pb-4 pt-6 px-2 bg-gray-100">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @campaigns.each do |campaign| %>
+          <tr class="hover:bg-gray-50">
+            <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm"><%= campaign.title %></td>
+            <td class="px-2 py-5 border-b border-gray-200 break-words"><%= truncate(campaign.description, length: 100) %></td>
+            <td class="px-2 py-5 border-b border-gray-200"><%= campaign.repo_identifier %></td>
+            <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm"><%= campaign.tier_name %></td>
+            <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm"><%= number_to_currency(campaign.tier_amount) %></td>
+            <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm"><%= campaign.accepted_currency %></td>
+            <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm"><%= campaign.contribution_cadence %></td>
+            <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm">
+              <%= link_to 'Show', user_campaign_path(current_user, campaign), class: "text-blue-600 hover:text-blue-900" %>
+              <%= link_to 'Edit', edit_user_campaign_path(current_user, campaign), class: "text-blue-600 hover:text-blue-900 ml-4" %>
+              <%= link_to 'Delete', user_campaign_path(current_user, campaign), method: :delete, data: { confirm: 'Are you sure?' }, class: "text-red-600 hover:text-red-900 ml-4" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

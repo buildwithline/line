@@ -10,7 +10,7 @@
     <%= link_to 'New personal campaign', new_user_campaign_path(current_user), class: 'btn btn-primary' %>
   </div>
   <div 
-   data-controller="wallet"
+    data-controller="wallet"
     data-wallet-project-id-value="<%= Rails.application.credentials.dig(:wallet_connect, :project_id) %>"
     data-wallet-user-id-value="<%= current_user.id %>"
     data-wallet-csrf-token-value="<%= form_authenticity_token %>">

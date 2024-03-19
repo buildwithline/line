@@ -3,7 +3,6 @@
     <%= @campaign.user.nickname %> / <%= @campaign.repo_identifier %>
   </div>
   <div class="flex flex-wrap -mx-2">
-    <!-- Left Column: Overview -->
     <div class="w-full md:w-1/2 px-2">
       <div class="mb-4">
         <strong>Title:</strong>
@@ -28,41 +27,80 @@
         </p>
       </div>
     </div>
-    <!-- Right Column: Call to Action -->
-    <div class="w-full md:w-1/2 px-2">
+    <div class="w-full md:w-1/2 px-2" data-controller="campaign">
       <div class="mb-4">
         <strong>Support Campaign:</strong>
       </div>
       <div class="mb-4">
-        <select class="block w-full p-2 border rounded">
+        <select class="block w-full p-2 border rounded" data-campaign-target="cadence">
           <option>One-Time</option>
           <option>Monthly</option>
           <option>Yearly</option>
         </select>
       </div>
+      <div class="modal" data-campaign-target="customAmountModal">
+        <div class="modal-content">
+          <input type="number" min="0" step="1" placeholder="Enter amount" data-campaign-target="customAmountInput">
+          <button data-action="click->campaign#confirmCustomAmount">OK</button>
+          <button data-action="click->campaign#cancelCustomAmount">Cancel</button>
+        </div>
+      </div>
       <div class="flex mb-4 space-x-2">
-        <% [25, 50, 75, 'Custom'].each do |amount| %>
+        <% [25, 50, 75, 'Custom'].each_with_index do |amount, index| %>
           <div class="flex-1">
-            <%= button_tag amount, class: "w-full p-2 border rounded text-center #{'bg-blue-500 text-white' if amount == 25}" %>
+            <% if amount == 'Custom' %>
+              <%= button_tag amount,
+                    data: { 
+                      action: "click->campaign#showCustomAmountModal", 
+                      campaign_target: "amountButton"
+                    },
+                    class: "w-full p-2 border rounded text-center"
+              %>
+              <input type="number" min="0" step="1" placeholder="Enter amount" 
+                class="w-full p-2 border rounded text-center modal hidden"
+                style="display: none;"
+                data-campaign-target="customAmountInput"
+                data-action="campaign#selectCustomAmount"/>
+            <% else %>
+              <%= button_tag "$#{amount}",
+                    data: { 
+                      action: "campaign#selectAmount", 
+                      campaign_target: "amountButton",
+                      campaign_value: amount.to_s 
+                    }, 
+                    class: "w-full p-2 border rounded text-center #{'bg-blue-500 text-white' if index == 0 }"
+              %>
+            <% end %>
           </div>
         <% end %>
       </div>
       <div class="flex mb-4 space-x-2">
         <% ['USDC', 'BTC', 'ETH'].each do |currency| %>
           <div class="flex-1">
-            <%= button_tag currency, class: "w-full p-2 border rounded text-center #{'bg-blue-500 text-white' if currency == 'USDC'}" %>
+            <%= button_tag currency, 
+                  data: {
+                    action: "campaign#selectCurrency",
+                    campaign_target: "currencyButton",
+                    campaign_value: currency
+                  }, 
+                  class: "w-full p-2 border rounded text-center #{'bg-blue-500 text-white' if currency == 'USDC'}" %>
           </div>
         <% end %>
       </div>
-      <div class="mb-4">
-        <strong>Wallet:</strong>
-        <p id="wallet-address"><%= @user.wallet.address if @user.wallet.present? %></p>
-        <% unless @user.wallet.present? %>
-          <%= link_to "Add Wallet", "#", class: "text-blue-600 hover:text-blue-800", data: { action: "click->web3modal#open" } %>
-        <% end %>
-      </div>
-      <div>
-        <%= button_tag "Support", class: "w-full p-2 bg-blue-500 text-white rounded", data: { action: "click->thank#youModal" } %>
+      <div class="mb-4" data-controller="wallet"
+        data-wallet-project-id-value="<%= Rails.application.credentials.dig(:wallet_connect, :project_id) %>"
+        data-wallet-user-id-value="<%= current_user.id %>"
+        data-wallet-csrf-token-value="<%= form_authenticity_token %>">
+        <button data-wallet-target="openModal" data-action="click->wallet#openConnectModal">
+          <strong>Wallet:</strong>
+          <p id="wallet-address"><%= @user.wallet.address if @user.wallet.present? %></p>
+          <% unless @user.wallet.present? %>
+            <%= button_tag "Add Wallet", type: "button", class: "text-blue-600 hover:text-blue-800", data: { action: "wallet#openConnectModal" } %>
+          <% end %>
+        </div>
+        <%= button_tag "Support", 
+          data: { action: "campaign#supportCampaign" }, 
+          class: "w-full p-2 bg-blue-500 text-white rounded" %>
       </div>
     </div>
   </div>

@@ -38,7 +38,7 @@
           <option>Yearly</option>
         </select>
       </div>
-      <div class="modal" data-campaign-target="customAmountModal">
+      <div class="modal hidden" data-campaign-target="customAmountModal">
         <div class="modal-content">
           <input type="number" min="0" step="1" placeholder="Enter amount" data-campaign-target="customAmountInput">
           <button data-action="click->campaign#confirmCustomAmount">OK</button>
@@ -57,7 +57,7 @@
                     class: "w-full p-2 border rounded text-center"
               %>
               <input type="number" min="0" step="1" placeholder="Enter amount" 
-                class="w-full p-2 border rounded text-center modal hidden"
+                class="w-full p-2 border rounded text-center modal"
                 style="display: none;"
                 data-campaign-target="customAmountInput"
                 data-action="campaign#selectCustomAmount"/>

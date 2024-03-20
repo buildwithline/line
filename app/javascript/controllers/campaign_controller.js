@@ -13,24 +13,32 @@ export default class extends Controller {
   connect() {
     this.selectedAmount = 25; // Default amount
     this.selectedCurrency = 'USDC'; // Default currency
-    this.hideCustomAmountModal() 
   }
 
   showCustomAmountModal() {
     this.customAmountModalTarget.classList.add('block');
+    this.customAmountModalTarget.classList.remove('hidden');
   }
 
   hideCustomAmountModal() {
     this.customAmountModalTarget.classList.remove('block');
+    this.customAmountModalTarget.classList.add('hidden');
+  }
+
+  updateCustomAmountVisibility() {
+    if (this.selectedAmount === 'Custom') {
+      this.showCustomAmountModal();
+    } else {
+      this.hideCustomAmountModal();
+
+    }
   }
 
   confirmCustomAmount() {
     // Get the custom amount from the input field
     const customAmount = parseFloat(this.customAmountInputTarget.value);
     if (customAmount > 0) {
-      // Close the modal
       this.hideCustomAmountModal();
-
       // Update the UI with the custom amount
       // this.updateContributionDisplay(customAmount);
     } else {
@@ -40,12 +48,13 @@ export default class extends Controller {
   }
 
   cancelCustomAmount() {
-    // Close the modal without updating the UI
     this.hideCustomAmountModal();
+    this.customAmountModalTarget.classList.add('hidden');
   }
 
   selectAmount(event) {
     const selectedAmount = event.currentTarget.dataset.campaignValue;
+    this.selectedAmount = selectedAmount;
     this.amountButtonTargets.forEach((button) => {
         if (button.dataset.campaignValue === selectedAmount) {
             button.classList.add("bg-blue-500", "text-white");
@@ -55,6 +64,7 @@ export default class extends Controller {
             button.classList.add("bg-white", "text-black");
         }
     });
+    this.updateCustomAmountVisibility(); 
   }
 
   selectCurrency(event) {

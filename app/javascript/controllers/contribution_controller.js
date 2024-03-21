@@ -5,7 +5,7 @@ export default class extends Controller {
     "amountButton",
     "currencyButton",
     "walletAddress",
-    "supportButton",
+    "contributeButton",
     "customAmountModal",
     "customAmountInput"
   ]
@@ -35,7 +35,7 @@ export default class extends Controller {
     if (customAmount > 0) {
       this.hideCustomAmountModal();
     } else {
-      console.error("Invalid custom amount. Please enter a number greater than 0.");
+      alert("Invalid custom amount. Please enter a number greater than 0.");
     }
   }
 
@@ -44,7 +44,7 @@ export default class extends Controller {
   }
 
   selectAmount(event) {
-    const selectedAmount = event.currentTarget.dataset.campaignValue;
+    const selectedAmount = event.currentTarget.dataset.contributionValue;
     this.selectedAmount = selectedAmount;
     this.highlightSelectedAmountButton(selectedAmount);
     this.updateCustomAmountVisibility(); 
@@ -53,7 +53,7 @@ export default class extends Controller {
 
   highlightSelectedAmountButton(selectedAmount) {
     this.amountButtonTargets.forEach(button => {
-      const isSelected = button.dataset.campaignValue === selectedAmount || (selectedAmount === 'Custom' && button.dataset.campaignValue === 'Custom');
+      const isSelected = button.dataset.contributionValue === selectedAmount || (selectedAmount === 'Custom' && button.dataset.contributionValue === 'Custom');
       button.classList.toggle("bg-blue-500", isSelected);
       button.classList.toggle("text-white", isSelected);
       button.classList.toggle("bg-white", !isSelected);
@@ -70,9 +70,9 @@ export default class extends Controller {
   }
 
   selectCurrency(event) {
-    const selectedCurrency = event.currentTarget.dataset.campaignValue;
+    const selectedCurrency = event.currentTarget.dataset.contributionValue;
     this.currencyButtonTargets.forEach(button => {
-      const isSelected = button.dataset.campaignValue === selectedCurrency;
+      const isSelected = button.dataset.contributionValue === selectedCurrency;
       button.classList.toggle("bg-blue-500", isSelected);
       button.classList.toggle("text-white", isSelected);
       button.classList.toggle("bg-white", !isSelected);
@@ -80,8 +80,14 @@ export default class extends Controller {
     });
   }
 
-  supportCampaign() {
-    alert(`Thank you for your support of ${this.selectedAmount} ${this.selectedCurrency}!`);
-    // Extend with actual logic for supporting the campaign
+  contribute() {
+    const amountValue = this.selectedAmount === 'Custom' ? parseFloat(this.customAmountInputTarget.value) : this.selectedAmount;
+    let formattedAmount;
+    // code provided by library(web3.js/ethereum.js etc to transfer funds) 
+    
+    if (!isNaN(amountValue) && amountValue > 0) {
+      formattedAmount = `$${amountValue}`;
+      alert(`Thank you for your support of ${formattedAmount} in ${this.selectedCurrency} currency!`);
+    }
   }
 }

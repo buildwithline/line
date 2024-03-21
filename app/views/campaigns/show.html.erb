@@ -27,22 +27,22 @@
         </p>
       </div>
     </div>
-    <div class="w-full md:w-1/2 px-2" data-controller="campaign">
+    <div class="w-full md:w-1/2 px-2" data-controller="contribution">
       <div class="mb-4">
         <strong>Support Campaign:</strong>
       </div>
       <div class="mb-4">
-        <select class="block w-full p-2 border rounded" data-campaign-target="cadence">
+        <select class="block w-full p-2 border rounded" data-contribution-target="cadence">
           <option>One-Time</option>
           <option>Monthly</option>
           <option>Yearly</option>
         </select>
       </div>
-      <div class="modal hidden" data-campaign-target="customAmountModal">
+      <div class="modal hidden" data-contribution-target="customAmountModal">
         <div class="modal-content">
-          <input type="number" min="0" step="1" placeholder="Enter amount" data-campaign-target="customAmountInput">
-          <button data-action="click->campaign#confirmCustomAmount">OK</button>
-          <button data-action="click->campaign#cancelCustomAmount">Cancel</button>
+          <input type="number" min="0" step="1" placeholder="Enter amount" data-contribution-target="customAmountInput">
+          <button data-action="click->contribution#confirmCustomAmount">OK</button>
+          <button data-action="click->contribution#cancelCustomAmount">Cancel</button>
         </div>
       </div>
       <div class="flex mb-4 space-x-2">
@@ -51,23 +51,23 @@
             <% if amount == 'Custom' %>
               <%= button_tag amount,
                     data: { 
-                      action: "click->campaign#showCustomAmountModal", 
-                      campaign_target: "amountButton",
-                      campaign_value: "Custom"
+                      action: "click->contribution#showCustomAmountModal", 
+                      contribution_target: "amountButton",
+                      contribution_value: "Custom"
                     },
                     class: "w-full p-2 border rounded text-center"
               %>
               <input type="number" min="0" step="1" placeholder="Enter amount" 
                 class="w-full p-2 border rounded text-center modal"
                 style="display: none;"
-                data-campaign-target="customAmountInput"
-                data-action="campaign#selectCustomAmount"/>
+                data-contribution-target="customAmountInput"
+                data-action="contribution#selectCustomAmount"/>
             <% else %>
               <%= button_tag "$#{amount}",
                     data: { 
-                      action: "campaign#selectAmount", 
-                      campaign_target: "amountButton",
-                      campaign_value: amount.to_s 
+                      action: "contribution#selectAmount", 
+                      contribution_target: "amountButton",
+                      contribution_value: amount.to_s 
                     }, 
                     class: "w-full p-2 border rounded text-center #{'bg-blue-500 text-white' if index == 0 }"
               %>
@@ -80,9 +80,9 @@
           <div class="flex-1">
             <%= button_tag currency, 
                   data: {
-                    action: "campaign#selectCurrency",
-                    campaign_target: "currencyButton",
-                    campaign_value: currency
+                    action: "contribution#selectCurrency",
+                    contribution_target: "currencyButton",
+                    contribution_value: currency
                   }, 
                   class: "w-full p-2 border rounded text-center #{'bg-blue-500 text-white' if currency == 'USDC'}" %>
           </div>
@@ -100,7 +100,7 @@
           <% end %>
         </div>
         <%= button_tag "Support", 
-          data: { action: "campaign#supportCampaign" }, 
+          data: { action: "contribution#contribute" }, 
           class: "w-full p-2 bg-blue-500 text-white rounded" %>
       </div>
     </div>

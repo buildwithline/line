@@ -12,7 +12,7 @@
   <% end %>
   <div>
     <%= form.hidden_field :repo_identifier, value: @repo_name %>
-    <%= form.hidden_field :receiving_wallet_id, value: current_user.wallet.id if current_user.wallet.present? %>
+    <%= form.hidden_field :receiving_wallet_, value: current_user.wallet.address if current_user.wallet.present? %>
     <div class="field">
       <%= form.label :creator, class: "block text-gray-700 text-sm font-bold mb-2" %>
       <p>

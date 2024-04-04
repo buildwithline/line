@@ -12,7 +12,9 @@ class CampaignsController < ApplicationController
     @repo_name = params[:repo_name]
   end
 
-  def show; end
+  def show
+    @campaign = Campaign.find(params[:id])
+  end
 
   def new
     @campaign = @user.campaigns.build

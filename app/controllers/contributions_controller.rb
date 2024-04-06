@@ -10,6 +10,6 @@ class ContributionsController < ApplicationController
   private
 
   def contributions_params
-    params.require(:campaign).permit(:tier_amount, :tier_name, :contribution_cadence, :accepted_currency, :repo_identifier, :receiving_wallet_id)
+    params.require(:campaign).permit(:contribution_cadence, :accepted_currency, :repo_identifier, :receiving_wallet_id)
   end
 end

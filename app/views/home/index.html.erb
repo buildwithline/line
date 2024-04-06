@@ -6,15 +6,15 @@
   <p>
     <%= "Hello, #{current_user.nickname}, welcome to Line - The Developers Marketplace " %>
   </p>
-  <div>
-    <%= link_to 'New personal campaign', new_user_campaign_path(current_user), class: 'btn btn-primary' %>
-  </div>
   <div 
     data-controller="wallet"
     data-wallet-project-id-value="<%= Rails.application.credentials.dig(:wallet_connect, :project_id) %>"
     data-wallet-user-id-value="<%= current_user.id %>"
     data-wallet-csrf-token-value="<%= form_authenticity_token %>">
-    <button data-wallet-target="openModal" data-action="click->wallet#openConnectModal">
+    <button 
+      data-wallet-target="openModal"
+      data-action="click->wallet#openConnectModal"
+      class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
       <% if current_user.wallet.present? %>
         Disconnect Wallet
       <% else %>
@@ -46,18 +46,15 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="flex justify-between items-center w-full">
                 <div>
-                  <!-- Display Organization Logo -->
                   <% if repo[:org_avatar_url] %>
                     <%= image_tag repo[:org_avatar_url], alt: "Organization logo", class: "w-8 h-8 mr-4 inline" %>
                   <% else %>
                     <%= image_tag @avatar, alt: "User logo", class: "w-8 h-8 mr-4 inline rounded-full" %>
                   <% end %>
-                  <!-- Repository Name as Link -->
                   <span class="align-middle inline">
                     <%= link_to repo[:repo].full_name, "https://github.com/#{repo[:repo].full_name}", target: "_blank", rel: "noopener noreferrer", class: "text-blue-600 hover:text-blue-800" %>
                   </span>
                 </div>
-                <!-- Option Buttons -->
                 <td>
                   <% campaign = @campaigns_by_repo_identifier[repo[:repo].full_name.split('/', 2).last] %>
                   <% if campaign %>

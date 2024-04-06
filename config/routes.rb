@@ -13,7 +13,7 @@ Rails.application.routes.draw do
 
   root to: 'home#index'
 
-  resources :users, only: [] do # Assuming you don't need all user routes
+  resources :users, only: [] do
     resource :wallet, only: %i[show create destroy]
     resources :campaigns
   end

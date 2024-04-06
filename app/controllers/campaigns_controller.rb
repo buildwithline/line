@@ -18,23 +18,26 @@ class CampaignsController < ApplicationController
 
   def new
     @campaign = @user.campaigns.build
-    @repo_name = params[:repo_name]
+    @repo_name = params[:repo_name] || @campaign.repo_identifier
   end
 
   def create
     @campaign = @user.campaigns.build(campaign_params)
     @repo_name = params[:campaign][:repo_identifier]
-    @campaign.receiving_wallet_id = @user.wallet.id if @user.wallet.present?
+    if params[:campaign][:wallet_address].present? && !current_user.wallet.present?
+      wallet = current_user.build_wallet(address: params[:campaign][:wallet_address])
+      wallet.save
+      @campaign.receiving_wallet_id = wallet.id
+    elsif current_user.wallet.present?
+      @campaign.receiving_wallet_id = current_user.wallet.id
+    end
 
     respond_to do |format|
       if @campaign.save
         format.html { redirect_to user_campaign_path(@user, @campaign), notice: 'Campaign was successfully created.' }
       else
-        logger.debug @campaign.errors.full_messages.to_sentence
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace('campaign_form', partial: 'campaigns/form', locals: { campaign: @campaign })
-        end
-        format.html { redirect_to new_user_campaign_path(@user), alert: 'There were errors with your submission.' }
+        Rails.logger.debug "Errors: #{@campaign.errors.inspect}"
+        format.html { redirect_to new_user_campaign_path(@user), alert: @campaign.errors.full_messages.join('. ') }
       end
     end
   end

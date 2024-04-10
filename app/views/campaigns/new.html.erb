@@ -43,17 +43,38 @@
       <%= form.label :description, class: "block text-gray-700 text-sm font-bold mb-2" %>
       <%= form.text_field :description, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
     </div>
-    <div class="field">
-      <%= form.label :accepted_currency, class: "block text-gray-700 text-sm font-bold mb-2" %>
-      <%= form.select :accepted_currency, ['all', 'USDC', 'BTC', 'ETH'], {}, {class: "shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"} %>
-    </div>
-    <div class="mt-4">
-      <div class="mt-4">
-        <%= form.label :contribution_cadence, 'Contribution Cadence', class: "block text-gray-700 text-sm font-bold mb-2" %>
-        <%= form.select :contribution_cadence, ['both', 'recurring', 'one-time'], {}, {class: "shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"} %>
+    <div class="flex mb-4 space-x-2" data-controller="currency">
+      <div class="flex-1">
+        <%= button_tag "Select All",
+          type: "button",
+          data: { 
+            action: "currency#selectAll",
+            currency_target: "selectAll"
+          },
+          class: "w-full p-2 border rounded text-center" %>
       </div>
+      <% Campaign::ALL_CURRENCIES.each do |currency| %>
+        <div class="flex-1">
+          <%= button_tag currency, 
+          type: "button",
+            data: { 
+              action: "currency#selectCurrency",
+              currency_target: "currencyButton",
+              currency_value: currency
+            }, 
+            class: "currency-btn w-full p-2 border rounded text-center" %>
+        </div>
+      <% end %>
     </div>
-    <%= form.submit (@campaign.new_record? ? 'Create Campaign' : 'Edit Campaign'), class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" %>
+    <%= form.hidden_field :accepted_currency, id: "selected_currency" %>
   </div>
+  <div class="mt-4">
+    <div class="mt-4">
+      <%= form.label :contribution_cadence, 'Contribution Cadence', class: "block text-gray-700 text-sm font-bold mb-2" %>
+      <%= form.select :contribution_cadence, ['both', 'recurring', 'one-time'], {}, {class: "shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"} %>
+    </div>
+  </div>
+  <%= form.submit (@campaign.new_record? ? 'Create Campaign' : 'Edit Campaign'), class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" %>
+</div>
 <% end %>
 </div>

@@ -8,6 +8,8 @@ class Campaign < ApplicationRecord
 
   scope :by_repo_identifier, ->(identifier) { where(repo_identifier: identifier).first }
 
+  ALL_CURRENCIES = %w[USDC BTC ETH].freeze
+
   # Optional association indicator for UI logic or elsewhere
   def repo_centric?
     repo_identifier.present?

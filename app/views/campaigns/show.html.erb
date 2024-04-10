@@ -28,7 +28,7 @@
       </div>
     </div>
     <div>
-      <%= render 'contributions/new'%>
+      <%= render 'contributions/new', campaign: @campaign, contribution: Contribution.new, accepted_currency: @accepted_currency %>
     </div>
   </div>
 </div>

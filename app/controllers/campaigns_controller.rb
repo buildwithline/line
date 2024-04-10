@@ -14,6 +14,11 @@ class CampaignsController < ApplicationController
 
   def show
     @campaign = Campaign.find(params[:id])
+    @accepted_currency = if @campaign.accepted_currency == 'all'
+                           Campaign::ALL_CURRENCIES
+                         else
+                           @campaign.accepted_currency.split(',')
+                         end
   end
 
   def new

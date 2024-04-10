@@ -47,15 +47,15 @@
     <% end %>
   </div>
   <div class="flex mb-4 space-x-2">
-    <% ['USDC', 'BTC', 'ETH'].each do |currency| %>
+    <% accepted_currency.each do |currency| %>
       <div class="flex-1">
         <%= button_tag currency, 
-                  data: {
-                    action: "contribution#selectCurrency",
-                    contribution_target: "currencyButton",
-                    contribution_value: currency
-                  }, 
-                  class: "w-full p-2 border rounded text-center #{'bg-blue-500 text-white' if currency == 'USDC'}" %>
+          data: {
+            action: "contribution#selectCurrency",
+            contribution_target: "currencyButton",
+            contribution_value: currency
+          }, 
+          class: "w-full p-2 border rounded text-center #{'bg-blue-500 text-white' if accepted_currency.length == 1 }" %>
       </div>
     <% end %>
   </div>

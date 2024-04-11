@@ -31,9 +31,7 @@ class HomeController < ApplicationController
   end
 
   def prepare_campaigns_mapping
-    # Assuming @repos is populated with GitHub repos including the user nickname prefix
     repo_identifiers = @repos.map do |repo|
-      # Strip out the user nickname and slash to match the format stored in your database
       repo[:repo].full_name.split('/', 2).last
     end
     pp "repo ident: #{repo_identifiers}"

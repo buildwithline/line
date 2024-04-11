@@ -14,19 +14,22 @@ class CampaignsController < ApplicationController
 
   def show
     @campaign = Campaign.find(params[:id])
-    @accepted_currency = if @campaign.accepted_currency == 'all'
-                           Campaign::ALL_CURRENCIES
-                         else
-                           @campaign.accepted_currency.split(',')
-                         end
+    @accepted_currencies = if @campaign.accepted_currencies == 'all'
+                             Campaign::ALL_CURRENCIES
+                           else
+                             @campaign.accepted_currencies.split(',')
+                           end
   end
 
   def new
     @campaign = @user.campaigns.build
-    @repo_name = params[:repo_name] || @campaign.repo_identifier
+    @repo_name = params[:repo_name]
+
+    @campaign.repo_identifier = @repo_name
   end
 
   def create
+    pp params
     @campaign = @user.campaigns.build(campaign_params)
     @repo_name = params[:campaign][:repo_identifier]
     if params[:campaign][:wallet_address].present? && !current_user.wallet.present?
@@ -41,10 +44,14 @@ class CampaignsController < ApplicationController
       if @campaign.save
         format.html { redirect_to user_campaign_path(@user, @campaign), notice: 'Campaign was successfully created.' }
       else
-        Rails.logger.debug "Errors: #{@campaign.errors.inspect}"
+        Rails.logger.debug @campaign.errors.full_messages.to_sentence
         format.html { redirect_to new_user_campaign_path(@user), alert: @campaign.errors.full_messages.join('. ') }
       end
     end
+
+    pp 'campaign create=========='
+    pp @campaign
+    pp '=========='
   end
 
   def edit
@@ -83,6 +90,6 @@ class CampaignsController < ApplicationController
   end
 
   def campaign_params
-    params.require(:campaign).permit(:title, :description, :tier_amount, :tier_name, :contribution_cadence, :accepted_currency, :repo_identifier, :receiving_wallet_id)
+    params.require(:campaign).permit(:title, :description, :tier_amount, :tier_name, :contribution_cadence, :repo_identifier, :receiving_wallet_id, accepted_currencies: [])
   end
 end

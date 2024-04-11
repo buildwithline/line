@@ -44,14 +44,15 @@
       <%= form.text_field :description, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
     </div>
     <div class="flex mb-4 space-x-2" data-controller="currency">
-      <div class="flex-1">
-        <%= button_tag "Select All",
-          type: "button",
+      <div class="flex items-center mb-4">
+        <%= check_box_tag 'select_all', 'all', false, 
+          id: "select-all-checkbox",
           data: { 
-            action: "currency#selectAll",
+            action: "click->currency#selectAll",
             currency_target: "selectAll"
           },
-          class: "w-full p-2 border rounded text-center" %>
+          class: "mr-2" %>
+        <%= label_tag 'select_all', 'Select All', id: "select-all-label", class: "text-gray-700 text-sm font-bold" %>
       </div>
       <% Campaign::ALL_CURRENCIES.each do |currency| %>
         <div class="flex-1">
@@ -65,16 +66,15 @@
             class: "currency-btn w-full p-2 border rounded text-center" %>
         </div>
       <% end %>
+      <%= form.hidden_field :accepted_currencies, id: "accepted_currencies", 
+        data: { currency_target: "acceptedCurrencies" } %>
     </div>
-    <%= form.hidden_field :accepted_currency, id: "selected_currency" %>
-  </div>
-  <div class="mt-4">
     <div class="mt-4">
-      <%= form.label :contribution_cadence, 'Contribution Cadence', class: "block text-gray-700 text-sm font-bold mb-2" %>
-      <%= form.select :contribution_cadence, ['both', 'recurring', 'one-time'], {}, {class: "shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"} %>
+      <div class="mt-4">
+        <%= form.label :contribution_cadence, 'Contribution Cadence', class: "block text-gray-700 text-sm font-bold mb-2" %>
+        <%= form.select :contribution_cadence, ['both', 'recurring', 'one-time'], {}, {class: "shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"} %>
+      </div>
     </div>
-  </div>
-  <%= form.submit (@campaign.new_record? ? 'Create Campaign' : 'Edit Campaign'), class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" %>
-</div>
-<% end %>
+    <%= form.submit (@campaign.new_record? ? 'Create Campaign' : 'Edit Campaign'), class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" %>
+  <% end %>
 </div>

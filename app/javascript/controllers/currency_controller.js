@@ -3,37 +3,74 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [
     "currencyButton",
-    "selectAll"
+    "selectAll",
+    "acceptedCurrencies"
   ]
 
   connect() {
-    console.log('connect currency selection controller')
-    this.selectedCurrency = 'USDC';
+    this.selectedCurrencies = [];
+    this.updateAcceptedCurrenciesField();
+    this.updateSelectAllState();
   }
 
   selectCurrency(event) {
-    event.preventDefault()
-    const selectedCurrency = event.currentTarget.dataset.contributionValue;
-    console.log(selectedCurrency)
-    this.currencyButtonTargets.forEach(button => {
-      const isSelected = button.dataset.contributionValue === selectedCurrency;
-      button.classList.toggle("bg-blue-500", isSelected);
-      button.classList.toggle("text-white", isSelected);
-      button.classList.toggle("bg-white", !isSelected);
-      button.classList.toggle("text-black", !isSelected);
-    });
+    event.preventDefault();
+    const currency = event.currentTarget.dataset.currencyValue;
+    const button = event.currentTarget;
+
+    button.classList.toggle("bg-blue-500");
+    button.classList.toggle("text-white");
+
+    const isSelected = button.classList.contains("bg-blue-500");
+    if (isSelected) {
+      if (!this.selectedCurrencies.includes(currency)) {
+        this.selectedCurrencies.push(currency);
+      }
+    } else {
+      const index = this.selectedCurrencies.indexOf(currency);
+      if (index !== -1) {
+        this.selectedCurrencies.splice(index, 1);
+      }
+    }
+
+    this.updateAcceptedCurrenciesField();
+    this.updateSelectAllState(); 
   }
 
-  selectAll() {
-    const isSelected = !this.selectAllTarget.classList.contains('bg-blue-500');
-    this.buttonTargets.forEach(button => {
-      if (isSelected) {
-        button.classList.add('bg-blue-500', 'text-white');
-      } else {
-        button.classList.remove('bg-blue-500', 'text-white');
+  selectAll(event) {
+    const isChecked = this.selectAllTarget.checked;
+    const label = document.getElementById("select-all-label");
+    label.textContent = isChecked ? "Unselect All" : "Select All";
+
+    this.currencyButtonTargets.forEach(button => {
+      button.classList.toggle('bg-blue-500', isChecked);
+      button.classList.toggle('text-white', isChecked);
+      const currency = button.dataset.currencyValue;
+      if (isChecked && !this.selectedCurrencies.includes(currency)) {
+        this.selectedCurrencies.push(currency);
+      } else if (!isChecked) {
+        const index = this.selectedCurrencies.indexOf(currency);
+        if (index !== -1) {
+          this.selectedCurrencies.splice(index, 1);
+        }
       }
     });
-    this.selectAllTarget.classList.toggle('bg-blue-500');
-    this.selectAllTarget.classList.toggle('text-white');
+
+    this.updateAcceptedCurrenciesField();
+  }
+
+  updateAcceptedCurrenciesField() {
+    this.acceptedCurrenciesTarget.value = this.selectedCurrencies.join(',');
+  }
+
+  updateSelectAllState() {
+    const allSelected = this.currencyButtonTargets.every(button =>
+      button.classList.contains("bg-blue-500")
+    );
+
+    this.selectAllTarget.checked = allSelected;
+
+    const label = document.getElementById("select-all-label");
+    label.textContent = allSelected ? "Unselect All" : "Select All";
   }
 }

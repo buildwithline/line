@@ -60,7 +60,7 @@
                   <% if campaign %>
                     <%= link_to 'Show Campaign', user_campaign_path(current_user, campaign, repo_identifier: repo[:repo].full_name), class: "btn btn-success" %>
                   <% else %>
-                    <%= link_to 'Create Campaign', new_user_campaign_path(current_user, repo_name: repo[:repo].name), class: "btn btn-primary" %>
+                    <%= link_to 'Create Campaign', new_user_campaign_path(current_user, repo_name: repo[:repo].full_name), class: "btn btn-primary" %>
                   <% end %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">

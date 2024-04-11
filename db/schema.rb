@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_14_130547) do
+ActiveRecord::Schema[7.1].define(version: 2024_04_11_130446) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -20,7 +20,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_14_130547) do
     t.bigint "receiving_wallet_id", null: false
     t.string "title"
     t.text "description"
-    t.string "accepted_currency"
+    t.text "accepted_currencies", default: [], array: true
     t.string "tier_name"
     t.decimal "tier_amount", precision: 10, scale: 2
     t.string "contribution_cadence"

@@ -25,7 +25,7 @@
             <td class="px-2 py-5 border-b border-gray-200"><%= campaign.repo_identifier %></td>
             <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm"><%= campaign.tier_name %></td>
             <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm"><%= number_to_currency(campaign.tier_amount) %></td>
-            <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm"><%= campaign.accepted_currency %></td>
+            <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm"><%= campaign.accepted_currencies %></td>
             <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm"><%= campaign.contribution_cadence %></td>
             <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm">
               <%= link_to 'Show', user_campaign_path(current_user, campaign), class: "text-blue-600 hover:text-blue-900" %>

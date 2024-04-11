@@ -4,6 +4,7 @@ class Campaign < ApplicationRecord
 
   # Validation for title, ensure it's present or meets your criteria
   validates :title, presence: true
+  validates :accepted_currencies, presence: true, length: { minimum: 1 }
   validates :repo_identifier, presence: true, uniqueness: { scope: :user_id, message: 'has already been used for a campaign' }
 
   scope :by_repo_identifier, ->(identifier) { where(repo_identifier: identifier).first }

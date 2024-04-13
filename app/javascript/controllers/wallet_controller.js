@@ -9,10 +9,12 @@ export default class extends Controller {
     projectId: String,
     userId: Number,
     walletIdValue: Number,
-    csrfToken: String
+    csrfToken: String,
+    disconnectRequested: Boolean
   }
 
   connect() {
+    console.log('connect wallet ctrl');
     this.isDeleting = false
     
     const projectId = this.projectIdValue;
@@ -40,6 +42,7 @@ export default class extends Controller {
       projectId: this.projectIdValue,
       enableAnalytics: true
     });
+    console.log(this.modal);
 
     this.modal.subscribeEvents(event => {
       this.account = getAccount(this.config)
@@ -48,19 +51,30 @@ export default class extends Controller {
         console.log('connected', event.data.event)
         this.sendAccountToBackend(this.account)
         this.openModalTarget.textContent = 'Disconnect Wallet'
-      } else if(event.data.event == 'MODAL_CLOSE') {
+      } else if(event.data.event == 'MODAL_CLOSE' && this.disconnectRequestedValue) {
         console.log('not connected')
         this.removeWalletFromDatabase(this.account)
         this.openModalTarget.textContent = 'Connect Wallet'
+      } else {
+        console.log('Modal closed without disconnection');
       }
     })
   }
 
-  openConnectModal() {
+  disconnectWallet() {
+    this.disconnectRequestedValue = true;
     this.modal.open();
   }
 
+
+  openConnectModal() {
+    this.disconnectRequestedValue = false;
+    this.modal.open();
+    console.log(this.modal.open, 'modal open');
+  }
+
   async removeWalletFromDatabase() {
+    if (!this.disconnectRequestedValue) return; 
     if (this.isDeleting) return;
     this.isDeleting = true;
   

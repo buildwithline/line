@@ -1,4 +1,4 @@
-<div class="mt-5">
+<div class="mt-5", data-controller= "currency">
   <h1 class="text-xl font-bold mb-4">Create a New Campaign for <%= @repo_name %></h1>
   <% unless current_user.wallet.present? %>
     <div 
@@ -12,7 +12,7 @@
       connect wallet
     </div>
   <% end %>
-  <%= form_with(model: [current_user, @campaign], local: true, class: "space-y-4") do |form| %>
+  <%= form_with(model: [current_user, @campaign], local: true, class: "space-y-4", data: { action: "submit->currency#handleSubmit", currency_target: "form" }) do |form| %>
     <% if @campaign.errors.any? %>
       <div id="error_explanation" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
         <strong class="font-bold">Oops!</strong>
@@ -43,7 +43,7 @@
       <%= form.label :description, class: "block text-gray-700 text-sm font-bold mb-2" %>
       <%= form.text_field :description, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
     </div>
-    <div class="flex mb-4 space-x-2" data-controller="currency">
+    <div class="flex mb-4 space-x-2">
       <div class="flex items-center mb-4">
         <%= check_box_tag 'select_all', 'all', false, 
           id: "select-all-checkbox",

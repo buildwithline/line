@@ -4,7 +4,8 @@ export default class extends Controller {
   static targets = [
     "currencyButton",
     "selectAll",
-    "acceptedCurrencies"
+    "acceptedCurrencies",
+    "form"
   ]
 
   connect() {
@@ -73,4 +74,10 @@ export default class extends Controller {
     const label = document.getElementById("select-all-label");
     label.textContent = allSelected ? "Unselect All" : "Select All";
   }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    this.updateAcceptedCurrenciesField();
+    this.formTarget.submit();
+    this.formTarget.requestSubmit();
 }

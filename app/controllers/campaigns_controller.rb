@@ -30,7 +30,8 @@ class CampaignsController < ApplicationController
 
   def create
     pp params
-    @campaign = @user.campaigns.build(campaign_params)
+    @campaign = @user.campaigns.build(campaign_params.except(:accepted_currencies))
+    @campaign.accepted_currencies = params[:campaign][:accepted_currencies].split(',')
     @repo_name = params[:campaign][:repo_identifier]
     if params[:campaign][:wallet_address].present? && !current_user.wallet.present?
       wallet = current_user.build_wallet(address: params[:campaign][:wallet_address])

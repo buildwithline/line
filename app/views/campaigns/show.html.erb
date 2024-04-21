@@ -1,4 +1,5 @@
 <div class="container mx-auto px-4 py-8">
+  <%= button_to 'Home', root_path, method: :get, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
   <div class="text-lg font-semibold mb-4">
     <%= @campaign.user.nickname %> / <%= @campaign.repo_identifier %>
   </div>

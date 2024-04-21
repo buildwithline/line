@@ -32,7 +32,7 @@ class HomeController < ApplicationController
 
   def prepare_campaigns_mapping
     repo_identifiers = @repos.map do |repo|
-      repo[:repo].full_name.split('/', 2).last
+      repo[:repo].full_name
     end
     pp "repo ident: #{repo_identifiers}"
 

@@ -56,7 +56,7 @@
                   </span>
                 </div>
                 <td>
-                  <% campaign = @campaigns_by_repo_identifier[repo[:repo].full_name.split('/', 2).last] %>
+                  <% campaign = @campaigns_by_repo_identifier[repo[:repo].full_name] %>
                   <% if campaign %>
                     <%= link_to 'Show Campaign', user_campaign_path(current_user, campaign, repo_identifier: repo[:repo].full_name), class: "btn btn-success" %>
                   <% else %>

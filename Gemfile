@@ -10,7 +10,7 @@ ruby '3.2.2'
 # Gemfile
 
 # Update the Rails version
-gem 'rails', '~> 7.1.2'
+gem 'rails', '~> 7.1.3.2'
 # Use postgresql as the database for Active Record
 gem 'pg'
 # Use Puma as the app server
@@ -63,7 +63,7 @@ gem 'bcrypt', '~> 3.1.19'
 gem 'jwt'
 
 # Cross-Origin Resource Sharing Middleware
-gem 'rack-cors'
+gem 'rack-cors', '>= 2.0.2'
 
 gem 'active_model_serializers', '~> 0.10.12'
 

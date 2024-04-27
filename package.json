@@ -10,6 +10,8 @@
     "@rails/actioncable": "^7.1.2",
     "@rails/activestorage": "^7.1.2",
     "@tailwindcss/postcss7-compat": "npm:@tailwindcss/postcss7-compat",
+    "@vue/cli": "^5.0.8",
+    "@vue/compiler-sfc": "^3.4.25",
     "@wagmi/connectors": "^4.1.18",
     "@wagmi/core": "2.6.9",
     "@walletconnect/ethereum-provider": "^2.11.3",
@@ -36,13 +38,17 @@
   "devDependencies": {
     "@babel/preset-env": "^7.24.0",
     "autoprefixer": "^9.8.8",
-    "esbuild": "^0.20.1",
+    "esbuild": "^0.20.2",
+    "esbuild-plugin-vue": "^0.2.4",
     "postcss": "^8.0.9",
     "postcss-load-config": "^3.1.0",
     "postcss-loader": "^8.0.0",
-    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17"
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.17",
+    "vue": "^3.2.26"
   },
   "scripts": {
-    "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --watch"
+    "build": "node esbuild.config.js",
+    "watch": "node esbuild.config.js --watch",
+    "serve": "vue-cli-service serve"
   }
 }

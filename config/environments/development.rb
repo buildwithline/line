@@ -86,5 +86,5 @@ Rails.application.configure do
   config.assets.compile = true
   
    # Serve individual files for easier debugging
-  config.assets.debug = true   
+  config.assets.debug = false   
 end

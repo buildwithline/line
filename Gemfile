@@ -75,6 +75,7 @@ group :development, :test do
   gem 'faker'
   gem 'faraday-retry'
   gem 'pry-remote'
+  gem 'erb_lint'
   gem 'rspec-rails'
   gem 'rubocop', require: false
   gem 'rubocop-rails', require: false

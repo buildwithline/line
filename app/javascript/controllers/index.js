@@ -5,4 +5,9 @@
 import { application } from "./application"
 
 import WalletController from "./wallet_controller"
+import ContributionController from "./contribution_controller"
+import CurrencyController from "./currency_controller"
+
 application.register("wallet", WalletController)
+application.register("contribution", ContributionController)
+application.register("currency", CurrencyController)

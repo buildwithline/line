@@ -11,7 +11,7 @@ Bundler.require(*Rails.groups)
 module Line
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 6.1
+    config.load_defaults 7.0
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -20,5 +20,14 @@ module Line
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins '*'
+
+        resource '*',
+                 headers: :any, methods: %i[get post put patch options head delete]
+      end
+    end
   end
 end

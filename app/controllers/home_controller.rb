@@ -26,6 +26,19 @@ class HomeController < ApplicationController
     @repos = @github_user_data[:repos]
     @organization_memberships = @github_user_data[:organization_memberships]
     @avatar = current_user.avatar_url
+
+    prepare_campaigns_mapping
+  end
+
+  def prepare_campaigns_mapping
+    repo_identifiers = @repos.map do |repo|
+      repo[:repo].full_name
+    end
+    pp "repo ident: #{repo_identifiers}"
+
+    campaigns = Campaign.where(user: current_user, repo_identifier: repo_identifiers)
+    @campaigns_by_repo_identifier = campaigns.index_by(&:repo_identifier)
+    logger.debug "Campaigns by Repo Identifier: #{@campaigns_by_repo_identifier.inspect}"
   end
 
   def render_github_data_as_json

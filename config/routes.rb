@@ -13,8 +13,9 @@ Rails.application.routes.draw do
 
   root to: 'home#index'
 
-  resources :users, only: [] do # Assuming you don't need all user routes
+  resources :users, only: [] do
     resource :wallet, only: %i[show create destroy]
+    resources :campaigns
   end
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end

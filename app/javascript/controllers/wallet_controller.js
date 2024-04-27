@@ -9,10 +9,12 @@ export default class extends Controller {
     projectId: String,
     userId: Number,
     walletIdValue: Number,
-    csrfToken: String
+    csrfToken: String,
+    disconnectRequested: Boolean
   }
 
   connect() {
+    console.log('connect wallet ctrl');
     this.isDeleting = false
     
     const projectId = this.projectIdValue;
@@ -40,6 +42,7 @@ export default class extends Controller {
       projectId: this.projectIdValue,
       enableAnalytics: true
     });
+    console.log(this.modal);
 
     this.modal.subscribeEvents(event => {
       this.account = getAccount(this.config)
@@ -48,20 +51,30 @@ export default class extends Controller {
         console.log('connected', event.data.event)
         this.sendAccountToBackend(this.account)
         this.openModalTarget.textContent = 'Disconnect Wallet'
-      } else if(event.data.event == 'MODAL_CLOSE') {
+      } else if(event.data.event == 'MODAL_CLOSE' && this.disconnectRequestedValue) {
         console.log('not connected')
         this.removeWalletFromDatabase(this.account)
         this.openModalTarget.textContent = 'Connect Wallet'
+      } else {
+        console.log('Modal closed without disconnection');
       }
     })
   }
 
-  openConnectModal() {
+  disconnectWallet() {
+    this.disconnectRequestedValue = true;
     this.modal.open();
   }
 
+
+  openConnectModal() {
+    this.disconnectRequestedValue = false;
+    this.modal.open();
+    console.log(this.modal.open, 'modal open');
+  }
+
   async removeWalletFromDatabase() {
-    // Guard clause to prevent multiple simultaneous deletions
+    if (!this.disconnectRequestedValue) return; 
     if (this.isDeleting) return;
     this.isDeleting = true;
   
@@ -85,7 +98,7 @@ export default class extends Controller {
     } catch (error) {
       console.error('Error removing wallet from backend:', error);
     } finally {
-      this.isDeleting = false; // Reset the flag
+      this.isDeleting = false;
     }
   }
   
@@ -109,13 +122,11 @@ export default class extends Controller {
       });
   
       if (!response.ok) {
-        // If the response is not okay, throw an error with the status text
         throw new Error(`Network response was not ok: ${response.statusText}`);
       }
   
       const responseData = await response.json();
       console.log('Successfully sent account to backend:', responseData);
-      // Additional actions based on the response (e.g., update UI)
     } catch (error) {
       console.error('Error sending account to backend:', error);
     }

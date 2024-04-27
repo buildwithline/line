@@ -35,7 +35,7 @@ export default class extends Controller {
     }
 
     this.updateAcceptedCurrenciesField();
-    this.updateSelectAllState(); 
+    this.updateSelectAllState();
   }
 
   selectAll(event) {
@@ -80,4 +80,5 @@ export default class extends Controller {
     this.updateAcceptedCurrenciesField();
     this.formTarget.submit();
     this.formTarget.requestSubmit();
+  }
 }

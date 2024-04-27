@@ -59,6 +59,12 @@
       </div>
     <% end %>
   </div>
+  <%
+=begin%>
+  this wallet needs to be the wallet of the user who created the campaign! NOT the current_user, or they
+  would just put money in their own account again!
+<%
+=end%>
   <div class="mb-4" data-controller="wallet"
         data-wallet-project-id-value="<%= Rails.application.credentials.dig(:wallet_connect, :project_id) %>"
         data-wallet-user-id-value="<%= current_user.id %>"

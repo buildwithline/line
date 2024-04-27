@@ -81,4 +81,10 @@ Rails.application.configure do
   config.action_controller.raise_on_missing_callback_actions = true
 
   config.log_level = :debug
+
+  # On-the-fly copilation
+  config.assets.compile = true
+  
+   # Serve individual files for easier debugging
+  config.assets.debug = true   
 end

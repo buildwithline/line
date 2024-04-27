@@ -23,16 +23,16 @@ class CampaignsController < ApplicationController
 
   def new
     @campaign = @user.campaigns.build
-    @repo_name = params[:repo_name]
-
-    @campaign.repo_identifier = @repo_name
+    @repo_name = params[:repo_name] || @campaign.repo_identifier
+    @campaign.repo_identifier ||= @repo_name
   end
+  
 
   def create
-    pp params
     @campaign = @user.campaigns.build(campaign_params.except(:accepted_currencies))
     @campaign.accepted_currencies = params[:campaign][:accepted_currencies].split(',')
     @repo_name = params[:campaign][:repo_identifier]
+
     if params[:campaign][:wallet_address].present? && !current_user.wallet.present?
       wallet = current_user.build_wallet(address: params[:campaign][:wallet_address])
       wallet.save
@@ -44,15 +44,13 @@ class CampaignsController < ApplicationController
     respond_to do |format|
       if @campaign.save
         format.html { redirect_to user_campaign_path(@user, @campaign), notice: 'Campaign was successfully created.' }
+        format.json { render json: @campaign, status: :created }
       else
         Rails.logger.debug @campaign.errors.full_messages.to_sentence
-        format.html { redirect_to new_user_campaign_path(@user), alert: @campaign.errors.full_messages.join('. ') }
+        format.html { render :new, alert: @campaign.errors.full_messages.join('. ') }
+        format.json { render json: { errors: @campaign.errors.full_messages }, status: :unprocessable_entity }
       end
     end
-
-    pp 'campaign create=========='
-    pp @campaign
-    pp '=========='
   end
 
   def edit

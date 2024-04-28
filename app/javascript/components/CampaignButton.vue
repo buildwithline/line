@@ -1,31 +1,33 @@
+<!-- <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const { createApp } = Vue;
+
+  const CampaignButton = {
+    props: ['repoName'],
+    template: `<button @click="createCampaign">Create Campaign for {{ repoName }}</button>`,
+    methods: {
+      createCampaign() {
+        console.log('Creating campaign for', this.repoName);
+      }
+    }
+  };
+});
+</script> -->
+
 <template>
-  <button @click="createCampaign" class="btn btn-primary">
-    Create Campaign
-  </button>
+  <div>
+    <ul>
+      <li v-for="item in items" :key="item.name">
+        <span>{{ item.name }}</span> - <span>{{ item.price }}</span>
+      </li>
+    </ul>
+  </div>
 </template>
-  
+
 <script>
-export default {
-  props: {
-    repoName: String
-  },
-  methods: {
-    createCampaign() {
-      console.log('Creating campaign for', this.repoName);
-      window.location.href = `/users/${this.$props.userId}/campaigns/new?repo_name=${this.repoName}`;
+  export default {
+    props: {
+      items: Array
     }
   }
-}
 </script>
-  
-<style scoped>
-.btn-primary {
-  background-color: #007bff;
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: #0056b3;
-}
-</style>
-  

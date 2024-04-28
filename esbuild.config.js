@@ -1,19 +1,31 @@
 const esbuild = require('esbuild');
-const VuePlugin = require('esbuild-plugin-vue').default;
+const path = require('path');
+const vuePlugin = require('esbuild-plugin-vue').default;
+const isDevelopment = process.env.NODE_ENV === 'development';
 
 esbuild.build({
   entryPoints: ['app/javascript/application.js'],
   bundle: true,
   outfile: 'app/assets/builds/application.js',
-  plugins: [VuePlugin()],
+  plugins: [vuePlugin()],
   sourcemap: true,
+  resolveExtensions: ['.js', '.vue'],
   format: 'esm',
+  sourcemap: isDevelopment,
   define: {
     'process.env.NODE_ENV': '"development"',
     '__VUE_OPTIONS_API__': '"true"',
-    '__VUE_PROD_DEVTOOLS__': '"false"',
-    '__VUE_PROD_HYDRATION_MISMATCH_DETAILS__': 'false', // Disable hydration mismatch details
+    '__VUE_PROD_DEVTOOLS__': isDevelopment ? '"true"' : '"false"',
   },
-  minify: process.env.NODE_ENV === 'production',
-  external: ['vue'],
-}).catch(() => process.exit(1));
+  loader: {
+    '.js': 'jsx'
+  },
+  alias: {
+    'vue': path.resolve(__dirname, 'node_modules/vue/dist/vue.esm-bundler.js')
+  },
+  minify: process.env.NODE_ENV === 'development'
+}).catch((error) => {
+  console.error("Build failed:", error);
+  process.exit(1);
+});
+

@@ -8,15 +8,6 @@ import App from './App.vue'
 
 createApp(App).mount('#vue-app')
 // document.addEventListener('DOMContentLoaded', () => {
-//     const app = createApp({
-//         components: {
-//             'campaign-button': CampaignButton
-//         },
-//         template: `<div>
-//                        <campaign-button repo-name="YourRepoName"></campaign-button>
-//                    </div>`
-//     });
-
-//     console.log('Vue app created', app);
-//     app.mount('#vue-app');
+//   const app = createApp(App)
+//   app.mount('#vue-app');
 // });

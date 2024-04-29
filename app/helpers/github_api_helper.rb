@@ -48,8 +48,18 @@ module GithubApiHelper
     def fetch_personal_repos(client, login)
       client.repositories(login).map do |repo|
         repo_details = client.repository(repo.full_name)
-
-        { repo: repo_details, org_avatar_url: repo_details.organization&.avatar_url }
+        {
+          id: repo_details.id,
+          full_name: repo_details.full_name,
+          private: repo_details.private,
+          # description: repo_details.description,
+          # url: repo_details.url,
+          owner: {
+            login: repo_details.owner.login,
+            id: repo_details.owner.id,
+            avatar_url: repo_details.owner.avatar_url
+          }
+        }
       end
     end
 
@@ -60,12 +70,31 @@ module GithubApiHelper
     def fetch_organization_repos(client, organizations)
       organizations.flat_map do |org|
         client.organization_repositories(org.login).filter_map do |repo|
-          repo_details = client.repository(repo.full_name)
-
-          { repo: repo_details, org_avatar_url: repo_details.organization&.avatar_url } if repo_details.permissions.admin
+          if repo.permissions.admin
+            {
+              id: repo.id,
+              full_name: repo.full_name,
+              html_url: repo.html_url,
+              description: repo.description,
+              owner: {
+                login: repo.owner.login,
+                avatar_url: repo.owner.avatar_url
+              }
+            }
+          end
         end
       end.compact
     end
+
+    # def fetch_organization_repos(client, organizations)
+    #   organizations.flat_map do |org|
+    #     client.organization_repositories(org.login).filter_map do |repo|
+    #       repo_details = client.repository(repo.full_name)
+
+    #       { repo: repo_details, org_avatar_url: repo_details.organization&.avatar_url } if repo_details.permissions.admin
+    #     end
+    #   end.compact
+    # end
 
     def assign_fetched_data(user_info, organizations)
       @organizations = organizations

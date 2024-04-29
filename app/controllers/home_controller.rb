@@ -24,6 +24,7 @@ class HomeController < ApplicationController
 
     @organizations = @github_user_data[:organizations]
     @repos = @github_user_data[:repos]
+    pp "REPOS::::::#{@repos}"
     @organization_memberships = @github_user_data[:organization_memberships]
     @avatar = current_user.avatar_url
 
@@ -31,9 +32,7 @@ class HomeController < ApplicationController
   end
 
   def prepare_campaigns_mapping
-    repo_identifiers = @repos.map do |repo|
-      repo[:repo].full_name
-    end
+    repo_identifiers = @repos.map { |repo| repo[:full_name] } # Adjusted from repo[:repo].full_name
     pp "repo ident: #{repo_identifiers}"
 
     campaigns = Campaign.where(user: current_user, repo_identifier: repo_identifiers)
@@ -45,7 +44,7 @@ class HomeController < ApplicationController
     render json: {
       user: @github_user_data,
       organizations: @organizations,
-      repos: @repos,
+      repos: @repos.as_json(only: %i[id full_name html_url description owner]),
       organization_memberships: @organization_memberships
     }
   end

@@ -1,0 +1,23 @@
+# EnableDefaultLinters: true
+
+# linters:
+#   ErbSafety:
+#     enabled: true
+#     better_html_config: .better-html.yml
+#   FinalNewline:
+#     enabled: true
+#   ErbSafety:
+#     enabled: true
+#     better_html_config: .better-html.yml
+#   RightTrim:
+#     enabled: true
+#     enforced_style: '-'
+#   SelfClosingTag:
+#     enabled: true
+#     enforced_style: 'always'
+#   Rubocop:
+#     enabled: true
+#     rubocop_config:
+#       inherit_from:
+#         - .rubocop.yml
+  

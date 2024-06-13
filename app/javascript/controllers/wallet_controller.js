@@ -1,114 +1,82 @@
-import { Controller } from "@hotwired/stimulus"
-import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi'
-import { mainnet, arbitrum } from 'viem/chains'
-import { getAccount, reconnect } from '@wagmi/core'
+import { Controller } from "@hotwired/stimulus";
+import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi";
+import { mainnet, arbitrum } from "viem/chains";
+import { getAccount, reconnect } from "@wagmi/core";
 
 export default class extends Controller {
-  static targets = [ "openModal" ]
+  static targets = ["openModal"];
   static values = {
     projectId: String,
     userId: Number,
     walletIdValue: Number,
     csrfToken: String,
-    disconnectRequested: Boolean
-  }
+  };
 
   connect() {
-    console.log('connect wallet ctrl');
-    this.isDeleting = false
-    
+    this.isDeleting = false;
+    this.disconnectRequested = false;
+    this.disconnectConfirmed = false;
+
     const projectId = this.projectIdValue;
     const chains = [mainnet, arbitrum];
     const metadata = {
       name: 'Web3Modal',
       description: 'Web3Modal Example',
-      url: 'https://web3modal.com', // origin must match your domain & subdomain
-      icons: ['https://avatars.githubusercontent.com/u/37784886']
-    }
+      url: 'http://localhost:3000',
+      icons: ['https://avatars.githubusercontent.com/u/37784886'],
+    };
 
     this.config = defaultWagmiConfig({
-      chains, // required
-      projectId, // required
-      metadata, // required
+      chains,
+      projectId,
+      metadata,
       enableWalletConnect: true,
       enableInjected: true,
       enableEIP6963: true,
       enableCoinbase: true,
     });
-    reconnect(this.config)
+    reconnect(this.config);
 
     this.modal = createWeb3Modal({
       wagmiConfig: this.config,
       projectId: this.projectIdValue,
-      enableAnalytics: true
+      enableAnalytics: true,
     });
-    console.log(this.modal);
 
-    this.modal.subscribeEvents(event => {
-      this.account = getAccount(this.config)
+    this.modal.subscribeEvents((event) => {
+      this.account = getAccount(this.config);
+      // console.log('Event:', event.data.event, 'Disconnect requested:', this.disconnectRequested); 
 
-      if(event.data.event == 'CONNECT_SUCCESS') {
-        console.log('connected', event.data.event)
-        this.sendAccountToBackend(this.account)
-        this.openModalTarget.textContent = 'Disconnect Wallet'
-      } else if(event.data.event == 'MODAL_CLOSE' && this.disconnectRequestedValue) {
-        console.log('not connected')
-        this.removeWalletFromDatabase(this.account)
-        this.openModalTarget.textContent = 'Connect Wallet'
-      } else {
-        console.log('Modal closed without disconnection');
+      if (event.data.event === 'CONNECT_SUCCESS' && !this.disconnectRequested) {
+        this.sendAccountToBackend(this.account);
+        this.openModalTarget.textContent = 'Disconnect Wallet';
+      } else if (event.data.event === 'MODAL_CLOSE') {
+        if (this.disconnectRequested) {
+          if (event.data.properties && !event.data.properties.connected) {
+            console.log('event properties connected? should be false', event.data.properties.connected);
+            this.removeWalletFromDatabase(this.account);
+            this.openModalTarget.textContent = 'Connect Wallet';
+          } else {
+            console.log('event properties connected? should be true', event.data.properties ? event.data.properties.connected : 'undefined');
+            console.log('Modal closed without disconnection');
+          }
+        }
       }
-    })
+    });
   }
 
-  disconnectWallet() {
-    this.disconnectRequestedValue = true;
+  openModal() {
+    const isDisconnect = this.openModalTarget.textContent === 'Disconnect Wallet';
+    this.disconnectRequested = isDisconnect;
+    console.log(isDisconnect ? 'Disconnect Wallet triggered' : 'Connect Wallet triggered', 'Disconnect requested:', this.disconnectRequested); // Debugging
     this.modal.open();
   }
-
-
-  openConnectModal() {
-    this.disconnectRequestedValue = false;
-    this.modal.open();
-    console.log(this.modal.open, 'modal open');
-  }
-
-  async removeWalletFromDatabase() {
-    if (!this.disconnectRequestedValue) return; 
-    if (this.isDeleting) return;
-    this.isDeleting = true;
-  
-    console.log('Attempting to disconnect wallet for user', this.userIdValue);
-    try {
-      const response = await fetch(`/users/${this.userIdValue}/wallet`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': this.csrfTokenValue,
-        },
-      });
-  
-      if (!response.ok) {
-        throw new Error(`Network response was not ok: ${response.statusText}`);
-      }
-  
-      const responseData = await response.json();
-      console.log('Successfully removed from DB:', responseData);
-      this.openModalTarget.textContent = 'Connect Wallet';
-    } catch (error) {
-      console.error('Error removing wallet from backend:', error);
-    } finally {
-      this.isDeleting = false;
-    }
-  }
-  
 
   async sendAccountToBackend(account) {
     const walletData = {
       wallet: {
         address: account.address,
-        // chain_id: account.chain.id,
-      }
+      },
     };
 
     try {
@@ -120,15 +88,46 @@ export default class extends Controller {
         },
         body: JSON.stringify(walletData),
       });
-  
+
       if (!response.ok) {
         throw new Error(`Network response was not ok: ${response.statusText}`);
       }
-  
+
       const responseData = await response.json();
       console.log('Successfully sent account to backend:', responseData);
     } catch (error) {
       console.error('Error sending account to backend:', error);
+    }
+  }
+
+  async removeWalletFromDatabase() {
+    if (this.isDeleting) {
+      console.log('Already deleting wallet, aborting.');
+      return;
+    }
+    this.isDeleting = true;
+
+    try {
+      const response = await fetch(`/users/${this.userIdValue}/wallet`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': this.csrfTokenValue,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Network response was not ok: ${response.statusText}`);
+      }
+
+      const responseData = await response.json();
+      console.log('Successfully removed from DB:', responseData);
+      this.openModalTarget.textContent = 'Connect Wallet';
+    } catch (error) {
+      console.error('Error removing wallet from backend:', error);
+    } finally {
+      this.isDeleting = false;
+      this.disconnectRequested = false;
     }
   }
 }

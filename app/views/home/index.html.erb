@@ -13,7 +13,6 @@
     data-wallet-user-id-value="<%= current_user.id %>"
     data-wallet-csrf-token-value="<%= form_authenticity_token %>"
   >
-    <%=  wallet_connected %>
     <button 
       data-wallet-target="openModal"
       data-action="click->wallet#openModal"

@@ -15,7 +15,6 @@ export default class extends Controller {
   connect() {
     this.isDeleting = false;
     this.disconnectRequested = false;
-    this.disconnectConfirmed = false;
 
     const projectId = this.projectIdValue;
     const chains = [mainnet, arbitrum];
@@ -45,22 +44,15 @@ export default class extends Controller {
 
     this.modal.subscribeEvents((event) => {
       this.account = getAccount(this.config);
-      // console.log('Event:', event.data.event, 'Disconnect requested:', this.disconnectRequested); 
 
-      if (event.data.event === 'CONNECT_SUCCESS' && !this.disconnectRequested) {
-        this.sendAccountToBackend(this.account);
+      if (event.data.event === 'CONNECT_SUCCESS') {
+        this.addWalletToDatabase(this.account);
         this.openModalTarget.textContent = 'Disconnect Wallet';
-      } else if (event.data.event === 'MODAL_CLOSE') {
-        if (this.disconnectRequested) {
-          if (event.data.properties && !event.data.properties.connected) {
-            console.log('event properties connected? should be false', event.data.properties.connected);
-            this.removeWalletFromDatabase(this.account);
-            this.openModalTarget.textContent = 'Connect Wallet';
-          } else {
-            console.log('event properties connected? should be true', event.data.properties ? event.data.properties.connected : 'undefined');
-            console.log('Modal closed without disconnection');
-          }
-        }
+      } else if (event.data.event === 'MODAL_CLOSE' && this.disconnectRequested && !event.data.properties.connected) {
+        this.removeWalletFromDatabase(this.account);
+        this.openModalTarget.textContent = 'Connect Wallet';
+      } else {
+        console.log('Modal closed without disconnection');
       }
     });
   }
@@ -68,11 +60,10 @@ export default class extends Controller {
   openModal() {
     const isDisconnect = this.openModalTarget.textContent === 'Disconnect Wallet';
     this.disconnectRequested = isDisconnect;
-    console.log(isDisconnect ? 'Disconnect Wallet triggered' : 'Connect Wallet triggered', 'Disconnect requested:', this.disconnectRequested); // Debugging
     this.modal.open();
   }
 
-  async sendAccountToBackend(account) {
+  async addWalletToDatabase(account) {
     const walletData = {
       wallet: {
         address: account.address,
@@ -94,9 +85,9 @@ export default class extends Controller {
       }
 
       const responseData = await response.json();
-      console.log('Successfully sent account to backend:', responseData);
+      console.log('Successfully created wallet in database:', responseData);
     } catch (error) {
-      console.error('Error sending account to backend:', error);
+      console.error('Error creating wallet in database:', error);
     }
   }
 
@@ -121,10 +112,10 @@ export default class extends Controller {
       }
 
       const responseData = await response.json();
-      console.log('Successfully removed from DB:', responseData);
+      console.log('Successfully removed from database:', responseData);
       this.openModalTarget.textContent = 'Connect Wallet';
     } catch (error) {
-      console.error('Error removing wallet from backend:', error);
+      console.error('Error removing wallet from database:', error);
     } finally {
       this.isDeleting = false;
       this.disconnectRequested = false;

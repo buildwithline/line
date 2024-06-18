@@ -2,6 +2,7 @@
   <div class="flex items-center space-x-4">
     <%= image_tag 'logo.jpg', alt: "Logo", class: 'my-6' %>
     <%= image_tag @avatar, alt: "Avatar", class: 'w-24 h-24 rounded-full' %>
+    <%= button_to "logout", destroy_user_session_path, method: :delete  %>
   </div>
   <p>
     <%= "Hello, #{current_user.nickname}, welcome to Line - The Developers Marketplace " %>

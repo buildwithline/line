@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 class CampaignsController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, only: %i[edit update destroy]
+  before_action :authorize_user!, only: %i[edit update destroy]
   before_action :check_campaign_existence, only: %i[new create]
-
+  before_action :set_repository, only: %i[new create]
+  before_action :set_user
   before_action :set_campaign, only: %i[show edit update destroy]
-  before_action :set_user, only: %i[new create update show]
 
   def index
     @campaigns = Campaign.all
@@ -13,7 +14,6 @@ class CampaignsController < ApplicationController
   end
 
   def show
-    @campaign = Campaign.find(params[:id])
     @accepted_currencies = if @campaign.accepted_currencies == 'all'
                              Campaign::ALL_CURRENCIES
                            else
@@ -25,28 +25,18 @@ class CampaignsController < ApplicationController
     @campaign = @user.campaigns.build
     @repo_name = params[:repo_name] || @campaign.repo_identifier
     @campaign.repo_identifier ||= @repo_name
+    @wallet = find_wallet_for_repo_owner(@repository)
   end
-  
 
   def create
-    @campaign = @user.campaigns.build(campaign_params.except(:accepted_currencies))
-    @campaign.accepted_currencies = params[:campaign][:accepted_currencies].split(',')
-    @repo_name = params[:campaign][:repo_identifier]
-
-    if params[:campaign][:wallet_address].present? && !current_user.wallet.present?
-      wallet = current_user.build_wallet(address: params[:campaign][:wallet_address])
-      wallet.save
-      @campaign.receiving_wallet_id = wallet.id
-    elsif current_user.wallet.present?
-      @campaign.receiving_wallet_id = current_user.wallet.id
-    end
+    @campaign = build_campaign_from_params
 
     respond_to do |format|
       if @campaign.save
         format.html { redirect_to user_campaign_path(@user, @campaign), notice: 'Campaign was successfully created.' }
         format.json { render json: @campaign, status: :created }
       else
-        Rails.logger.debug @campaign.errors.full_messages.to_sentence
+        log_errors(@campaign)
         format.html { render :new, alert: @campaign.errors.full_messages.join('. ') }
         format.json { render json: { errors: @campaign.errors.full_messages }, status: :unprocessable_entity }
       end
@@ -74,11 +64,48 @@ class CampaignsController < ApplicationController
   private
 
   def set_user
-    @user = current_user
+    @user = User.find_by(id: params[:user_id])
+    return unless @user.nil?
+
+    Rails.logger.error "User not found with id: #{params[:user_id]}"
+    redirect_to root_path, alert: 'User not found.'
   end
 
   def set_campaign
-    @campaign = current_user.campaigns.find(params[:id])
+    @campaign = @user&.campaigns&.find_by(id: params[:id])
+    return unless @campaign.nil?
+
+    Rails.logger.error "Campaign not found with id: #{params[:id]} for user: #{@user.id}"
+    redirect_to root_path, alert: 'Campaign not found.'
+  end
+
+  def set_repository
+    github_service = GithubService.new(current_user)
+    @repositories = github_service.fetch_repositories
+    @repository = @repositories.find { |repo| repo.id == params[:repository_id].to_i }
+  end
+
+  def authorize_user!
+    return if @campaign.user == current_user
+
+    redirect_to root_path, alert: 'You are not authorized to perform this action.'
+  end
+
+  def build_campaign_from_params
+    campaign = @user.campaigns.build(campaign_params.except(:accepted_currencies))
+    campaign.accepted_currencies = params[:campaign][:accepted_currencies].split(',')
+    campaign.repo_identifier = params[:campaign][:repo_identifier]
+    campaign.receiving_wallet = find_wallet_for_repo_owner(@repository)
+    campaign
+  end
+
+  def log_errors(campaign)
+    Rails.logger.debug campaign.errors.full_messages.to_sentence
+  end
+
+  def find_wallet_for_repo_owner(repository)
+    owner = User.find_by(uid: repository.owner.id)
+    owner&.wallets&.first
   end
 
   def check_campaign_existence

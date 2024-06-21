@@ -2,8 +2,7 @@
 
 FactoryBot.define do
   factory :wallet do
-    address { Faker::Blockchain::Ethereum.address } # Using Faker to generate a random Ethereum address
-    chain_id { 1 }
-    user
+    address { Faker::Blockchain::Ethereum.address }
+    association :user
   end
 end

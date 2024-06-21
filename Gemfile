@@ -92,6 +92,8 @@ group :development do
 end
 
 group :test do
+  # Provides mock authentication for OmniAuth in test environments
+  gem 'omniauth-test'
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '>= 3.39.2'
   gem 'selenium-webdriver', '>= 4.17.0.rc1'

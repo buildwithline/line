@@ -105,6 +105,9 @@ GEM
     coderay (1.1.3)
     concurrent-ruby (1.2.3)
     connection_pool (2.4.1)
+    crack (1.0.0)
+      bigdecimal
+      rexml
     crass (1.0.6)
     date (3.3.4)
     devise (4.9.3)
@@ -133,6 +136,7 @@ GEM
     ffi (1.16.3)
     globalid (1.2.1)
       activesupport (>= 6.1)
+    hashdiff (1.1.0)
     hashie (5.0.0)
     http-accept (1.7.0)
     http-cookie (1.0.5)
@@ -393,6 +397,10 @@ GEM
       nokogiri (~> 1.6)
       rubyzip (>= 1.3.0)
       selenium-webdriver (~> 4.0)
+    webmock (3.23.1)
+      addressable (>= 2.8.0)
+      crack (>= 0.3.2)
+      hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.8.1)
     websocket (1.2.10)
     websocket-driver (0.7.6)
@@ -445,6 +453,7 @@ DEPENDENCIES
   tzinfo-data
   web-console (>= 4.2.1)
   webdrivers
+  webmock
 
 RUBY VERSION
    ruby 3.2.2p53

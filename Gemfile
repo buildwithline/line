@@ -92,13 +92,16 @@ group :development do
 end
 
 group :test do
+  # Adds support for Capybara system testing and selenium driver
+  gem 'capybara', '>= 3.39.2'
   # Provides mock authentication for OmniAuth in test environments
   gem 'omniauth-test'
   # Adds support for Capybara system testing and selenium driver
-  gem 'capybara', '>= 3.39.2'
   gem 'selenium-webdriver', '>= 4.17.0.rc1'
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'webdrivers'
+  # Adds support to make API calls
+  gem 'webmock'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

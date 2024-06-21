@@ -19,7 +19,7 @@ end
 
 RSpec.configure do |config|
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
-  config.use_transactional_fixtures = true
+  config.use_transactional_fixtures = false
   config.infer_spec_type_from_file_location!
   config.filter_rails_from_backtrace!
 end
@@ -55,7 +55,7 @@ RSpec.configure do |config|
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
   # instead of true.
-  config.use_transactional_fixtures = true
+  config.use_transactional_fixtures = false
 
   # You can uncomment this line to turn off ActiveRecord support entirely.
   # config.use_active_record = false
@@ -85,4 +85,13 @@ RSpec.configure do |config|
 
   # Include FactoryBot methods
   config.include FactoryBot::Syntax::Methods
+
+  # Raise errors for deprecation warnings to ensure they are addressed promptly
+  config.raise_errors_for_deprecations!
+
+  # Handle deprecation warning for action_dispatch.show_exceptions by setting it to :none
+  # This ensures that exceptions are raised immediately during tests for better error visibility
+  config.before(:each) do
+    allow(Rails.application.config.action_dispatch).to receive(:show_exceptions).and_return(:none)
+  end
 end

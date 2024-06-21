@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 class CampaignsController < ApplicationController
-  before_action :authenticate_user!, only: %i[edit update destroy]
+  before_action :authenticate_user!, except: %i[index show]
+  before_action :set_campaign, only: %i[show edit update destroy]
+  before_action :set_user_for_modification, except: %i[index show]
   before_action :authorize_user!, only: %i[edit update destroy]
   before_action :check_campaign_existence, only: %i[new create]
   before_action :set_repository, only: %i[new create]
-  before_action :set_user
-  before_action :set_campaign, only: %i[show edit update destroy]
 
   def index
     @campaigns = Campaign.all
@@ -44,7 +44,6 @@ class CampaignsController < ApplicationController
   end
 
   def edit
-    @campaign = Campaign.find(params[:id])
     @repo_name = @campaign.repo_identifier
   end
 
@@ -63,20 +62,23 @@ class CampaignsController < ApplicationController
 
   private
 
-  def set_user
+  def set_user_for_modification
     @user = User.find_by(id: params[:user_id])
-    return unless @user.nil?
+
+    return unless @user.nil? && %w[new create edit update destroy].include?(action_name)
 
     Rails.logger.error "User not found with id: #{params[:user_id]}"
     redirect_to root_path, alert: 'User not found.'
   end
 
   def set_campaign
-    @campaign = @user&.campaigns&.find_by(id: params[:id])
-    return unless @campaign.nil?
-
-    Rails.logger.error "Campaign not found with id: #{params[:id]} for user: #{@user.id}"
-    redirect_to root_path, alert: 'Campaign not found.'
+    @campaign = Campaign.find_by(id: params[:id])
+    if @campaign.nil?
+      Rails.logger.error "Campaign not found with id: #{params[:id]}"
+      redirect_to root_path, alert: 'Campaign not found.'
+    else
+      @user = @campaign.user
+    end
   end
 
   def set_repository

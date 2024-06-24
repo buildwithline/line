@@ -45,7 +45,7 @@ jobs:
         env:
           RAILS_ENV: test
         run: |
-          cp config/database.yml.ci config/database.yml
+          cp config/database.ci.yml config/database.yml
           bin/rails db:create db:schema:load
 
       - name: Run tests

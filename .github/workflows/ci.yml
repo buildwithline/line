@@ -47,7 +47,7 @@ jobs:
           GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
           GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
         run: |
-          cp config/database.yml.ci config/database.yml
+          cp config/database.ci.yml config/database.yml
           bin/rails db:create db:schema:load
 
       - name: Run tests

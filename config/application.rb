@@ -15,6 +15,7 @@ module Line
 
     # Handle deprecation warnings
     config.active_support.deprecation = :log
+    config.active_support.deprecation_behavior = %i[log notify]
     config.action_dispatch.show_exceptions = :none
 
     # Configuration for the application, engines, and railties goes here.

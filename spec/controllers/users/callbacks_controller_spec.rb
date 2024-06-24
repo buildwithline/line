@@ -6,7 +6,7 @@ RSpec.describe Users::CallbacksController, type: :controller do
   include Devise::Test::ControllerHelpers
 
   before do
-    @request.env['devise.mapping'] = Devise.mappings[:user]
+    request.env['devise.mapping'] = Devise.mappings[:user]
     request.env['omniauth.auth'] = OmniAuth.config.mock_auth[:github]
   end
 

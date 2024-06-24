@@ -86,6 +86,9 @@ RSpec.configure do |config|
   # Include FactoryBot methods
   config.include FactoryBot::Syntax::Methods
 
+  # Use transactional fixtures in tests
+  config.use_transactional_fixtures = true
+
   # Raise errors for deprecation warnings to ensure they are addressed promptly
   config.raise_errors_for_deprecations!
 

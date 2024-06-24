@@ -34,6 +34,19 @@ jobs:
           gem install bundler:2.5.5
           bundle install --jobs 4 --retry 3
 
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+
+      - name: Install JavaScript dependencies
+        run: npm install
+
+      - name: Precompile assets
+        env:
+          RAILS_ENV: test
+        run: node build.ci.js
+
       - name: Wait for Postgres
         run: |
           while ! pg_isready -h localhost -p 5432 -U postgres; do

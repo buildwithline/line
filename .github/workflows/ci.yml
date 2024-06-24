@@ -44,11 +44,15 @@ jobs:
       - name: Set up database
         env:
           RAILS_ENV: test
+          GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
         run: |
-          cp config/database.ci.yml config/database.yml
+          cp config/database.yml.ci config/database.yml
           bin/rails db:create db:schema:load
 
       - name: Run tests
         env:
           RAILS_ENV: test
+          GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
         run: bundle exec rspec

@@ -110,3 +110,5 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 gem 'tailwindcss-rails', '~> 2.3.0'
 
 gem 'add', '~> 0.3.2'
+
+gem "bundler-audit", "~> 0.9.1"

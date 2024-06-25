@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'active_support/core_ext/integer/time'
 
 Rails.application.configure do
@@ -84,7 +86,7 @@ Rails.application.configure do
 
   # On-the-fly copilation
   config.assets.compile = true
-  
-   # Serve individual files for easier debugging
-  config.assets.debug = true   
+
+  # Serve individual files for easier debugging
+  config.assets.debug = true
 end

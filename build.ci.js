@@ -1,6 +1,6 @@
 const esbuild = require('esbuild');
 const { polyfillNode } = require('esbuild-plugin-polyfill-node');
-const { postCssPlugin } = require('esbuild-plugin-postcss2');
+const { postCssPlugin } = require('esbuild-plugin-postcss');
 
 esbuild.build({
   entryPoints: ['app/javascript/application.js'],

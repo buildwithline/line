@@ -1,14 +1,11 @@
-# PostgreSQL. Make sure to update username, password, and database name.
-#   gem install pg
-#
-#   Ensure the PostgreSQL gem is defined in your Gemfile
-#   gem 'pg'
-#
 default: &default
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
+  username: postgres
+  password: postgres
+  host: localhost
 
 development:
   <<: *default
@@ -17,9 +14,9 @@ development:
 test:
   <<: *default
   database: line_test
-# production:
-#   <<: *default
-#   database: line_production
-#   username: your_postgres_username
-#   password: your_postgres_password
-#   host: your_postgres_host
+
+production:
+  <<: *default
+  database: line_production
+  username: postgres
+  password: <%= ENV['DATABASE_PASSWORD'] %>

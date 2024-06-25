@@ -7,6 +7,16 @@ default: &default
   password: postgres
   host: localhost
 
+development:
+  <<: *default
+  database: line_development
+
 test:
   <<: *default
   database: line_test
+
+production:
+  <<: *default
+  database: line_production
+  username: postgres
+  password: <%= ENV['DATABASE_PASSWORD'] %>

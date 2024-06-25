@@ -63,6 +63,9 @@ jobs:
           cp config/database.ci.yml config/database.yml
           bin/rails db:create db:schema:load
 
+      - name: Clear cache
+        run: rm -rf tmp/cache
+
       - name: Run tests
         env:
           RAILS_ENV: test

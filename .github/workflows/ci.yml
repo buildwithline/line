@@ -51,18 +51,19 @@ jobs:
 
       - name: Wait for Postgres
         run: |
+          echo "Checking PostgreSQL container status..."
           while ! pg_isready -h localhost -p 5432 -U postgres; do
-            echo "Waiting for postgres to be ready..."
+            echo "Waiting for PostgreSQL to be ready..."
             sleep 1
           done
-          # Check the status of the PostgreSQL container
+
+      - name: Debug Postgres
+        if: always()
+        run: |
+          echo "PostgreSQL container status:"
           docker ps -a
-          # If the container is not running, print logs
-          if [ $(docker inspect -f '{{.State.Running}}' $(docker ps -q -f name=postgres)) == "false" ]; then
-            echo "PostgreSQL container failed to start. Logs:"
-            docker logs $(docker ps -q -f name=postgres)
-            exit 1
-          fi
+          echo "PostgreSQL logs:"
+          docker logs $(docker ps -q -f name=postgres)
 
       - name: Set up database
         env:

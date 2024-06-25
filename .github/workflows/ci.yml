@@ -55,6 +55,14 @@ jobs:
             echo "Waiting for postgres to be ready..."
             sleep 1
           done
+          # Check the status of the PostgreSQL container
+          docker ps -a
+          # If the container is not running, print logs
+          if [ $(docker inspect -f '{{.State.Running}}' $(docker ps -q -f name=postgres)) == "false" ]; then
+            echo "PostgreSQL container failed to start. Logs:"
+            docker logs $(docker ps -q -f name=postgres)
+            exit 1
+          fi
 
       - name: Set up database
         env:

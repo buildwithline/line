@@ -6,21 +6,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:latest
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: line_test
-        options: >-
-          --health-cmd "pg_isready -U postgres -d line_test -h /tmp"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
       - uses: actions/checkout@v2
 
@@ -47,20 +32,13 @@ jobs:
           RAILS_ENV: test
         run: node build.ci.js
 
-      - name: Wait for Postgres
+      - name: Set up PostgreSQL
         run: |
-          echo "Waiting for 10 seconds to allow PostgreSQL to initialize..."
-          sleep 10
-          echo "Checking PostgreSQL status..."
-          while ! pg_isready -h /tmp -p 5432 -U postgres; do
-            echo "Waiting for postgres to be ready..."
-            sleep 1
-          done
-          echo "PostgreSQL is ready."
-
-      - name: Create PostgreSQL role
-        run: |
-          sudo -u postgres psql -h /tmp -c "CREATE ROLE postgres WITH LOGIN SUPERUSER PASSWORD 'postgres';" || true
+          sudo apt-get update
+          sudo apt-get install -y postgresql postgresql-contrib
+          sudo service postgresql start
+          sudo -u postgres psql -c "CREATE ROLE postgres WITH LOGIN SUPERUSER PASSWORD 'postgres';"
+          sudo -u postgres createdb line_test
 
       - name: Set up database
         env:

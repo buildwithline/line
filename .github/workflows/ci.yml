@@ -26,6 +26,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Verify init.sql file
+        run: |
+          echo "Listing init.sql file:"
+          ls -l ${{ github.workspace }}/init.sql
+          echo "Content of init.sql file:"
+          cat ${{ github.workspace }}/init.sql
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -55,6 +62,13 @@ jobs:
             echo "Waiting for postgres to be ready..."
             sleep 1
           done
+
+      - name: Check Postgres logs
+        run: |
+          echo "PostgreSQL container status:"
+          docker ps -a
+          echo "PostgreSQL container logs:"
+          docker logs $(docker ps -q -f ancestor=postgres:latest)
 
       - name: Set up database
         env:

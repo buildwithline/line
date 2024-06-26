@@ -15,23 +15,9 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: line_test
-        options: >-
-          --health-cmd "pg_isready -U postgres -d line_test"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        volumes:
-          - ${{ github.workspace }}/init.sql:/docker-entrypoint-initdb.d/init.sql
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Verify init.sql file
-        run: |
-          echo "Listing init.sql file:"
-          ls -l ${{ github.workspace }}/init.sql
-          echo "Content of init.sql file:"
-          cat ${{ github.workspace }}/init.sql
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -56,19 +42,10 @@ jobs:
           RAILS_ENV: test
         run: node build.ci.js
 
-      - name: Wait for Postgres
+      - name: Set up PostgreSQL
         run: |
-          while ! pg_isready -h localhost -p 5432 -U postgres; do
-            echo "Waiting for postgres to be ready..."
-            sleep 1
-          done
-
-      - name: Check Postgres logs
-        run: |
-          echo "PostgreSQL container status:"
-          docker ps -a
-          echo "PostgreSQL container logs:"
-          docker logs $(docker ps -q -f ancestor=postgres:latest)
+          sudo -u postgres psql -c "CREATE ROLE postgres WITH LOGIN SUPERUSER PASSWORD 'postgres';"
+          sudo -u postgres psql -c "CREATE DATABASE line_test OWNER postgres;"
 
       - name: Set up database
         env:

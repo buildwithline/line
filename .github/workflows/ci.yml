@@ -38,7 +38,7 @@ jobs:
           sudo apt-get install -y postgresql postgresql-contrib
           sudo service postgresql start
           sudo -u postgres psql -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'postgres') THEN CREATE ROLE postgres WITH LOGIN SUPERUSER PASSWORD 'postgres'; END IF; END \$\$;"
-          sudo -u postgres psql -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'line_test') THEN CREATE DATABASE line_test; END IF; END \$\$;"
+          if ! sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='line_test'" | grep -q 1; then sudo -u postgres createdb line_test; fi
 
       - name: Set up database
         env:

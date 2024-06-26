@@ -21,7 +21,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         volumes:
-          - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+          - ${{ github.workspace }}/init.sql:/docker-entrypoint-initdb.d/init.sql
 
     steps:
       - uses: actions/checkout@v2
@@ -51,20 +51,10 @@ jobs:
 
       - name: Wait for Postgres
         run: |
-          echo "Checking PostgreSQL container status..."
           while ! pg_isready -h localhost -p 5432 -U postgres; do
-            echo "Waiting for PostgreSQL to be ready..."
+            echo "Waiting for postgres to be ready..."
             sleep 1
           done
-
-      - name: Debug Postgres
-        if: always()
-        run: |
-          echo "PostgreSQL container status:"
-          docker ps -a
-          echo "PostgreSQL logs:"
-          CONTAINER_ID=$(docker ps -aqf "name=postgres")
-          docker logs $CONTAINER_ID
 
       - name: Set up database
         env:

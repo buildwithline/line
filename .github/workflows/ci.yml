@@ -42,10 +42,17 @@ jobs:
           RAILS_ENV: test
         run: node build.ci.js
 
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          while ! pg_isready -h localhost -p 5432 -U postgres; do
+            echo "Waiting for postgres to be ready..."
+            sleep 1
+          done
+
       - name: Set up PostgreSQL
         run: |
-          sudo -u postgres psql -c "CREATE ROLE postgres WITH LOGIN SUPERUSER PASSWORD 'postgres';"
-          sudo -u postgres psql -c "CREATE DATABASE line_test OWNER postgres;"
+          psql -U postgres -c "CREATE ROLE postgres WITH LOGIN SUPERUSER PASSWORD 'postgres';"
+          psql -U postgres -c "CREATE DATABASE line_test OWNER postgres;"
 
       - name: Set up database
         env:

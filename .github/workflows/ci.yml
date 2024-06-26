@@ -63,7 +63,8 @@ jobs:
           echo "PostgreSQL container status:"
           docker ps -a
           echo "PostgreSQL logs:"
-          docker logs $(docker ps -q -f name=postgres)
+          CONTAINER_ID=$(docker ps -aqf "name=postgres")
+          docker logs $CONTAINER_ID
 
       - name: Set up database
         env:

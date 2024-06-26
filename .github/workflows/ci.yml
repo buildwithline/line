@@ -40,7 +40,9 @@ jobs:
       - name: Precompile assets
         env:
           RAILS_ENV: test
-        run: node build.ci.js
+        run: |
+          npx tailwindcss -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css
+          node build.ci.js
 
       - name: Set up database
         env:

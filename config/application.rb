@@ -18,6 +18,7 @@ module Line
     config.active_support.deprecation_behavior = %i[log notify]
     config.action_dispatch.show_exceptions = :none
 
+    config.assets.css_compressor = nil
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files

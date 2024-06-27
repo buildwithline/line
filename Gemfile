@@ -67,6 +67,9 @@ gem 'rack-cors', '>= 2.0.2'
 
 gem 'active_model_serializers', '~> 0.10.12'
 
+# Asset management
+gem 'sprockets-rails'
+
 group :development, :test do
   # Call 'byebug' or 'binding.pry' anywhere in the code to stop execution and get a debugger console
   # gem "pry-byebug" #does not play well with 'pry-remote'

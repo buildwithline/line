@@ -274,8 +274,9 @@ Devise.setup do |config|
   # Rails.application.config.middleware.use OmniAuth::Builder do
   #   provider :github, 'GITHUB_KEY', 'GITHUB_SECRET', scope: 'user,public_repo'
   # end
-  config.omniauth :github, Rails.application.credentials.oauth.dig(:github, :client_id),
-                  Rails.application.credentials.oauth.dig(:github, :client_secret), scope: 'user, read:user, repo, read:org'
+  config.omniauth :github,
+                  ENV['GITHUB_CLIENT_ID'] || Rails.application.credentials.oauth.dig(:github, :client_id),
+                  ENV['GITHUB_CLIENT_SECRET'] || Rails.application.credentials.oauth.dig(:github, :client_secret), scope: 'user, read:user, repo, read:org'
   # config.omniauth :gitlab, Rails.application.credentials.oauth.dig(:gitlab, :client_id), Rails.application.credentials.oauth.dig(:gitlab, :client_secret), scope: "user, repo", strategy_class: OmniAuth::Strategies::GitLab
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or

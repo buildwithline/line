@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ChangeAcceptedCurrencyToArray < ActiveRecord::Migration[6.0]
   def up
     rename_column :campaigns, :accepted_currency, :accepted_currencies

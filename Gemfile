@@ -16,7 +16,7 @@ gem 'pg'
 # Use Puma as the app server
 gem 'puma', '~> 6.4.1'
 # Use SCSS for stylesheets
-gem 'sass-rails', '>= 6'
+# gem 'sass-rails', '>= 6'
 
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
 gem 'turbo-rails'
@@ -67,6 +67,9 @@ gem 'rack-cors', '>= 2.0.2'
 
 gem 'active_model_serializers', '~> 0.10.12'
 
+# Asset management
+gem 'sprockets-rails'
+
 group :development, :test do
   # Call 'byebug' or 'binding.pry' anywhere in the code to stop execution and get a debugger console
   # gem "pry-byebug" #does not play well with 'pry-remote'
@@ -94,9 +97,14 @@ end
 group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '>= 3.39.2'
+  # Provides mock authentication for OmniAuth in test environments
+  gem 'omniauth-test'
+  # Adds support for Capybara system testing and selenium driver
   gem 'selenium-webdriver', '>= 4.17.0.rc1'
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'webdrivers'
+  # Adds support to make API calls
+  gem 'webmock'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
@@ -105,3 +113,5 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 gem 'tailwindcss-rails', '~> 2.3.0'
 
 gem 'add', '~> 0.3.2'
+
+gem 'bundler-audit', '~> 0.9.1'

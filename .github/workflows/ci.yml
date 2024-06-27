@@ -1,0 +1,64 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up PostgreSQL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql postgresql-contrib
+          sudo service postgresql start
+          sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';"
+          sudo -u postgres psql -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'postgres') THEN CREATE ROLE postgres WITH LOGIN SUPERUSER PASSWORD 'postgres'; END IF; END \$\$;"
+          sudo -u postgres psql -c "DROP DATABASE IF EXISTS line_test;"
+          sudo -u postgres psql -c "CREATE DATABASE line_test;"
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.2
+
+      - name: Install dependencies
+        run: |
+          gem install bundler:2.5.5
+          bundle install --jobs 4 --retry 3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+
+      - name: Install JavaScript dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Precompile assets
+        env:
+          RAILS_ENV: test
+        run: |
+          npx tailwindcss -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css
+          node build.ci.js
+
+      - name: Set up database
+        env:
+          RAILS_ENV: test
+          GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+        run: |
+          mv config/database.ci.yml config/database.yml
+          bin/rails db:create db:schema:load
+
+      - name: Clear cache
+        run: rm -rf tmp/cache
+
+      - name: Run tests
+        env:
+          RAILS_ENV: test
+          GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+        run: bundle exec rspec

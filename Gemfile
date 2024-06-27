@@ -16,7 +16,7 @@ gem 'pg'
 # Use Puma as the app server
 gem 'puma', '~> 6.4.1'
 # Use SCSS for stylesheets
-gem 'sass-rails', '>= 6'
+# gem 'sass-rails', '>= 6'
 
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
 gem 'turbo-rails'

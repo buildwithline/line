@@ -4,7 +4,7 @@ import { mainnet, arbitrum } from "viem/chains";
 import { getAccount, reconnect } from "@wagmi/core";
 
 export default class extends Controller {
-  static targets = ["openModal"];
+  static targets = ["openModal", 'createCampaignButton', 'tooltipText'];
   static values = {
     projectId: String,
     userId: Number,
@@ -54,7 +54,9 @@ export default class extends Controller {
       } else {
         console.log('Modal closed without disconnection');
       }
+      this.updateButtonState();
     });
+    this.updateButtonState();
   }
 
   openModal() {
@@ -119,6 +121,26 @@ export default class extends Controller {
     } finally {
       this.isDeleting = false;
       this.disconnectRequested = false;
+    }
+  }
+
+  updateButtonState() {
+    if (this.walletConnectedValue) {
+      this.createCampaignButtonTarget.disabled = false;
+      this.createCampaignButtonTarget.classList.remove("bg-gray-500", "cursor-not-allowed");
+      this.createCampaignButtonTarget.classList.add("bg-blue-500", "hover:bg-blue-700");
+  
+      // Hide the tooltip
+      this.tooltipTextTarget.classList.remove("opacity-100");
+      this.tooltipTextTarget.classList.add("opacity-0");
+    } else {
+      this.createCampaignButtonTarget.disabled = true;
+      this.createCampaignButtonTarget.classList.remove("bg-blue-500", "hover:bg-blue-700");
+      this.createCampaignButtonTarget.classList.add("bg-gray-500", "cursor-not-allowed");
+  
+      // Show the tooltip
+      this.tooltipTextTarget.classList.remove("opacity-0");
+      this.tooltipTextTarget.classList.add("opacity-100");
     }
   }
 }

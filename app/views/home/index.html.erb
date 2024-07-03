@@ -1,4 +1,9 @@
-<div>
+<div
+  data-controller="wallet"
+  data-wallet-project-id-value="<%= Rails.application.credentials.dig(:wallet_connect, :project_id) %>"
+  data-wallet-user-id-value="<%= current_user.id %>"
+  data-wallet-csrf-token-value="<%= form_authenticity_token %>"
+>
   <div class="flex items-center space-x-4">
     <%= image_tag 'logo.jpg', alt: "Logo", class: 'my-6' %>
     <%= image_tag @avatar, alt: "Avatar", class: 'w-24 h-24 rounded-full' %>
@@ -8,20 +13,12 @@
     <%= "Hello, #{current_user.nickname}, welcome to Line - The Developers Marketplace " %>
   </p>
   <% wallet_connected = current_user.wallet.present? %>
-  <div 
-    data-controller="wallet"
-    data-wallet-project-id-value="<%= Rails.application.credentials.dig(:wallet_connect, :project_id) %>"
-    data-wallet-user-id-value="<%= current_user.id %>"
-    data-wallet-csrf-token-value="<%= form_authenticity_token %>"
-  >
     <button 
       data-wallet-target="openModal"
       data-action="click->wallet#openModal"
       class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
       <%= wallet_connected ? 'Disconnect Wallet' : 'Connect Wallet' %>
     </button>
-  </div>
-
   <p>
     <% if @organizations.present? %>
       <ul>
@@ -60,7 +57,23 @@
                   <% if campaign %>
                     <%= link_to 'Show Campaign', user_campaign_path(current_user, campaign, repo_identifier: repo[:repo].full_name), class: "btn btn-success" %>
                   <% else %>
-                    <%= link_to 'Create Campaign', new_user_campaign_path(current_user, repo_name: repo[:repo].full_name), class: "btn btn-primary" %>
+                   <div class="tooltip relative group">
+                      <button 
+                        data-wallet-target="createCampaignButton"
+                        type="button"
+                        class="bg-gray-500 text-white font-bold py-2 px-4 rounded cursor-not-allowed"
+                        disabled
+                      >
+                        Create Campaign
+                      </button>
+                      <span 
+                        id="tooltip-top"
+                        data-wallet-target="tooltipText"
+                        class="tooltip-text absolute z-10 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        Please connect a wallet to create campaigns
+                      </span>
+                    </div>
                   <% end %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">

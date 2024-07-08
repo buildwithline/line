@@ -1,10 +1,10 @@
-import { Controller } from "@hotwired/stimulus";
-import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi";
-import { mainnet, arbitrum } from "viem/chains";
-import { getAccount, reconnect } from "@wagmi/core";
+import { Controller } from '@hotwired/stimulus';
+import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi';
+import { mainnet, arbitrum } from 'viem/chains';
+import { getAccount, reconnect } from '@wagmi/core';
 
 export default class extends Controller {
-  static targets = ["openModal"];
+  static targets = ['openModal'];
   static values = {
     projectId: String,
     userId: Number,
@@ -48,7 +48,11 @@ export default class extends Controller {
       if (event.data.event === 'CONNECT_SUCCESS') {
         this.addWalletToDatabase(this.account);
         this.openModalTarget.textContent = 'Disconnect Wallet';
-      } else if (event.data.event === 'MODAL_CLOSE' && this.disconnectRequested && !event.data.properties.connected) {
+      } else if (
+        event.data.event === 'MODAL_CLOSE' &&
+        this.disconnectRequested &&
+        !event.data.properties.connected
+      ) {
         this.removeWalletFromDatabase(this.account);
         this.openModalTarget.textContent = 'Connect Wallet';
       } else {
@@ -58,7 +62,8 @@ export default class extends Controller {
   }
 
   openModal() {
-    const isDisconnect = this.openModalTarget.textContent === 'Disconnect Wallet';
+    const isDisconnect =
+      this.openModalTarget.textContent === 'Disconnect Wallet';
     this.disconnectRequested = isDisconnect;
     this.modal.open();
   }

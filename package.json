@@ -41,9 +41,9 @@
     "postcss": "^8.4.38",
     "postcss-load-config": "^3.1.0",
     "postcss-loader": "^8.0.0",
+    "prettier": "^3.3.2",
     "tailwindcss": "^3.4.4"
   },
-  
   "scripts": {
     "lint:erb": "erblint app/views",
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --watch && npm run lint:erb"

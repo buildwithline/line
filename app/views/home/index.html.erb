@@ -57,7 +57,7 @@
                   <% if campaign %>
                     <%= link_to 'Show Campaign', user_campaign_path(current_user, campaign, repo_identifier: repo[:repo].full_name), class: "btn btn-success" %>
                   <% else %>
-                   <div class="tooltip relative group">
+                    <div class="tooltip relative group">
                       <button 
                         data-wallet-target="createCampaignButton"
                         type="button"

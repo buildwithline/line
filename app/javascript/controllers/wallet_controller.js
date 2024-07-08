@@ -10,11 +10,15 @@ export default class extends Controller {
     userId: Number,
     walletIdValue: Number,
     csrfToken: String,
+    walletConnected: Boolean,
   };
 
   connect() {
     this.isDeleting = false;
     this.disconnectRequested = false;
+    this.walletConnectedValue = this.walletConnectedValue || false;
+
+    this.updateButtonState();
 
     const projectId = this.projectIdValue;
     const chains = [mainnet, arbitrum];
@@ -36,6 +40,14 @@ export default class extends Controller {
     });
     reconnect(this.config);
 
+    this.account = getAccount(this.config);
+    if (this.account && this.account.isConnected) {
+      this.walletConnectedValue = true;
+    } else {
+      this.walletConnectedValue = false;
+    }
+    this.updateButtonState();
+
     this.modal = createWeb3Modal({
       wagmiConfig: this.config,
       projectId: this.projectIdValue,
@@ -48,15 +60,17 @@ export default class extends Controller {
       if (event.data.event === 'CONNECT_SUCCESS') {
         this.addWalletToDatabase(this.account);
         this.openModalTarget.textContent = 'Disconnect Wallet';
+        this.walletConnectedValue = true;
+        this.updateButtonState();
       } else if (event.data.event === 'MODAL_CLOSE' && this.disconnectRequested && !event.data.properties.connected) {
         this.removeWalletFromDatabase(this.account);
         this.openModalTarget.textContent = 'Connect Wallet';
+        this.walletConnectedValue = false;
+        this.updateButtonState();
       } else {
         console.log('Modal closed without disconnection');
       }
-      this.updateButtonState();
     });
-    this.updateButtonState();
   }
 
   openModal() {
@@ -125,22 +139,24 @@ export default class extends Controller {
   }
 
   updateButtonState() {
-    if (this.walletConnectedValue) {
-      this.createCampaignButtonTarget.disabled = false;
-      this.createCampaignButtonTarget.classList.remove("bg-gray-500", "cursor-not-allowed");
-      this.createCampaignButtonTarget.classList.add("bg-blue-500", "hover:bg-blue-700");
+    this.createCampaignButtonTargets.forEach((button, index) => {
+      const tooltip = this.tooltipTextTargets[index];
+      if (this.walletConnectedValue) {
+        button.disabled = false;
+        button.classList.remove("bg-gray-500", "cursor-not-allowed");
+        button.classList.add("bg-blue-500", "hover:bg-blue-700");
   
-      // Hide the tooltip
-      this.tooltipTextTarget.classList.remove("opacity-100");
-      this.tooltipTextTarget.classList.add("opacity-0");
-    } else {
-      this.createCampaignButtonTarget.disabled = true;
-      this.createCampaignButtonTarget.classList.remove("bg-blue-500", "hover:bg-blue-700");
-      this.createCampaignButtonTarget.classList.add("bg-gray-500", "cursor-not-allowed");
+        tooltip.classList.add("hidden");
+        tooltip.classList.remove("block");
+      } else {
+        button.disabled = true;
+        button.classList.remove("bg-blue-500", "hover:bg-blue-700");
+        button.classList.add("bg-gray-500", "cursor-not-allowed");
   
-      // Show the tooltip
-      this.tooltipTextTarget.classList.remove("opacity-0");
-      this.tooltipTextTarget.classList.add("opacity-100");
-    }
+        tooltip.classList.remove("hidden");
+        tooltip.classList.add("block");
+      }
+    });
   }
+  
 }

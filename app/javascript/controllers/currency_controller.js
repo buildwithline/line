@@ -1,12 +1,12 @@
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
   static targets = [
-    "currencyButton",
-    "selectAll",
-    "acceptedCurrencies",
-    "form"
-  ]
+    'currencyButton',
+    'selectAll',
+    'acceptedCurrencies',
+    'form',
+  ];
 
   connect() {
     this.selectedCurrencies = [];
@@ -19,10 +19,10 @@ export default class extends Controller {
     const currency = event.currentTarget.dataset.currencyValue;
     const button = event.currentTarget;
 
-    button.classList.toggle("bg-blue-500");
-    button.classList.toggle("text-white");
+    button.classList.toggle('bg-blue-500');
+    button.classList.toggle('text-white');
 
-    const isSelected = button.classList.contains("bg-blue-500");
+    const isSelected = button.classList.contains('bg-blue-500');
     if (isSelected) {
       if (!this.selectedCurrencies.includes(currency)) {
         this.selectedCurrencies.push(currency);
@@ -40,10 +40,10 @@ export default class extends Controller {
 
   selectAll(event) {
     const isChecked = this.selectAllTarget.checked;
-    const label = document.getElementById("select-all-label");
-    label.textContent = isChecked ? "Unselect All" : "Select All";
+    const label = document.getElementById('select-all-label');
+    label.textContent = isChecked ? 'Unselect All' : 'Select All';
 
-    this.currencyButtonTargets.forEach(button => {
+    this.currencyButtonTargets.forEach((button) => {
       button.classList.toggle('bg-blue-500', isChecked);
       button.classList.toggle('text-white', isChecked);
       const currency = button.dataset.currencyValue;
@@ -65,14 +65,14 @@ export default class extends Controller {
   }
 
   updateSelectAllState() {
-    const allSelected = this.currencyButtonTargets.every(button =>
-      button.classList.contains("bg-blue-500")
+    const allSelected = this.currencyButtonTargets.every((button) =>
+      button.classList.contains('bg-blue-500')
     );
 
     this.selectAllTarget.checked = allSelected;
 
-    const label = document.getElementById("select-all-label");
-    label.textContent = allSelected ? "Unselect All" : "Select All";
+    const label = document.getElementById('select-all-label');
+    label.textContent = allSelected ? 'Unselect All' : 'Select All';
   }
 
   handleSubmit(event) {

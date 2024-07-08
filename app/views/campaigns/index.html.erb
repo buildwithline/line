@@ -1,5 +1,6 @@
 <div class="container mx-auto px-4">
-  <%= button_to 'Home', root_path, method: :get, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+  <%= button_to 'Home', root_path, method: :get, class: "bg-blue-500
+  hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
   <div class="flex justify-between items-center py-4">
     <h1 class="text-2xl font-semibold">Campaigns</h1>
   </div>
@@ -19,22 +20,38 @@
       </thead>
       <tbody>
         <% @campaigns.each do |campaign| %>
-          <tr class="hover:bg-gray-50">
-            <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm"><%= campaign.title %></td>
-            <td class="px-2 py-5 border-b border-gray-200 break-words"><%= truncate(campaign.description, length: 100) %></td>
-            <td class="px-2 py-5 border-b border-gray-200"><%= campaign.repo_identifier %></td>
-            <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm"><%= campaign.tier_name %></td>
-            <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm"><%= number_to_currency(campaign.tier_amount) %></td>
-            <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm"><%= campaign.accepted_currencies %></td>
-            <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm"><%= campaign.contribution_cadence %></td>
-            <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm">
-              <%= link_to 'Show', user_campaign_path(campaign.user, campaign), class: "text-blue-600 hover:text-blue-900" %>
-              <% if campaign.user == current_user %>
-                <%= link_to 'Edit', edit_user_campaign_path(current_user, campaign), class: 'btn btn-primary' %>
-                <%= link_to 'Delete', user_campaign_path(current_user, campaign), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger' %>
-              <% end %>
-            </td>
-          </tr>
+        <tr class="hover:bg-gray-50">
+          <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm">
+            <%= campaign.title %>
+          </td>
+          <td class="px-2 py-5 border-b border-gray-200 break-words">
+            <%= truncate(campaign.description, length: 100) %>
+          </td>
+          <td class="px-2 py-5 border-b border-gray-200">
+            <%= campaign.repo_identifier %>
+          </td>
+          <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm">
+            <%= campaign.tier_name %>
+          </td>
+          <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm">
+            <%= number_to_currency(campaign.tier_amount) %>
+          </td>
+          <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm">
+            <%= campaign.accepted_currencies %>
+          </td>
+          <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm">
+            <%= campaign.contribution_cadence %>
+          </td>
+          <td class="px-2 py-5 border-b border-gray-200 bg-white text-sm">
+            <%= link_to 'Show', user_campaign_path(campaign.user, campaign),
+            class: "text-blue-600 hover:text-blue-900" %> <% if campaign.user ==
+            current_user %> <%= link_to 'Edit',
+            edit_user_campaign_path(current_user, campaign), class: 'btn
+            btn-primary' %> <%= link_to 'Delete',
+            user_campaign_path(current_user, campaign), method: :delete, data: {
+            confirm: 'Are you sure?' }, class: 'btn btn-danger' %> <% end %>
+          </td>
+        </tr>
         <% end %>
       </tbody>
     </table>

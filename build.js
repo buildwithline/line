@@ -15,13 +15,10 @@ async function build() {
     plugins: [
       polyfillNode(),
       postCssPlugin({
-        plugins: [
-          require('tailwindcss'),
-          require('autoprefixer'),
-        ],
+        plugins: [require('tailwindcss'), require('autoprefixer')],
       }),
     ],
-    external: ['@walletconnect/web3-provider', '@web3modal/ui']
+    external: ['@walletconnect/web3-provider', '@web3modal/ui'],
   });
 
   await context.watch({

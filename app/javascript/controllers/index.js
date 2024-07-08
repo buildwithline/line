@@ -2,12 +2,12 @@
 // Run that command whenever you add a new controller or create them with
 // ./bin/rails generate stimulus controllerName
 
-import { application } from "./application"
+import { application } from './application';
 
-import WalletController from "./wallet_controller"
-import ContributionController from "./contribution_controller"
-import CurrencyController from "./currency_controller"
+import WalletController from './wallet_controller';
+import ContributionController from './contribution_controller';
+import CurrencyController from './currency_controller';
 
-application.register("wallet", WalletController)
-application.register("contribution", ContributionController)
-application.register("currency", CurrencyController)
+application.register('wallet', WalletController);
+application.register('contribution', ContributionController);
+application.register('currency', CurrencyController);

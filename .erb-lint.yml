@@ -1,0 +1,27 @@
+linters:
+  AltText:
+    enabled: true
+  HtmlAttributeWithErb:
+    enabled: true
+  ClosingErbTagIndentation:
+    enabled: true
+  ExtraNewline:
+    enabled: true
+  FinalNewline:
+    enabled: true
+  LeftoverWhitespace:
+    enabled: true
+  ParserErrors:
+    enabled: true
+  RightTrim:
+    enabled: true
+  RuboCop:
+    enabled: true
+  SpaceAroundErbTag:
+    enabled: true
+  SpaceIndentation:
+    enabled: true
+  TrailingWhitespace:
+    enabled: true
+  ViewComponent:
+    enabled: true

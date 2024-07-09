@@ -452,7 +452,7 @@ DEPENDENCIES
   turbo-rails
   tzinfo-data
   web-console (>= 4.2.1)
-  webdrivers
+  webdrivers (~> 5.0)
   webmock
 
 RUBY VERSION

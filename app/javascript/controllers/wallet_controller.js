@@ -4,25 +4,30 @@ import { mainnet, arbitrum } from "viem/chains";
 import { getAccount, reconnect } from "@wagmi/core";
 
 export default class extends Controller {
-  static targets = ["openModal"];
+  static targets = ["openModal", 'createCampaignButton', 'tooltipText'];
+  static targets = ["openModal", "createCampaignButton", "tooltipText"];
   static values = {
     projectId: String,
     userId: Number,
     walletIdValue: Number,
     csrfToken: String,
+    walletConnected: Boolean,
   };
 
   connect() {
     this.isDeleting = false;
     this.disconnectRequested = false;
+    this.walletConnectedValue = this.walletConnectedValue || false;
+
+    this.updateButtonState();
 
     const projectId = this.projectIdValue;
     const chains = [mainnet, arbitrum];
     const metadata = {
-      name: 'Web3Modal',
-      description: 'Web3Modal Example',
-      url: 'http://localhost:3000',
-      icons: ['https://avatars.githubusercontent.com/u/37784886'],
+      name: "Web3Modal",
+      description: "Web3Modal Example",
+      url: "http://localhost:3000",
+      icons: ["https://avatars.githubusercontent.com/u/37784886"],
     };
 
     this.config = defaultWagmiConfig({
@@ -36,6 +41,14 @@ export default class extends Controller {
     });
     reconnect(this.config);
 
+    this.account = getAccount(this.config);
+    if (this.account && this.account.isConnected) {
+      this.walletConnectedValue = true;
+    } else {
+      this.walletConnectedValue = false;
+    }
+    this.updateButtonState();
+
     this.modal = createWeb3Modal({
       wagmiConfig: this.config,
       projectId: this.projectIdValue,
@@ -45,20 +58,29 @@ export default class extends Controller {
     this.modal.subscribeEvents((event) => {
       this.account = getAccount(this.config);
 
-      if (event.data.event === 'CONNECT_SUCCESS') {
+      if (event.data.event === "CONNECT_SUCCESS") {
         this.addWalletToDatabase(this.account);
-        this.openModalTarget.textContent = 'Disconnect Wallet';
-      } else if (event.data.event === 'MODAL_CLOSE' && this.disconnectRequested && !event.data.properties.connected) {
+        this.openModalTarget.textContent = "Disconnect Wallet";
+        this.walletConnectedValue = true;
+        this.updateButtonState();
+      } else if (
+        event.data.event === "MODAL_CLOSE" &&
+        this.disconnectRequested &&
+        !event.data.properties.connected
+      ) {
         this.removeWalletFromDatabase(this.account);
-        this.openModalTarget.textContent = 'Connect Wallet';
+        this.openModalTarget.textContent = "Connect Wallet";
+        this.walletConnectedValue = false;
+        this.updateButtonState();
       } else {
-        console.log('Modal closed without disconnection');
+        console.log("Modal closed without disconnection");
       }
     });
   }
 
   openModal() {
-    const isDisconnect = this.openModalTarget.textContent === 'Disconnect Wallet';
+    const isDisconnect =
+      this.openModalTarget.textContent === "Disconnect Wallet";
     this.disconnectRequested = isDisconnect;
     this.modal.open();
   }
@@ -72,10 +94,10 @@ export default class extends Controller {
 
     try {
       const response = await fetch(`/users/${this.userIdValue}/wallet`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': this.csrfTokenValue,
+          "Content-Type": "application/json",
+          "X-CSRF-Token": this.csrfTokenValue,
         },
         body: JSON.stringify(walletData),
       });
@@ -85,25 +107,25 @@ export default class extends Controller {
       }
 
       const responseData = await response.json();
-      console.log('Successfully created wallet in database:', responseData);
+      console.log("Successfully created wallet in database:", responseData);
     } catch (error) {
-      console.error('Error creating wallet in database:', error);
+      console.error("Error creating wallet in database:", error);
     }
   }
 
   async removeWalletFromDatabase() {
     if (this.isDeleting) {
-      console.log('Already deleting wallet, aborting.');
+      console.log("Already deleting wallet, aborting.");
       return;
     }
     this.isDeleting = true;
 
     try {
       const response = await fetch(`/users/${this.userIdValue}/wallet`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': this.csrfTokenValue,
+          "Content-Type": "application/json",
+          "X-CSRF-Token": this.csrfTokenValue,
         },
       });
 
@@ -112,13 +134,34 @@ export default class extends Controller {
       }
 
       const responseData = await response.json();
-      console.log('Successfully removed from database:', responseData);
-      this.openModalTarget.textContent = 'Connect Wallet';
+      console.log("Successfully removed from database:", responseData);
+      this.openModalTarget.textContent = "Connect Wallet";
     } catch (error) {
-      console.error('Error removing wallet from database:', error);
+      console.error("Error removing wallet from database:", error);
     } finally {
       this.isDeleting = false;
       this.disconnectRequested = false;
     }
+  }
+
+  updateButtonState() {
+    this.createCampaignButtonTargets.forEach((button, index) => {
+      const tooltip = this.tooltipTextTargets[index];
+      if (this.walletConnectedValue) {
+        button.disabled = false;
+        button.classList.remove("bg-gray-500", "cursor-not-allowed");
+        button.classList.add("bg-blue-500", "hover:bg-blue-700");
+
+        tooltip.classList.add("hidden");
+        tooltip.classList.remove("block");
+      } else {
+        button.disabled = true;
+        button.classList.remove("bg-blue-500", "hover:bg-blue-700");
+        button.classList.add("bg-gray-500", "cursor-not-allowed");
+
+        tooltip.classList.remove("hidden");
+        tooltip.classList.add("block");
+      }
+    });
   }
 }

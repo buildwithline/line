@@ -54,6 +54,6 @@ RSpec.describe 'User Authentication', type: :system do
 
     click_button 'Log in with GitHub'
 
-    expect(page).to have_content('Hello, testuser')
+    expect(page).to have_css('p', text: 'Hello, testuser, welcome to Line - The Developers Marketplace')
   end
 end

@@ -4,15 +4,15 @@
   data-wallet-user-id-value="<%= current_user.id %>"
   data-wallet-csrf-token-value="<%= form_authenticity_token %>"
 >
+  <% wallet_connected = current_user.wallet.present? %>
   <div class="flex items-center space-x-4">
     <%= image_tag 'logo.jpg', alt: "Logo", class: 'my-6' %>
     <%= image_tag @avatar, alt: "Avatar", class: 'w-24 h-24 rounded-full' %>
     <%= button_to "logout", destroy_user_session_path, method: :delete  %>
   </div>
   <p>
-    <%= "Hello, #{current_user.nickname}, welcome to Line - The Developers Marketplace " %>
+    <%= "Hello, #{current_user.nickname}, welcome to Line - The Developers Marketplace" %>
   </p>
-  <% wallet_connected = current_user.wallet.present? %>
     <button 
       data-wallet-target="openModal"
       data-action="click->wallet#openModal"
@@ -54,8 +54,12 @@
                 </div>
                 <td>
                   <% campaign = @campaigns_by_repo_identifier[repo[:repo].full_name] %>
-                  <% if campaign %>
-                    <%= link_to 'Show Campaign', user_campaign_path(current_user, campaign, repo_identifier: repo[:repo].full_name), class: "btn btn-success" %>
+                  <% if wallet_connected %>
+                    <% if campaign %>
+                      <%= link_to 'Show Campaign', user_campaign_path(current_user, campaign, repo_identifier: repo[:repo].full_name), class: "btn btn-success" %>
+                    <% else %>
+                      <%= link_to 'Create Campaign', new_user_campaign_path(current_user, repo_name: repo[:repo].full_name), class: "btn btn-primary" %>
+                    <% end %>
                   <% else %>
                     <div class="tooltip relative group">
                       <button 
@@ -88,12 +92,12 @@
             </td>
           </tr>
         <% end %>
-      </tbody>
-    </table>
-  <% else %>
-    <p>No repos found.</p>
-  <% end %>
-</div>
+      </table>
+    <% else %>
+      <p>No repos found.</p>
+    <% end %>
+  </div>
+
 <script>
   function copyToClipboard(text) {
     if (navigator.clipboard && window.isSecureContext) {

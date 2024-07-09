@@ -6,7 +6,7 @@ class CampaignsController < ApplicationController
   before_action :set_user_for_modification, except: %i[index show]
   before_action :authorize_user!, only: %i[edit update destroy]
   before_action :check_campaign_existence, only: %i[new create]
-  # before_action :set_repository, only: %i[new create]
+  before_action :set_repository, only: %i[new create]
 
   def index
     @campaigns = Campaign.all
@@ -22,55 +22,10 @@ class CampaignsController < ApplicationController
   end
 
   def new
-    unless current_user.wallet&.id
-      flash[:alert] = 'You need to connect a wallet to create a campaign.'
-      redirect_to request.referer || root_path
-      return
-    end
-
-    pp 'new'
-    pp params[:receiving_wallet_id]
-
-    @repo_name = params[:repo_name]
-    @receiving_wallet_id = current_user.wallet&.id
-
-    @campaign = current_user.campaigns.build(repo_identifier: @repo_name, receiving_wallet_id: @receiving_wallet_id)
-
-    github_data = fetch_github_data(@repo_name)
-    @repo = github_data[:repo]
-
-    if @repo.nil?
-      logger.error "Repository data is nil for repo_name: #{@repo_name}"
-      render plain: 'Repository not found', status: :not_found
-      return
-    end
-
-    @campaign.title = "New Campaign for #{@repo_name}"
-    @campaign.description = "This is a new campaign for the repository #{@repo_name}."
-    @campaign.accepted_currencies = %w[USD EUR]
-    @campaign.tier_name = 'Supporter'
-    @campaign.tier_amount = 10
-    @campaign.contribution_cadence = 'monthly'
-
-    if @campaign.save
-      flash[:success] = 'Campaign created successfully'
-      redirect_to user_campaign_path(current_user, @campaign)
-    else
-      flash[:error] = 'There was an error creating the campaign'
-      render :new
-    end
-    # @receiving_wallet_id = find_wallet_for_repo_owner(@repo_name)
-    #   @campaign = @user.campaigns.build
-    #   @repo_name = params[:repo_name] || @campaign.repo_identifier
-    #   @campaign.repo_identifier ||= @repo_name
-    #   @wallet = find_wallet_for_repo_owner(@repository)
-    # rescue StandardError => e
-    #   logger.error "Error in new action: #{e.message}"
-    #   pp "@campaign.repo_identifier ||= @repo_name: #{@campaign.repo_identifier ||= @repo_name}"
-    #   pp @campaign
-    #   pp @repo_name
-    #   pp @wallet
-    #   render plain: 'Internal Server Error', status: :internal_server_error
+    @campaign = @user.campaigns.build
+    @repo_name = params[:repo_name] || @campaign.repo_identifier
+    @campaign.repo_identifier ||= @repo_name
+    @wallet = find_wallet_for_repo_owner(@repository)
   end
 
   def create
@@ -126,29 +81,10 @@ class CampaignsController < ApplicationController
     end
   end
 
-  def fetch_github_data(_repo_name)
-    {
-      repo: {
-        id: 203_172_436,
-        name: 'bookyourbeach',
-        full_name: 'codersquirrelbln/bookyourbeach',
-        owner: {
-          login: 'codersquirrelbln',
-          id: 50_495_826,
-          avatar_url: 'https://avatars.githubusercontent.com/u/50495826?v=4'
-        }
-      }
-    }
-    #   github_data = GithubApiHelper.fetch_github_data(current_user)
-    #   pp 'set repo'
-    #   @repositories = github_data[:repos]
-    #   first_three_repos = @repositories.first(3)
-    #   pp first_three_repos
-    #   @repository = @repositories.find { |repo| repo[:repo].id == params[:repository_id].to_i }
-    #   pp "repo: #{@repository}"
-    # rescue StandardError => e
-    #   logger.error "Error setting repository: #{e.message}"
-    #   raise
+  def set_repository
+    github_service = GithubService.new(current_user)
+    @repositories = github_service.fetch_repositories
+    @repository = @repositories.find { |repo| repo.id == params[:repository_id].to_i }
   end
 
   def authorize_user!
@@ -169,31 +105,9 @@ class CampaignsController < ApplicationController
     Rails.logger.debug campaign.errors.full_messages.to_sentence
   end
 
-  def find_wallet_for_repo_owner(repo_name)
-    github_data = fetch_github_data(repo_name)
-    repo = github_data[:repo]
-    owner_login = repo[:owner][:login]
-
-    owner = User.find_by(uid: owner_login)
+  def find_wallet_for_repo_owner(repository)
+    owner = User.find_by(uid: repository.owner.id)
     owner&.wallets&.first
-
-    # github_data = GithubApiHelper.fetch_github_data(current_user)
-    # @repositories = github_data[:repos]
-    # pp "first repo: #{@repositories.first[:full_name]}"
-    # pp 'repo included?'
-    # @repositories.each do |repo|
-    #   pp 'same name?'
-    #   pp(repo[:full_name] == repository)
-    # end
-
-    # pp '======================'
-    # pp "repository passed to find wallet method: #{repository}"
-    # pp '======================'
-
-    # pp 'find wallet'
-    # owner = User.find_by(uid: repository.owner.id)
-    # pp owner
-    # owner&.wallets&.first
   end
 
   def check_campaign_existence

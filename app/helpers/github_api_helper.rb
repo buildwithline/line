@@ -23,7 +23,7 @@ module GithubApiHelper
       self.repos = personal_repos + org_repos
 
       # Assign fetched data to accessors
-      assign_fetched_data(user_info, organizations)
+      assign_fetched_data(user_info, organizations, repos)
 
       # Return the fetched data
       fetched_data
@@ -51,6 +51,9 @@ module GithubApiHelper
 
         { repo: repo_details, org_avatar_url: repo_details.organization&.avatar_url }
       end
+    rescue Oktoki::NotFound => e
+      handle_error('Personal repo not found', e.message)
+      []
     end
 
     def fetch_organizations(client, login)
@@ -64,13 +67,20 @@ module GithubApiHelper
 
           { repo: repo_details, org_avatar_url: repo_details.organization&.avatar_url } if repo_details.permissions.admin
         end
+      rescue Octokit::NotFound => e
+        handle_error("Organization repos not found for #{org.login}", e.message)
+        []
+      rescue OktoKit::Error => e
+        handle_error('GitHub API Error', e.message)
+        []
       end.compact
     end
 
-    def assign_fetched_data(user_info, organizations)
+    def assign_fetched_data(user_info, organizations, repos)
       @organizations = organizations
       @organizations_names = organizations.map(&:login)
       @user_avatar = "https://github.com/users/#{user_info.login}.png"
+      @repos = repos
     end
 
     def fetched_data

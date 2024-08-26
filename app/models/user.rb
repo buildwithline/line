@@ -6,9 +6,11 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable, :trackable,
          :recoverable, :rememberable, :validatable, :omniauthable, omniauth_providers: [:github]
 
+  #  Associations
   has_one :wallet, dependent: :destroy
-  has_many :campaigns
-  has_many :contributions
+  has_many :campaigns, through: :repositories
+  has_many :repositories, dependent: :destroy
+  has_many :contributions, dependent: :destroy
   has_many :contributed_campaigns, through: :contributions, source: :campaign
 
   def self.from_omniauth(auth)

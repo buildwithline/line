@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require 'sidekiq/testing'
 
 RSpec.describe Users::CallbacksController, type: :controller do
   include Devise::Test::ControllerHelpers
+  Sidekiq::Testing.fake!
 
   before do
     request.env['devise.mapping'] = Devise.mappings[:user]
@@ -32,6 +34,12 @@ RSpec.describe Users::CallbacksController, type: :controller do
 
         expect(response).to redirect_to(root_path)
         expect(controller.current_user).to eq(user)
+      end
+
+      it 'enqueues a SyncReposJob' do
+        expect do
+          get :github
+        end.to have_enqueued_job(SyncReposJob).with(user.id)
       end
     end
   end

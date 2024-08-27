@@ -23,7 +23,7 @@ gem 'turbo-rails'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.11.5'
 # Use Redis adapter to run Action Cable in production
-# gem 'redis', '~> 4.0'
+gem 'redis', '~> 4.0'
 # Use Active Model has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
@@ -70,6 +70,10 @@ gem 'active_model_serializers', '~> 0.10.12'
 # Asset management
 gem 'sprockets-rails'
 
+# Handles scheduling and running background jobs
+gem 'sidekiq'
+gem 'sidekiq-scheduler'
+
 group :development, :test do
   # Call 'byebug' or 'binding.pry' anywhere in the code to stop execution and get a debugger console
   # gem "pry-byebug" #does not play well with 'pry-remote'
@@ -81,6 +85,8 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'rubocop', require: false
   gem 'rubocop-rails', require: false
+  # Helps simulate times for testing
+  gem 'timecop'
 end
 
 group :development do

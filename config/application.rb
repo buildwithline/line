@@ -19,7 +19,7 @@ module Line
     config.action_dispatch.show_exceptions = :none
 
     # Uncomment the following line if it is required for the assets pipeline
-    # config.assets.css_compressor = nil
+    config.assets.css_compressor = nil
 
     # Configuration for the application, engines, and railties goes here.
     #

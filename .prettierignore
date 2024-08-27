@@ -1,0 +1,2 @@
+app/views/layouts/application.html.erb
+app/views/campaigns/index.html.erb

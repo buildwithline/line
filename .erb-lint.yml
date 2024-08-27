@@ -1,7 +1,8 @@
 linters:
-  AltText:
+  RuboCop:
     enabled: true
-  HtmlAttributeWithErb:
+    rubocop_config: '.rubocop.yml'
+  AltText:
     enabled: true
   ClosingErbTagIndentation:
     enabled: true
@@ -15,13 +16,9 @@ linters:
     enabled: true
   RightTrim:
     enabled: true
-  RuboCop:
-    enabled: true
   SpaceAroundErbTag:
     enabled: true
   SpaceIndentation:
     enabled: true
   TrailingWhitespace:
-    enabled: true
-  ViewComponent:
     enabled: true

@@ -1,0 +1,24 @@
+linters:
+  RuboCop:
+    enabled: true
+    rubocop_config: '.rubocop.yml'
+  AltText:
+    enabled: true
+  ClosingErbTagIndentation:
+    enabled: true
+  ExtraNewline:
+    enabled: true
+  FinalNewline:
+    enabled: true
+  LeftoverWhitespace:
+    enabled: true
+  ParserErrors:
+    enabled: true
+  RightTrim:
+    enabled: true
+  SpaceAroundErbTag:
+    enabled: true
+  SpaceIndentation:
+    enabled: true
+  TrailingWhitespace:
+    enabled: true

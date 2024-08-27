@@ -1,1 +1,22 @@
-inherit_from: .rubocop_todo.yml
+inherit_from:
+  - .rubocop_todo.yml
+
+AllCops:
+  TargetRubyVersion: 2.7
+  Exclude:
+    - 'db/schema.rb'
+    - 'node_modules/**/*'
+    - 'bin/*'
+    - 'config/**/*'
+    - 'vendor/**/*'
+    - 'spec/fixtures/**/*'
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Layout/LineLength:
+  Max: 100

@@ -1,14 +1,21 @@
 <div class="">
   <div class="">
-    <%= image_tag "logo.jpg", class: "my-8" %> 
-    <p class="mt-10 font-bold text-4xl mx-10 mb-10">The Developers Marketplace</p>
+    <%= image_tag "logo.jpg", class: "my-8" %>
+    <p class="mt-10 font-bold text-4xl mx-10 mb-10">
+      The Developers Marketplace
+    </p>
   </div>
   <div class="flex justify-center space-x-4 mt-10">
-    <%= form_tag(user_github_omniauth_authorize_path, method: "post", data: { turbo: false }, class: "form-group") do %>
+    <%= form_tag(user_github_omniauth_authorize_path, method: "post", data: {
+    turbo: false }, class: "form-group") do %>
 
-      <button type="submit" class="btn rounded-md px-4 py-2 flex items-center bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-        <%= image_tag("github-mark.png", alt: "GitHub", class: "mr-2", style: "height: 20px; width: 20px;") %>Log in with GitHub
-      </button>
+    <button
+      type="submit"
+      class="btn rounded-md px-4 py-2 flex items-center bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+    >
+      <%= image_tag("github-mark.png", alt: "GitHub", class: "mr-2", style:
+      "height: 20px; width: 20px;") %>Log in with GitHub
+    </button>
     <% end %>
   </div>
 </div>

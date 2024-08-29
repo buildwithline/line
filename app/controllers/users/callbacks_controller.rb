@@ -7,9 +7,6 @@ module Users
     def github
       @user = User.from_omniauth(request.env['omniauth.auth'])
 
-      # Pass the GitHub username to the GithubApiHelper
-      # _github_api = GithubApiHelper.new(@user&.name)
-
       if @user.persisted?
         Rails.logger.debug "User persisted: #{@user.inspect}"
         sign_in_and_redirect @user, event: :authentication

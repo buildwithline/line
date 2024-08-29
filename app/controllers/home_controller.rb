@@ -8,7 +8,7 @@ class HomeController < ApplicationController
 
     respond_to do |format|
       if @github_user_data
-        format.html # default view
+        format.html
         format.json { render_github_data_as_json }
       else
         handle_github_data_failure
@@ -19,15 +19,22 @@ class HomeController < ApplicationController
   private
 
   def fetch_and_prepare_github_data
-    @github_user_data = GithubApiHelper.fetch_github_data(current_user)
+    github_service = GithubApiService.new(current_user)
+    @github_user_data = github_service.fetch_user_data
+
     return unless @github_user_data
 
-    @organizations = @github_user_data[:organizations]
-    @repos = @github_user_data[:repos]
-    @organization_memberships = @github_user_data[:organization_memberships]
-    @avatar = current_user.avatar_url
+    @avatar = @github_user_data['avatar_url']
 
-    prepare_campaigns_mapping
+    # @github_user_data = GithubApiHelper.fetch_github_data(current_user)
+    # return unless @github_user_data
+
+    # @organizations = @github_user_data[:organizations]
+    # @repos = @github_user_data[:repos]
+    # @organization_memberships = @github_user_data[:organization_memberships]
+    # @avatar = current_user.avatar_url
+
+    # prepare_campaigns_mapping
   end
 
   def prepare_campaigns_mapping
@@ -44,9 +51,10 @@ class HomeController < ApplicationController
   def render_github_data_as_json
     render json: {
       user: @github_user_data,
-      organizations: @organizations,
-      repos: @repos,
-      organization_memberships: @organization_memberships
+      avatar: @avatar
+      # organizations: @organizations,
+      # repos: @repos,
+      # organization_memberships: @organization_memberships
     }
   end
 

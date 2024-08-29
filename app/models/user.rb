@@ -22,7 +22,22 @@ class User < ApplicationRecord
       user.password = Devise.friendly_token
 
       user.github_access_token = auth.credentials.token
+
+      user.sync_github_user_data
+      user
     end
+  end
+
+  def sync_github_user_data
+    github_service = GithubApiService.new(self)
+    user_data = github_service.fetch_user_data
+
+    return unless user_data
+
+    update(
+      nickname: user_data['login'],
+      avatar_url: user_data['avatar_url']
+    )
   end
 
   def github_repos

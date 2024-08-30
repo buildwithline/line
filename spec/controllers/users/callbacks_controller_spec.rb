@@ -7,7 +7,40 @@ RSpec.describe Users::CallbacksController, type: :controller do
 
   before do
     request.env['devise.mapping'] = Devise.mappings[:user]
+
+    OmniAuth.config.test_mode = true
+    OmniAuth.config.mock_auth[:github] = OmniAuth::AuthHash.new(
+      provider: 'github',
+      uid: '123456',
+      info: {
+        email: 'test@example.com',
+        nickname: 'testuser'
+      },
+      credentials: {
+        token: 'mock_token'
+      }
+    )
+
     request.env['omniauth.auth'] = OmniAuth.config.mock_auth[:github]
+
+    stub_request(:get, 'https://api.github.com/user')
+      .with(
+        headers: {
+          'Authorization' => 'token mock_token',
+          'User-Agent' => 'RailsApp',
+          'Accept' => '*/*',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3'
+        }
+      )
+      .to_return(
+        status: 200,
+        body: {
+          login: 'testuser',
+          avatar_url: 'http://example.com/avatar.png',
+          html_url: 'http://example.com/testuser'
+        }.to_json,
+        headers: { 'Content-Type' => 'application/json' }
+      )
   end
 
   describe 'GET #github' do

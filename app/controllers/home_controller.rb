@@ -6,13 +6,14 @@ class HomeController < ApplicationController
   def index
     fetch_and_prepare_github_data
 
-    respond_to do |format|
-      if @github_user_data
+    if @github_user_data
+      @avatar = current_user.avatar_url
+      respond_to do |format|
         format.html
         format.json { render_github_data_as_json }
-      else
-        handle_github_data_failure
       end
+    else
+      handle_github_data_failure
     end
   end
 
@@ -25,16 +26,6 @@ class HomeController < ApplicationController
     return unless @github_user_data
 
     @avatar = @github_user_data['avatar_url']
-
-    # @github_user_data = GithubApiHelper.fetch_github_data(current_user)
-    # return unless @github_user_data
-
-    # @organizations = @github_user_data[:organizations]
-    # @repos = @github_user_data[:repos]
-    # @organization_memberships = @github_user_data[:organization_memberships]
-    # @avatar = current_user.avatar_url
-
-    # prepare_campaigns_mapping
   end
 
   def prepare_campaigns_mapping
@@ -52,9 +43,6 @@ class HomeController < ApplicationController
     render json: {
       user: @github_user_data,
       avatar: @avatar
-      # organizations: @organizations,
-      # repos: @repos,
-      # organization_memberships: @organization_memberships
     }
   end
 

@@ -46,6 +46,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_26_114022) do
 
   create_table "repositories", force: :cascade do |t|
     t.bigint "user_id", null: false
+    t.bigint "repo_github_id"
     t.string "full_name"
     t.string "name"
     t.string "owner_login"

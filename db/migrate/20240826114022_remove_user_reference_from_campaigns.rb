@@ -7,7 +7,7 @@ class RemoveUserReferenceFromCampaigns < ActiveRecord::Migration[7.1]
   end
 
   def down
-    add_column :campaigns, :user_id, :integer, null: false, foreign_key: true
+    add_column :campaigns, :user_id, :integer, null: false
     add_foreign_key :campaigns, :users, column: :user_id
   end
 end

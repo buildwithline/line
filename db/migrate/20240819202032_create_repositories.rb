@@ -4,6 +4,7 @@ class CreateRepositories < ActiveRecord::Migration[7.1]
   def change
     create_table :repositories do |t|
       t.references :user, null: false, foreign_key: true
+      t.bigint :repo_github_id
       t.string :full_name
       t.string :name
       t.string :owner_login

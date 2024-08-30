@@ -22,12 +22,33 @@ class User < ApplicationRecord
       user.password = Devise.friendly_token
 
       user.github_access_token = auth.credentials.token
+
+      user.sync_github_user_data
+      user
     end
   end
 
-  def github_repos
-    Rails.cache.fetch("#{cache_key_with_version}/github_repos", expires_in: 12.hours) do
-      GithubApiHelper.fetch_github_data(self)[:repos]
-    end
+  def sync_github_user_data
+    github_service = GithubApiService.new(self)
+    user_data = github_service.fetch_user_data
+
+    return unless user_data
+
+    update(
+      nickname: user_data['login'],
+      avatar_url: user_data['avatar_url']
+    )
+  end
+
+  def sync_github_repo_data
+    github_service = GithubApiService.new(self)
+    repo_data = github_service.fetch_repo_data
+
+    return unless repo_data
+
+    update(
+      full_name: repo_data[:full_name],
+      name: repo_data[:name]
+    )
   end
 end

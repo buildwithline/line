@@ -7,13 +7,12 @@ module Users
     def github
       @user = User.from_omniauth(request.env['omniauth.auth'])
 
-      # Pass the GitHub username to the GithubApiHelper
-      # _github_api = GithubApiHelper.new(@user&.name)
-
       if @user.persisted?
+        Rails.logger.debug "User persisted: #{@user.inspect}"
         sign_in_and_redirect @user, event: :authentication
         set_flash_message(:notice, :success, kind: 'GitHub') if is_navigational_format?
       else
+        Rails.logger.debug "User could not be persisted: #{@user.errors.full_messages.join(', ')}"
         session['devise.github_data'] = request.env['omniauth.auth'].except('extra')
         redirect_to root_path
       end

@@ -14,8 +14,6 @@ class GithubApiService
 
   def fetch_user_data
     uri = URI("#{GITHUB_API_BASE_URL}/user")
-    puts "uri #{uri}"
-    puts "response #{response}"
     response = make_get_request_for_user_data(uri)
 
     if response.is_a?(Net::HTTPSuccess)

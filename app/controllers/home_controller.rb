@@ -4,7 +4,7 @@ class HomeController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    fetch_and_prepare_github_data
+    fetch_user_data_from_database
 
     if @github_user_data
       @avatar = current_user.avatar_url
@@ -19,20 +19,18 @@ class HomeController < ApplicationController
 
   private
 
-  def fetch_and_prepare_github_data
-    github_service = GithubApiService.new(current_user)
-    @github_user_data = github_service.fetch_user_data
-
-    return unless @github_user_data
-
-    @avatar = @github_user_data['avatar_url']
+  def fetch_user_data_from_database
+    @github_user_data = {
+      'login' => current_user.nickname,
+      'avatar_url' => current_user.avatar_url
+    }
+    @avatar = current_user.avatar_url
   end
 
   def prepare_campaigns_mapping
     repo_identifiers = @repos.map do |repo|
       repo[:repo].full_name
     end
-    pp "repo ident: #{repo_identifiers}"
 
     campaigns = Campaign.where(user: current_user, repo_identifier: repo_identifiers)
     @campaigns_by_repo_identifier = campaigns.index_by(&:repo_identifier)

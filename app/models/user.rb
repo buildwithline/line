@@ -13,6 +13,9 @@ class User < ApplicationRecord
   has_many :contributions, dependent: :destroy
   has_many :contributed_campaigns, through: :contributions, source: :campaign
 
+  # callbacks
+  after_create_commit :enqueue_repo_sync_job
+
   def self.from_omniauth(auth)
     where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
       user.provider = auth.provider
@@ -24,33 +27,15 @@ class User < ApplicationRecord
       user.password = Devise.friendly_token
 
       user.github_access_token = auth.credentials.token
-
-      user.sync_github_user_data
       user
     end
   end
 
-  def sync_github_user_data
-    github_service = GithubApiService.new(self)
-    user_data = github_service.fetch_user_data
+  private
 
-    return unless user_data
-
-    update(
-      nickname: user_data['login'],
-      avatar_url: user_data['avatar_url']
-    )
-  end
-
-  def sync_github_repo_data
-    github_service = GithubApiService.new(self)
-    repo_data = github_service.fetch_repo_data
-
-    return unless repo_data
-
-    update(
-      full_name: repo_data[:full_name],
-      name: repo_data[:name]
-    )
+  def enqueue_repo_sync_job
+    # call job
+    # Sync
+    # user_id
   end
 end

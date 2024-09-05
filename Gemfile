@@ -74,6 +74,9 @@ gem 'sprockets-rails'
 gem 'sidekiq'
 gem 'sidekiq-scheduler'
 
+# for http requests
+gem 'httparty'
+
 group :development, :test do
   # Call 'byebug' or 'binding.pry' anywhere in the code to stop execution and get a debugger console
   # gem "pry-byebug" #does not play well with 'pry-remote'

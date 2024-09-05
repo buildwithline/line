@@ -2,19 +2,18 @@
   <div class="flex items-center space-x-4">
     <%= image_tag 'logo.jpg', alt: "Logo", class: 'my-6' %>
     <%= image_tag @avatar, alt: "GitHub Avatar", class: 'w-24 h-24 rounded-full' %>
-    <%= button_to "logout", destroy_user_session_path, method: :delete  %>
+    <%= button_to "logout", destroy_user_session_path, method: :delete %>
   </div>
   <p>
     <%= "Hello, #{current_user.nickname}, welcome to Line - The Developers Marketplace " %>
   </p>
   <% wallet_connected = current_user.wallet.present? %>
-  <div 
+  <div
     data-controller="wallet"
     data-wallet-project-id-value="<%= Rails.application.credentials.dig(:wallet_connect, :project_id) %>"
     data-wallet-user-id-value="<%= current_user.id %>"
-    data-wallet-csrf-token-value="<%= form_authenticity_token %>"
-  >
-    <button 
+    data-wallet-csrf-token-value="<%= form_authenticity_token %>">
+    <button
       data-wallet-target="openModal"
       data-action="click->wallet#openModal"
       class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700">
@@ -22,22 +21,6 @@
     </button>
   </div>
 
-  <p>
-    <% if @organizations.present? %>
-      <ul>
-        <% @organizations.each do |org| %>
-          <li>
-            <a href="https://github.com/<%= org.login %>" class="flex items-center space-x-4 hover:bg-gray-100 p-2 rounded" target="_blank" rel="noopener noreferrer">
-              <%= image_tag org.avatar_url, alt: "#{org.login} logo", class: 'w-8 h-8' %>
-              <span><%= org.login %></span>
-            </a>
-          </li>
-        <% end %>
-      </ul>
-    <% else %>
-      <p>No organizations found.</p>
-    <% end %>
-  </p>
   <div>
     <% if @repos.present? %>
       <table>
@@ -78,6 +61,6 @@
   <% end %>
 </div>
 <script>
-  
+
 </script>
 </div>

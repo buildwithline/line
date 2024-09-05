@@ -7,7 +7,6 @@ class HomeController < ApplicationController
     fetch_user_data_from_database
 
     if @github_user_data
-      @avatar = current_user.avatar_url
       respond_to do |format|
         format.html
         format.json { render_github_data_as_json }

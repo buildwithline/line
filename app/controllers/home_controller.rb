@@ -5,6 +5,7 @@ class HomeController < ApplicationController
 
   def index
     fetch_user_data_from_database
+    prepare_campaigns_mapping
 
     if @github_user_data
       respond_to do |format|
@@ -24,12 +25,11 @@ class HomeController < ApplicationController
       'avatar_url' => current_user.avatar_url
     }
     @avatar = current_user.avatar_url
+    @repositories = current_user.repositories.select(:full_name, :name, :html_url, :description)
   end
 
   def prepare_campaigns_mapping
-    repo_identifiers = @repos.map do |repo|
-      repo[:repo].full_name
-    end
+    repo_identifiers = @repositories.map(&:full_name)
 
     campaigns = Campaign.where(repo_identifier: repo_identifiers)
     @campaigns_by_repo_identifier = campaigns.index_by(&:repo_identifier)
@@ -39,7 +39,8 @@ class HomeController < ApplicationController
   def render_github_data_as_json
     render json: {
       user: @github_user_data,
-      avatar: @avatar
+      avatar: @avatar,
+      repositories: @repositories
     }
   end
 

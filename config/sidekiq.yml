@@ -1,4 +1,6 @@
-:schedule:
-  sync_repos_job:
-    cron: "0 0 * * *" # Daily at midnight
-    class: "SyncReposJob"
+:concurrency: 5
+:scheduler:
+  :schedule:
+    sync_repos_job:
+      cron: "0 0 * * *" # Daily at midnight
+      class: "SyncReposJob"

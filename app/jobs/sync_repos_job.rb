@@ -6,9 +6,7 @@ class SyncReposJob < ApplicationJob
 
   def perform(user_id)
     user = User.find(user_id)
-
-    service = SyncReposService.new(user)
-
-    service.call
+    Rails.logger.debug "JOBS: Syncing repos for user: #{user.nickname}"
+    SyncReposService.new(user).call
   end
 end

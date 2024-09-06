@@ -8,6 +8,7 @@ class SyncReposService
   def call
     response = HTTParty.get("https://api.github.com/users/#{@user.nickname}/repos",
                             headers: { 'Accept': 'application/vnd.github+json' })
+    Rails.logger.debug "GitHub API Response: #{response.code} - #{response.body}"
     response.each do |repo_data|
       repo = Repository.find_or_create_by(repo_github_id: repo_data['id']) do |r|
         r.user = @user
@@ -23,7 +24,7 @@ class SyncReposService
         r.pushed_to_github_at = repo_data['pushed_at']
       end
 
-      pp repo
+      Rails.logger.debug "Repository synced: #{repo.full_name}"
 
       next unless repo.persisted? && repo.changed?
 
@@ -39,6 +40,7 @@ class SyncReposService
         updated_on_github_at: repo_data['updated_at'],
         pushed_to_github_at: repo_data['pushed_at']
       )
+      Rails.logger.debug "Repository updated and synced: #{repo.full_name}"
     end
     # daraus ertsellen wir unsere repos with data
     # if already exist in db, then update, if not then create in db

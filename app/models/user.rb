@@ -17,25 +17,31 @@ class User < ApplicationRecord
   after_create_commit :enqueue_repo_sync_job
 
   def self.from_omniauth(auth)
-    where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
-      user.provider = auth.provider
-      user.uid = auth.uid
-      user.nickname = auth.info.nickname
-      user.avatar_url = auth.info.image
+    user = where(provider: auth.provider, uid: auth.uid).first_or_create do |u|
+      u.provider = auth.provider
+      u.uid = auth.uid
+      u.nickname = auth.info.nickname
+      u.avatar_url = auth.info.image
 
-      user.email = auth.info.email
-      user.password = Devise.friendly_token
+      u.email = auth.info.email
+      u.password = Devise.friendly_token
 
-      user.github_access_token = auth.credentials.token
-      user
+      u.github_access_token = auth.credentials.token
     end
+
+    user.save if user.new_record?
+
+    user.sync_repositories
+    user
+  end
+
+  def sync_repositories
+    SyncReposService.new(self).call
   end
 
   private
 
   def enqueue_repo_sync_job
-    # call job
-    # Sync
-    # user_id
+    SyncReposJob.perform_later(id)
   end
 end

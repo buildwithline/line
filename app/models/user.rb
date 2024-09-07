@@ -8,8 +8,8 @@ class User < ApplicationRecord
 
   #  Associations
   has_one :wallet, dependent: :destroy
-  has_many :campaigns, through: :repositories
   has_many :repositories, dependent: :destroy
+  has_many :campaigns, through: :repositories
   has_many :contributions, dependent: :destroy
   has_many :contributed_campaigns, through: :contributions, source: :campaign
 

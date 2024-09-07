@@ -15,8 +15,10 @@ Rails.application.routes.draw do
 
   resources :users, only: [] do
     resource :wallet, only: %i[show create destroy]
-    resources :campaigns
+    resources :repositories, only: [] do
+      resources :campaigns
+    end
   end
-  resources :campaigns, only: [:index]
+  # resources :campaigns, only: [:index]
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end

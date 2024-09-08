@@ -39,11 +39,8 @@ jobs:
         with:
           node-version: "16"
 
-      - name: Install Yarn
-        run: npm install -g yarn
-
       - name: Install JavaScript dependencies
-        run: yarn install --frozen-lockfile
+        run: npm install
 
       - name: Precompile assets
         env:

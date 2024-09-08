@@ -57,12 +57,19 @@
       </div>
     <% end %>
   </div>
+
+  <div>
+    <strong>Receiving Wallet:</strong>
+    <p id="receiving-wallet-address" class="mb-4">
+      <%= @campaign.receiving_wallet.address %>
+    </p>
+  </div>
+
   <% if current_user %>
     <div class="mb-4" data-controller="wallet"
         data-wallet-project-id-value="<%= Rails.application.credentials.dig(:wallet_connect, :project_id) %>"
         data-wallet-user-id-value="<%= current_user.id %>"
         data-wallet-csrf-token-value="<%= form_authenticity_token %>">
-
       <div>
         <strong>Your Wallet:</strong>
         <% if current_user.wallet.present? %>
@@ -73,17 +80,10 @@
           <%= button_tag "Add Wallet", type: "button", class: "text-blue-600 hover:text-blue-800 mb-4", data: { action: "wallet#openConnectModal" } %>
         <% end %>
       </div>
-
-      <div>
-        <strong>Receiving Wallet:</strong>
-        <p id="receiving-wallet-address" class="mb-4">
-          <%= @campaign.receiving_wallet.address %>
-        </p>
-      </div>
     </div>
-    <% end %>
-    <%= button_tag "Support",
-          data: { action: "contribution#contribute" },
-          class: "w-full p-2 bg-blue-500 text-white rounded" %>
+  <% end %>
+  <%= button_tag "Support",
+    data: { action: "contribution#contribute" },
+    class: "w-full p-2 bg-blue-500 text-white rounded" %>
   </div>
 </div>

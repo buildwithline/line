@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 class CampaignsController < ApplicationController
-  before_action :authenticate_user!, except: %i[index show]
+  before_action :authenticate_user!, except: %i[index show edit]
   before_action :set_campaign, only: %i[show edit update destroy]
   before_action :authorize_user!, only: %i[edit update destroy]
-  before_action :set_repository, only: %i[new create show]
-  before_action :check_repository_ownership!, only: %i[new create]
+  before_action :set_repository, only: %i[new create show edit]
+  before_action :check_repository_ownership!, only: %i[new create edit]
 
   def index
     # Question: Should this display ALL campaigns regardness of user or just the current_user's campaigns?
@@ -43,9 +43,7 @@ class CampaignsController < ApplicationController
     end
   end
 
-  def edit
-    @repo_name = @campaign.repository
-  end
+  def edit; end
 
   def update
     if @campaign.update(campaign_params)

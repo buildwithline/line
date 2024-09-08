@@ -1,35 +1,40 @@
-<div class="container mx-auto px-4 py-8">
-  <%= button_to 'Home', root_path, method: :get, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
-  <div class="text-lg font-semibold mb-4">
-    <%= @campaign.user.nickname %> / <%= @campaign.repo_identifier %>
-  </div>
-  <div class="flex flex-wrap -mx-2">
-    <div class="w-full md:w-1/2 px-2">
-      <div class="mb-4">
-        <strong>Title:</strong>
-        <p><%= @campaign.title %></p>
-      </div>
-      <div class="mb-4">
-        <strong>Description:</strong>
-        <p><%= @campaign.description %></p>
-      </div>
-      <div class="mb-4">
-        <strong>Project Owner:</strong>
-        <p><%= @campaign.user.nickname %> project owner verified
-          <%= image_tag("verified-icon.svg", alt: "Verified", class: "inline-block ml-1", width: "20", height: "20") %>
-        </p>
-      </div>
-      <div class="mb-4">
-        <strong>Repository URL:</strong>
-        <p>
-          <%= link_to "https://github.com/#{@campaign.repo_identifier}", target: "_blank", rel: "noopener noreferrer" do %>
-            https://github.com/<%= @campaign.repo_identifier %>
-          <% end %>
-        </p>
-      </div>
+
+
+<div class="flex justify-center items-center min-h-screen">
+  <div class="w-full max-w-4xl px-4 py-8 bg-white">
+    <%= button_to 'Home', root_path, method: :get, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+    <div class="text-lg font-semibold mb-4">
+      Campaign for <%= @repository.user.nickname %> / <%= @repository.name %>
     </div>
-    <div>
-      <%= render 'contributions/new', campaign: @campaign, contribution: Contribution.new, accepted_currencies: @campaign.accepted_currencies %>
+    <div class="flex flex-wrap -mx-2">
+    <div class="flex flex-col md:flex-row md:space-x-36">
+      <div class="w-full md:w-1/2 mb-8 md:mb-0 px-2">
+        <div class="mb-4">
+          <strong>Title:</strong>
+          <p><%= @campaign.title %></p>
+        </div>
+        <div class="mb-4">
+          <strong>Description:</strong>
+          <p><%= @campaign.description %></p>
+        </div>
+        <div class="mb-4">
+          <strong>Project Owner:</strong>
+          <p><%= @repository.user.nickname %> project owner verified
+            <%= image_tag("verified-icon.svg", alt: "Verified", class: "inline-block ml-1", width: "20", height: "20") %>
+          </p>
+        </div>
+        <div class="mb-4">
+          <strong>Repository URL:</strong>
+          <p>
+            <%= link_to "https://github.com/#{@repository.full_name}", target: "_blank", rel: "noopener noreferrer" do %>
+              https://github.com/<%= @repository.full_name %>
+            <% end %>
+          </p>
+        </div>
+      </div>
+      <div class="w-full md:w-1/2 px-2 ml-4">
+        <%= render 'contributions/new', campaign: @campaign, contribution: Contribution.new, accepted_currencies: @campaign.accepted_currencies %>
+      </div>
     </div>
   </div>
 </div>

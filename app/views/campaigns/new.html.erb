@@ -67,12 +67,12 @@
         </div>
       <% end %>
       <%= form.hidden_field :accepted_currencies, id: "accepted_currencies",
-        data: { currency_target: "acceptedCurrencies" } %>
+        value: "", data: { currency_target: "acceptedCurrencies" } %>
     </div>
     <div class="mt-4">
       <div class="mt-4">
-        <%= form.label :contribution_cadence, 'Contribution Cadence', class: "block text-gray-700 text-sm font-bold mb-2" %>
-        <%= form.select :contribution_cadence, ['both', 'recurring', 'one-time'], {}, {class: "shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"} %>
+        <%#= form.label :contribution_cadence, 'Contribution Cadence', class: "block text-gray-700 text-sm font-bold mb-2" %>
+        <%#= form.select :contribution_cadence, ['both', 'recurring', 'one-time'], {}, {class: "shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"} %>
       </div>
     </div>
     <%= form.submit (@campaign.new_record? ? 'Create Campaign' : 'Edit Campaign'), class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" %>

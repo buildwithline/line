@@ -4,14 +4,14 @@ class CampaignsController < ApplicationController
   before_action :authenticate_user!, except: %i[index show]
   before_action :set_campaign, only: %i[show edit update destroy]
   before_action :authorize_user!, only: %i[edit update destroy]
-  before_action :set_repository, only: %i[new create]
+  before_action :set_repository, only: %i[new create show]
   before_action :check_repository_ownership!, only: %i[new create]
 
   def index
     # Question: Should this display ALL campaigns regardness of user or just the current_user's campaigns?
     @repositories = current_user.repositories
     @repository_ids = @repositories.pluck(:id)
-    @campaigns = Campaign.where(repository_id: repository_ids)
+    @campaigns = Campaign.where(repository_id: @repository_ids)
   end
 
   def show
@@ -100,6 +100,8 @@ class CampaignsController < ApplicationController
   end
 
   def campaign_params
-    params.require(:campaign).permit(:title, :description, :tier_amount, :tier_name, :contribution_cadence, :repository_id, :receiving_wallet_id, accepted_currencies: [])
+    params.require(:campaign).permit(:title, :description, :repository_id, :receiving_wallet_id, :contribution_cadence).tap do |whitelisted|
+      whitelisted[:accepted_currencies] = params[:campaign][:accepted_currencies].split(',') if params[:campaign][:accepted_currencies].present?
+    end
   end
 end

@@ -1,20 +1,13 @@
 # frozen_string_literal: true
 
 class CampaignsController < ApplicationController
-  before_action :authenticate_user!, except: %i[index show edit]
-  before_action :set_campaign, only: %i[show edit update destroy]
-  before_action :authorize_user!, only: %i[edit update destroy]
-  before_action :set_repository, only: %i[new create show edit]
+  before_action :set_repository, only: %i[new create edit]
   before_action :check_repository_ownership!, only: %i[new create edit]
-
-  def index
-    # Question: Should this display ALL campaigns regardness of user or just the current_user's campaigns?
-    @repositories = current_user.repositories
-    @repository_ids = @repositories.pluck(:id)
-    @campaigns = Campaign.where(repository_id: @repository_ids)
-  end
+  before_action :set_campaign, only: %i[edit update destroy]
 
   def show
+    @campaign = Campaign.find(params[:id])
+    @repository = @campaign.repository
     @accepted_currencies = if @campaign.accepted_currencies == 'all'
                              Campaign::ALL_CURRENCIES
                            else
@@ -37,6 +30,7 @@ class CampaignsController < ApplicationController
         format.json { render json: @campaign, status: :created }
       else
         log_errors(@campaign)
+        Rails.logger.error(@campaign.errors.full_messages.to_sentence)
         format.html { render :new, alert: @campaign.errors.full_messages.join('. ') }
         format.json { render json: { errors: @campaign.errors.full_messages }, status: :unprocessable_entity }
       end
@@ -62,30 +56,19 @@ class CampaignsController < ApplicationController
 
   def set_campaign
     @campaign = Campaign.find_by(id: params[:id])
-    if @campaign.nil?
-      Rails.logger.error "Campaign not found with id: #{params[:id]}"
-      redirect_to root_path, alert: 'Campaign not found.'
-    else
-      @repository = @campaign.repository
-    end
+    redirect_to root_path, alert: "Campaign not found with id: #{params[:id]}." unless @campaign
   end
 
   def set_repository
     @repository = Repository.find(params[:repository_id])
-  end
-
-  def authorize_user!
-    return if @campaign.repository.user == current_user
-
-    Rails.logger.error "Unauthorized attempt by #{current_user.email} to modify campaign"
-    redirect_to root_path, alert: 'You are not authorized to perform this action.'
+    redirect_to root_path, alert: 'Repository not found.' unless @repository
   end
 
   def check_repository_ownership!
-    @repository = current_user.repositories.find_by(id: params[:repository_id])
-    return if @repository.present? && @repository.user == current_user
+    return if current_user == @repository.user
 
-    redirect_to root_path, flash[:alert] = 'You are not authorized to create a campaign for this repository'
+    flash[:alert] = 'You are not authorized to create a campaign for this repository'
+    redirect_to root_path
   end
 
   def log_errors(campaign)

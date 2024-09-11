@@ -7,8 +7,8 @@ class Campaign < ApplicationRecord
 
   # Validations
   validates :title, presence: { message: 'must be provided and cannot be blank.' }
+  validates :description, presence: { message: 'must be provided and cannot be blank.' }
   validates :accepted_currencies, length: { minimum: 1, message: 'must include at least one currency.' }
-  validates :repository_id, uniqueness: { message: 'A campaign for this repository already exists' }
 
   # Constants
   ALL_CURRENCIES = %w[USDC BTC ETH].freeze

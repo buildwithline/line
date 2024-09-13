@@ -73,8 +73,8 @@
       <div>
         <strong>Your Wallet:</strong>
         <% if current_user.wallet.present? %>
-          <p id="wallet-address" class="mb-12">
-            <%= current_user.wallet&.address %>
+          <p id="wallet-address" class="mb-12"
+            <%= current_user.wallet&.address %>>
           </p>
         <% else %>
           <%= button_tag "Add Wallet", type: "button", class: "text-blue-600 hover:text-blue-800 mb-4", data: { action: "wallet#openConnectModal" } %>

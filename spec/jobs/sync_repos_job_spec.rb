@@ -7,6 +7,7 @@ RSpec.describe SyncReposJob, type: :job do
   before do
     ActiveJob::Base.queue_adapter = :test
     Repository.delete_all
+    User.delete_all
   end
 
   let(:user) { create(:user, uid: '12345', provider: 'github', nickname: 'testuser', email: 'test@example.com') }
@@ -21,7 +22,7 @@ RSpec.describe SyncReposJob, type: :job do
 
   describe 'perform' do
     before do
-      @repository = create(:repository, user:, full_name: 'user/new_repository', created_on_github_at: 5.minutes.ago)
+      @repository = create(:repository, user:, full_name: 'user/new_repository', owner_login: user.nickname, repo_github_id: 123, created_on_github_at: 5.minutes.ago)
     end
 
     it 'creates a repository correctly' do
@@ -30,30 +31,25 @@ RSpec.describe SyncReposJob, type: :job do
     end
 
     it 'syncs new repositories' do
-      Timecop.freeze(Time.current.beginning_of_day + 1.day) do
-        allow_any_instance_of(SyncReposService).to receive(:call).and_return(
-          [
-            {
-              id: 123,
-              full_name: 'user/newest_repository',
-              name: 'newest_repository',
-              html_url: 'http://github.com/user/newest_repository',
-              description: 'The newest repository',
-              private: false,
-              fork: false,
-              created_on_github_at: 5.minutes.ago,
-              updated_on_github_at: 5.minutes.ago,
-              pushed_to_github_at: 5.minutes.ago,
-              created_at: 5.minutes.ago,
-              updated_at: 5.minutes.ago
-            }
-          ]
-        )
-      end
+      allow(HTTParty).to receive(:get).and_return(
+        double(code: 200, body: '[{
+          "id": 124,
+          "full_name": "user/newest_repository",
+          "name": "newest_repository",
+          "html_url": "http://github.com/user/newest_repository",
+          "description": "The newest repository",
+          "private": false,
+          "fork": false,
+          "owner": { "login": "testuser" },
+          "created_at": "2024-09-13T23:55:00Z",
+          "updated_at": "2024-09-13T23:55:00Z",
+          "pushed_at": "2024-09-13T23:55:00Z"
+        }]')
+      )
 
       SyncReposJob.perform_now(user.id)
-
       user.reload
+
       expect(user.repositories.count).to eq(2)
       expect(user.repositories.last.full_name).to eq('user/newest_repository')
     end

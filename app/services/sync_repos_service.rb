@@ -9,7 +9,6 @@ class SyncReposService
     Rails.logger.debug "Syncing repos for user with nickname: #{@user.nickname}"
     response = HTTParty.get("https://api.github.com/users/#{@user.nickname}/repos",
                             headers: { 'Accept': 'application/vnd.github+json' })
-    puts "this is the response in sync call #{response}"
     if response.code == 200
       repositories_data = JSON.parse(response.body)
       Rails.logger.debug "GitHub API Response: #{response.code} - #{response.body}"

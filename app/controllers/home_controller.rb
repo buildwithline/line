@@ -7,14 +7,7 @@ class HomeController < ApplicationController
     fetch_user_data_from_database
     prepare_campaigns_mapping
 
-    if @github_user_data
-      respond_to do |format|
-        format.html
-        format.json { render_github_data_as_json }
-      end
-    else
-      handle_github_data_failure
-    end
+    handle_github_data_failure unless @github_user_data
   end
 
   private
@@ -34,14 +27,6 @@ class HomeController < ApplicationController
     campaigns = Campaign.where(repository_id: repository_ids)
     @campaigns_by_repository_id = campaigns.index_by(&:repository_id)
     logger.debug "Campaigns by Repo Identifier: #{@campaigns_by_repository_id.inspect}"
-  end
-
-  def render_github_data_as_json
-    render json: {
-      user: @github_user_data,
-      avatar: @avatar,
-      repositories: @repositories
-    }
   end
 
   def handle_github_data_failure

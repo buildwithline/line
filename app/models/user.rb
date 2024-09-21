@@ -29,17 +29,13 @@ class User < ApplicationRecord
       u.github_access_token = auth.credentials.token
     end
 
-    user.save if user.new_record?
-
-    user.sync_repositories
+    user.enqueue_repo_sync_job
     user
   end
 
   def sync_repositories
     SyncReposService.new(self).call
   end
-
-  private
 
   def enqueue_repo_sync_job
     SyncReposJob.perform_later(id)

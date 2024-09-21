@@ -37,7 +37,7 @@
                   <td>
                     <% campaign = @campaigns_by_repository_id[repo.id] %>
                     <% if campaign %>
-                      <%= link_to 'Show Campaign', edit_user_repository_campaign_path(current_user, repo, campaign), class: "btn btn-success" %>
+                      <%= link_to 'Show Campaign', edit_user_campaign_path(current_user, campaign), class: "btn btn-success" %>
                     <% else %>
                       <%= link_to 'Create Campaign', new_user_repository_campaign_path(current_user, repo), class: "bg-blue-500 text-white px-4 py-2 rounded inline-block" %>
                     <% end %>

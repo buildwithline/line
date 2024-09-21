@@ -2,21 +2,16 @@
 
 Rails.application.routes.draw do
   devise_for :users, controllers: {
-    registrations: 'users/registrations',
     omniauth_callbacks: 'users/callbacks'
   }
-
-  devise_scope :user do
-    get 'login', to: 'devise/sessions#new'
-    get 'signup', to: 'devise/registrations#new'
-  end
 
   root to: 'home#index'
 
   resources :users, only: [] do
     resource :wallet, only: %i[show create destroy]
+    resources :campaigns, only: %i[show edit update destroy]
     resources :repositories, only: [] do
-      resources :campaigns
+      resources :campaigns, only: %i[new create]
     end
   end
   # resources :campaigns, only: [:index]

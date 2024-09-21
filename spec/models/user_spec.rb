@@ -16,6 +16,7 @@ RSpec.describe User, type: :model do
       .to_return(
         status: 200,
         body: {
+          name: 'testuser',
           login: 'testuser',
           avatar_url: 'http://example.com/avatar.png',
           html_url: 'http://example.com/testuser'
@@ -31,7 +32,8 @@ RSpec.describe User, type: :model do
         uid: '123456',
         info: {
           email: 'test@example.com',
-          nickname: 'testuser'
+          nickname: 'testuser',
+          image: 'http://example.com/avatar.png'
         },
         credentials: {
           token: 'mock_token'

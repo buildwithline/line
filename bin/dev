@@ -5,6 +5,12 @@ if gem list --no-installed --exact --silent foreman; then
   gem install foreman
 fi
 
+if ! pgrep -x "redis-server" > /dev/null; then
+  echo "Starting Redis..."
+  brew services start redis
+  sleep 2
+fi
+
 # Default to port 3000 if not specified
 export PORT="${PORT:-3000}"
 

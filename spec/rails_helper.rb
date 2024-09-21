@@ -40,6 +40,15 @@ RSpec.configure do |config|
   config.before(:each) do
     allow(Rails.application.config.action_dispatch).to receive(:show_exceptions).and_return(:none)
   end
+
+  # Configure ActiveJob to use the test adapter
+  config.before(:suite) do
+    ActiveJob::Base.queue_adapter = :test
+  end
+
+  # Include ActiveJob::TestHelper to enable matchers for testing background job enqueuing and performing.
+  # This is necessary for verifying that jobs are correctly enqueued or performed within controller tests.
+  config.include ActiveJob::TestHelper, type: :controller
 end
 
 # Checks for pending migrations and applies them before tests are run

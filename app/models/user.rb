@@ -6,49 +6,38 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable, :trackable,
          :recoverable, :rememberable, :validatable, :omniauthable, omniauth_providers: [:github]
 
+  #  Associations
   has_one :wallet, dependent: :destroy
-  has_many :campaigns
-  has_many :contributions
+  has_many :repositories, dependent: :destroy
+  has_many :campaigns, through: :repositories
+  has_many :contributions, dependent: :destroy
   has_many :contributed_campaigns, through: :contributions, source: :campaign
 
+  # callbacks
+  after_create_commit :enqueue_repo_sync_job
+
   def self.from_omniauth(auth)
-    where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
-      user.provider = auth.provider
-      user.uid = auth.uid
-      user.nickname = auth.info.nickname
-      user.avatar_url = auth.info.image
+    user = where(provider: auth.provider, uid: auth.uid).first_or_create do |u|
+      u.provider = auth.provider
+      u.uid = auth.uid
+      u.nickname = auth.info.nickname
+      u.avatar_url = auth.info.image
 
-      user.email = auth.info.email
-      user.password = Devise.friendly_token
+      u.email = auth.info.email
+      u.password = Devise.friendly_token
 
-      user.github_access_token = auth.credentials.token
-
-      user.sync_github_user_data
-      user
+      u.github_access_token = auth.credentials.token
     end
+
+    user.enqueue_repo_sync_job
+    user
   end
 
-  def sync_github_user_data
-    github_service = GithubApiService.new(self)
-    user_data = github_service.fetch_user_data
-
-    return unless user_data
-
-    update(
-      nickname: user_data['login'],
-      avatar_url: user_data['avatar_url']
-    )
+  def sync_repositories
+    SyncReposService.new(self).call
   end
 
-  def sync_github_repo_data
-    github_service = GithubApiService.new(self)
-    repo_data = github_service.fetch_repo_data
-
-    return unless repo_data
-
-    update(
-      full_name: repo_data[:full_name],
-      name: repo_data[:name]
-    )
+  def enqueue_repo_sync_job
+    SyncReposJob.perform_later(id)
   end
 end

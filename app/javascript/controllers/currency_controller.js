@@ -1,12 +1,12 @@
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
   static targets = [
     "currencyButton",
     "selectAll",
     "acceptedCurrencies",
-    "form"
-  ]
+    "form",
+  ];
 
   connect() {
     this.selectedCurrencies = [];
@@ -43,9 +43,9 @@ export default class extends Controller {
     const label = document.getElementById("select-all-label");
     label.textContent = isChecked ? "Unselect All" : "Select All";
 
-    this.currencyButtonTargets.forEach(button => {
-      button.classList.toggle('bg-blue-500', isChecked);
-      button.classList.toggle('text-white', isChecked);
+    this.currencyButtonTargets.forEach((button) => {
+      button.classList.toggle("bg-blue-500", isChecked);
+      button.classList.toggle("text-white", isChecked);
       const currency = button.dataset.currencyValue;
       if (isChecked && !this.selectedCurrencies.includes(currency)) {
         this.selectedCurrencies.push(currency);
@@ -61,11 +61,12 @@ export default class extends Controller {
   }
 
   updateAcceptedCurrenciesField() {
-    this.acceptedCurrenciesTarget.value = this.selectedCurrencies.join(',');
+    this.acceptedCurrenciesTarget.value = this.selectedCurrencies.join(",");
+    console.log(this.acceptedCurrenciesTarget.value);
   }
 
   updateSelectAllState() {
-    const allSelected = this.currencyButtonTargets.every(button =>
+    const allSelected = this.currencyButtonTargets.every((button) =>
       button.classList.contains("bg-blue-500")
     );
 

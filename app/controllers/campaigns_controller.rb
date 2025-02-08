@@ -2,8 +2,8 @@
 
 class CampaignsController < ApplicationController
   before_action :authenticate_user!, except: %i[index show]
-  before_action :set_campaign, only: %i[edit update destroy]
-  before_action :set_repository, only: %i[new create]
+  before_action :set_repository, only: %i[new create update edit show]
+  before_action :set_campaign, only: %i[edit update]
 
   def show
     @campaign = Campaign.find(params[:id])
@@ -19,14 +19,21 @@ class CampaignsController < ApplicationController
   end
 
   def create
+    params[:campaign][:accepted_currencies] = params[:campaign][:accepted_currencies].split(",") if params[:campaign][:accepted_currencies].is_a?(String)
     @campaign = @repository.build_campaign(campaign_params)
     @campaign.receiving_wallet = current_user.wallet
 
+    Rails.logger.debug "Creating campaign for repository: #{@repository.inspect}"
+    Rails.logger.debug "Campaign attributes before save: #{@campaign.inspect}"
+
+
     if @campaign.save
-      redirect_to user_campaign_path(@repository.user, @campaign), notice: 'Campaign was successfully created.'
+      redirect_to user_repository_campaign_path(current_user, @repository, @campaign), notice: 'Campaign was successfully created.'
     else
       log_errors(@campaign)
-      render :new, alert: @campaign.errors.full_messages.join('. ')
+      flash.now[:alert] = @campaign.errors.full_messages.join('. ')
+      Rails.logger.debug "Campaign save failed. Errors: #{@campaign.errors.full_messages}"
+      render :new
     end
   end
 
@@ -46,10 +53,19 @@ class CampaignsController < ApplicationController
 
   def set_campaign
     @campaign = current_user.campaigns.find(params[:id])
+    pp @campaign
   end
 
   def set_repository
-    @repository = current_user.repositories.find(params[:repository_id])
+    @repository = 
+      if action_name == 'new' || action_name == 'create' || !@campaign
+        current_user.repositories.find(params[:repository_id])
+      else
+        @campaign.repository
+      end
+      pp @repository
+
+      Rails.logger.debug "Repository set in #{action_name} action: #{@repository.inspect}"
   end
 
   def log_errors(campaign)

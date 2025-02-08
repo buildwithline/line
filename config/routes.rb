@@ -9,11 +9,11 @@ Rails.application.routes.draw do
 
   resources :users, only: [] do
     resource :wallet, only: %i[show create destroy]
-    resources :campaigns, only: %i[show edit update destroy]
     resources :repositories, only: [] do
-      resources :campaigns, only: %i[new create]
+      resources :campaigns, only: %i[show new create edit update destroy] do
+        resources :contributions, only: %i[new create]
+      end
     end
   end
-  # resources :campaigns, only: [:index]
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end

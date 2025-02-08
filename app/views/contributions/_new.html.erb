@@ -66,14 +66,19 @@
           data-wallet-csrf-token-value="<%= form_authenticity_token %>">
       <button data-wallet-target="openModal" data-action="click->wallet#openConnectModal">
         <strong>Wallet:</strong>
-        <p id="wallet-address"><%= @user.wallet.address if @user.wallet.present? %></p>
-        <% unless @user.wallet.present? %>
-          <%= button_tag "Add Wallet", type: "button", class: "text-blue-600 hover:text-blue-800", data: { action: "wallet#openConnectModal" } %>
-        <% end %>
-      </div>
-    <% end %>
+
+    <div class="mb-4">
+      <strong>Receiving Wallet (Campaign Owner):</strong>
+      <p><%= @campaign.receiving_wallet.address %></p>
+    </div>
+    <div class="mb-4">
+      <strong>Your Wallet (Sending):</strong>
+      <p><%= current_user.wallet.address %></p>
+    </div>
+
+
     <%= button_tag "Support", 
           data: { action: "contribution#contribute" }, 
           class: "w-full p-2 bg-blue-500 text-white rounded" %>
-  </div>
+  <% end %>
 </div>

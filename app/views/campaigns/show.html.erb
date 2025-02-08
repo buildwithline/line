@@ -1,7 +1,7 @@
 <div class="container mx-auto px-4 py-8">
   <%= button_to 'Home', root_path, method: :get, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
   <div class="text-lg font-semibold mb-4">
-    <%= @campaign.user.nickname %> / <%= @campaign.repo_identifier %>
+    <%= @repository.user.nickname %> / <%= @repository.full_name %>
   </div>
   <div class="flex flex-wrap -mx-2">
     <div class="w-full md:w-1/2 px-2">
@@ -15,15 +15,15 @@
       </div>
       <div class="mb-4">
         <strong>Project Owner:</strong>
-        <p><%= @campaign.user.nickname %> project owner verified
+        <p><%= @repository.user.nickname %> project owner verified
           <%= image_tag("verified-icon.svg", alt: "Verified", class: "inline-block ml-1", width: "20", height: "20") %>
         </p>
       </div>
       <div class="mb-4">
         <strong>Repository URL:</strong>
         <p>
-          <%= link_to "https://github.com/#{@campaign.repo_identifier}", target: "_blank", rel: "noopener noreferrer" do %>
-            https://github.com/<%= @campaign.repo_identifier %>
+          <%= link_to "https://github.com/#{@repository.full_name}", target: "_blank", rel: "noopener noreferrer" do %>
+            https://github.com/<%= @repository.full_name %>
           <% end %>
         </p>
       </div>

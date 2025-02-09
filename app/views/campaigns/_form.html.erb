@@ -24,6 +24,8 @@
   <% end %>
   <%= form_with(model: [current_user, @repository, @campaign], local: true, class: "space-y-4", data: { action: "submit->currency#handleSubmit", currency_target: "form" }) do |form| %>
     <%= form.hidden_field :repository_id, value: @repository.id %>
+    <%= form.hidden_field :accepted_currencies, id: "accepted_currencies", name: "campaign[accepted_currencies][]",
+        data: { currency_target: "acceptedCurrencies" } %>
     <% if @campaign.errors.any? %>
       <div id="error_explanation" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
         <strong class="font-bold">Oops!</strong>
@@ -73,11 +75,9 @@
               currency_target: "currencyButton",
               currency_value: currency
             },
-            class: "currency-btn w-full p-2 border rounded text-center" %>
+            class: "currency-btn w-full p-2 border rounded text-center #{'bg-blue-500 text-white' if @campaign.accepted_currencies.include?(currency)} #{'bg-white text-black' unless @campaign.accepted_currencies.include?(currency)}" %>
         </div>
       <% end %>
-      <%= form.hidden_field :accepted_currencies, id: "accepted_currencies",
-        data: { currency_target: "acceptedCurrencies" } %>
     </div>
     <div class="mt-4">
       <div class="mt-4">
@@ -85,6 +85,6 @@
         <%= form.select :contribution_cadence, ['both', 'recurring', 'one-time'], {}, {class: "shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"} %>
       </div>
     </div>
-    <%= form.submit (@campaign.new_record? ? 'Create Campaign' : 'Edit Campaign'), class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" %>
+    <%= form.submit (@campaign.new_record? ? 'Create Campaign' : 'Update Campaign'), class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" %>
   <% end %>
 </div>

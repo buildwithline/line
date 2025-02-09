@@ -27,6 +27,11 @@
           <% end %>
         </p>
       </div>
+      <div>
+        <% if @repository.user == current_user %>
+          <%= link_to 'Edit Campaign', edit_user_repository_campaign_path(@repository.user, @repository, @campaign), class: "bg-blue-500 text-white px-4 py-2 rounded inline-block" %>
+        <% end %>
+      </div>
     </div>
     <div>
       <%= render 'contributions/new', campaign: @campaign, contribution: Contribution.new, accepted_currencies: @campaign.accepted_currencies %>

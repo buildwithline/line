@@ -36,7 +36,7 @@
                   </div>
                   <td>
                     <% if repository.campaign %>
-                      <%= link_to 'Show Campaign', edit_user_repository_campaign_path(current_user, repository, repository.campaign), class: "btn btn-success" %> 
+                      <%= link_to 'Show Campaign', user_repository_campaign_path(current_user, repository, repository.campaign), class: "btn btn-success" %> 
                     <% else %>
                       <%= link_to 'Create Campaign', new_user_repository_campaign_path(current_user, repository), class: "bg-blue-500 text-white px-4 py-2 rounded inline-block" %>
                     <% end %>

@@ -1,6 +1,6 @@
 function copyToClipboard(text) {
   if (navigator.clipboard && window.isSecureContext) {
-    // Use the Clipboard API
+    // Use the modern Clipboard API
     navigator.clipboard
       .writeText(text)
       .then(() => alert("Link copied to clipboard!"))

@@ -19,7 +19,7 @@ module Line
     config.action_dispatch.show_exceptions = :none
 
     # Uncomment the following line if it is required for the assets pipeline
-    # config.assets.css_compressor = nil
+    config.assets.css_compressor = nil
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -28,6 +28,8 @@ module Line
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    # Handle background jobs with Sidekiq
+    config.active_job.queue_adapter = :sidekiq
 
     config.middleware.insert_before 0, Rack::Cors do
       allow do

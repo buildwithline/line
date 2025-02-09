@@ -24,7 +24,7 @@ RSpec.describe 'User Authentication', type: :system do
       info: {
         email: 'test@example.com',
         nickname: 'testuser',
-        avatar: 'http://example.com/avatar.png'
+        image: 'http://example.com/avatar.png'
       },
       credentials: {
         token: 'mock_token'

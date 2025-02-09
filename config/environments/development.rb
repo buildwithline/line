@@ -89,4 +89,9 @@ Rails.application.configure do
 
   # Serve individual files for easier debugging
   config.assets.debug = true
+
+  # Use the inline job adapter to execute background jobs synchronously during development.
+  # This helps with debugging, as jobs will be executed immediately instead of being queued.
+  # Recommended for development environments where real-time job feedback is helpful.
+  config.active_job.queue_adapter = :inline
 end

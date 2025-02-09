@@ -3,7 +3,7 @@
 class CampaignsController < ApplicationController
   before_action :set_repository, only: %i[new create edit]
   before_action :check_repository_ownership!, only: %i[new create edit]
-  before_action :set_campaign, only: %i[edit update destroy]
+  before_action :set_campaign, only: %i[edit update]
 
   def show
     @campaign = Campaign.find(params[:id])

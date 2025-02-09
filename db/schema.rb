@@ -10,14 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_26_114022) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_11_173716) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "campaigns", force: :cascade do |t|
-    t.string "repo_identifier"
     t.bigint "receiving_wallet_id", null: false
-    t.string "title"
+    t.string "title", null: false
     t.text "description"
     t.text "accepted_currencies", default: [], array: true
     t.string "tier_name"

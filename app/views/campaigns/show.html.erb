@@ -1,37 +1,8 @@
-<div class="container mx-auto px-4 py-8">
-  <%= button_to 'Home', root_path, method: :get, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
-  <div class="text-lg font-semibold mb-4">
-    <%= @repository.user.nickname %> / <%= @repository.full_name %>
-  </div>
-  <div class="flex flex-wrap -mx-2">
-    <div class="w-full md:w-1/2 px-2">
-      <div class="mb-4">
-        <strong>Title:</strong>
-        <p><%= @campaign.title %></p>
-      </div>
-      <div class="mb-4">
-        <strong>Description:</strong>
-        <p><%= @campaign.description %></p>
-      </div>
-      <div class="mb-4">
-        <strong>Project Owner:</strong>
-        <p><%= @repository.user.nickname %> project owner verified
-          <%= image_tag("verified-icon.svg", alt: "Verified", class: "inline-block ml-1", width: "20", height: "20") %>
-        </p>
-      </div>
-      <div class="mb-4">
-        <strong>Repository URL:</strong>
-        <p>
-          <%= link_to "https://github.com/#{@repository.full_name}", target: "_blank", rel: "noopener noreferrer" do %>
-            https://github.com/<%= @repository.full_name %>
-          <% end %>
-        </p>
-      </div>
-      <div>
-        <% if @repository.user == current_user %>
-          <%= link_to 'Edit Campaign', edit_user_repository_campaign_path(@repository.user, @repository, @campaign), class: "bg-blue-500 text-white px-4 py-2 rounded inline-block" %>
-        <% end %>
-      </div>
+<div class="flex justify-center items-center min-h-screen">
+  <div class="w-full max-w-4xl px-4 py-8 bg-white">
+    <%= button_to 'Home', root_path, method: :get, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
+    <div class="text-lg font-semibold mb-4">
+      Campaign for <%= @repository.user.nickname %> / <%= @repository.name %>
     </div>
     <div class="flex flex-wrap -mx-2">
     <div class="flex flex-col md:flex-row md:space-x-36">
@@ -57,6 +28,11 @@
               https://github.com/<%= @repository.full_name %>
             <% end %>
           </p>
+        </div>
+        <div>
+        <% if @repository.user == current_user %>
+          <%= link_to 'Edit Campaign', edit_user_repository_campaign_path(@repository.user, @repository, @campaign), class: "bg-blue-500 text-white px-4 py-2 rounded inline-block" %>
+        <% end %>
         </div>
       </div>
       <div class="w-full md:w-1/2 px-2 ml-4">

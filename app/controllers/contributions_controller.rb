@@ -2,6 +2,7 @@
 
 class ContributionsController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_receiving_wallet, only: %i[new create]
 
   def new
     pp 'new action'

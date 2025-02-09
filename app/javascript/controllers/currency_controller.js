@@ -56,13 +56,11 @@ export default class extends Controller {
         }
       }
     });
-
     this.updateAcceptedCurrenciesField();
   }
 
   updateAcceptedCurrenciesField() {
     this.acceptedCurrenciesTarget.value = this.selectedCurrencies.join(",");
-    console.log(this.acceptedCurrenciesTarget.value);
   }
 
   updateSelectAllState() {
@@ -78,8 +76,9 @@ export default class extends Controller {
 
   handleSubmit(event) {
     event.preventDefault();
+
     this.updateAcceptedCurrenciesField();
+
     this.formTarget.submit();
-    this.formTarget.requestSubmit();
   }
 }

@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 class CampaignsController < ApplicationController
-  before_action :authenticate_user!, except: %i[index show]
-  before_action :set_repository, only: %i[new create update edit show]
-  before_action :set_campaign, only: %i[edit update]
+  before_action :set_repository, only: %i[new create edit]
+  before_action :check_repository_ownership!, only: %i[new create edit]
+  before_action :set_campaign, only: %i[edit update destroy]
 
   def show
     @campaign = Campaign.find(params[:id])
+    @repository = @campaign.repository
     @accepted_currencies = if @campaign.accepted_currencies == 'all'
                              Campaign::ALL_CURRENCIES
                            else
@@ -16,25 +17,22 @@ class CampaignsController < ApplicationController
 
   def new
     @campaign = @repository.build_campaign
+    @wallet = find_wallet_for_repo_owner(@repository)
   end
 
   def create
-    # Check if accepted_currencies is a string
-    if params[:campaign][:accepted_currencies].is_a?(String)
-      parsed = nil
-      begin
-        # Try to parse it as JSON
-        parsed = JSON.parse(params[:campaign][:accepted_currencies])
-      rescue JSON::ParserError
-        # If it’s not valid JSON, treat it as a plain CSV string
-      end
-  
-      # If it was parsed into an array, use it
-      if parsed.is_a?(Array)
-        params[:campaign][:accepted_currencies] = parsed
+    @campaign = @repository.build_campaign(campaign_params)
+    @campaign.receiving_wallet = current_user.wallet
+
+    respond_to do |format|
+      if @campaign.save
+        format.html { redirect_to user_repository_campaign_path(@repository.user, @repository, @campaign), notice: 'Campaign was successfully created.' }
+        format.json { render json: @campaign, status: :created }
       else
-        # If it's just a comma-separated string, split it into an array
-        params[:campaign][:accepted_currencies] = params[:campaign][:accepted_currencies].split(",")
+        log_errors(@campaign)
+        Rails.logger.error(@campaign.errors.full_messages.to_sentence)
+        format.html { render :new, alert: @campaign.errors.full_messages.join('. ') }
+        format.json { render json: { errors: @campaign.errors.full_messages }, status: :unprocessable_entity }
       end
     end
   
@@ -57,7 +55,6 @@ class CampaignsController < ApplicationController
     end
   end
   
-
   def edit
     @repo_name = @campaign.repository
     @accepted_currencies = @campaign.accepted_currencies
@@ -84,7 +81,6 @@ class CampaignsController < ApplicationController
 
   def set_campaign
     @campaign = current_user.campaigns.find(params[:id])
-    pp @campaign
   end
 
   def set_repository
@@ -94,9 +90,22 @@ class CampaignsController < ApplicationController
       else
         @campaign.repository
       end
-      pp @repository
 
       Rails.logger.debug "Repository set in #{action_name} action: #{@repository.inspect}"
+    @campaign = Campaign.find_by(id: params[:id])
+    redirect_to root_path, alert: "Campaign not found with id: #{params[:id]}." unless @campaign
+  end
+
+  # def set_repository
+  #   @repository = Repository.find(params[:repository_id])
+  #   redirect_to root_path, alert: 'Repository not found.' unless @repository
+  # end
+
+  def check_repository_ownership!
+    return if current_user == @repository.user
+
+    flash[:alert] = 'You are not authorized to create a campaign for this repository'
+    redirect_to root_path
   end
 
   def log_errors(campaign)

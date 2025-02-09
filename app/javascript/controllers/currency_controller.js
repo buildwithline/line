@@ -21,8 +21,11 @@ export default class extends Controller {
 
     button.classList.toggle("bg-blue-500");
     button.classList.toggle("text-white");
+    button.classList.toggle("bg-white");
+    button.classList.toggle("text-black");
 
     const isSelected = button.classList.contains("bg-blue-500");
+
     if (isSelected) {
       if (!this.selectedCurrencies.includes(currency)) {
         this.selectedCurrencies.push(currency);
@@ -46,6 +49,8 @@ export default class extends Controller {
     this.currencyButtonTargets.forEach((button) => {
       button.classList.toggle("bg-blue-500", isChecked);
       button.classList.toggle("text-white", isChecked);
+      button.classList.toggle("bg-white", !isChecked);
+      button.classList.toggle("text-black", !isChecked);
       const currency = button.dataset.currencyValue;
       if (isChecked && !this.selectedCurrencies.includes(currency)) {
         this.selectedCurrencies.push(currency);

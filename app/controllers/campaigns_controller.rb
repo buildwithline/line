@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CampaignsController < ApplicationController
-  before_action :set_repository, only: %i[new create edit]
+  before_action :set_repository, only: %i[new create edit update]
   before_action :check_repository_ownership!, only: %i[new create edit]
   before_action :set_campaign, only: %i[edit update]
 
@@ -61,19 +61,23 @@ class CampaignsController < ApplicationController
   end
 
   def update
-    params[:campaign][:accepted_currencies] = [params[:campaign][:accepted_currencies]] if params[:campaign][:accepted_currencies].is_a?(String)
-
-    existing_currencies = @campaign.accepted_currencies || []
-    params[:campaign][:accepted_currencies].each do |currency|
-      existing_currencies << currency unless existing_currencies.include?(currency)
-    end
-
-    @campaign.accepted_currencies = existing_currencies
-
-    if @campaign.update(campaign_params)
-      redirect_to user_repository_campaign_path(@repository.user, @repository, @campaign), notice: 'Campaign updated successfully!'
-    else
-      render :edit
+    def update
+      currencies_param = params[:campaign][:accepted_currencies]
+      currencies_param = [currencies_param] if currencies_param.is_a?(String)
+    
+      existing_currencies = @campaign.accepted_currencies || []
+    
+      currencies_param.each do |currency|
+        existing_currencies << currency unless existing_currencies.include?(currency)
+      end
+    
+      @campaign.accepted_currencies = existing_currencies
+    
+      if @campaign.save
+        redirect_to user_repository_campaign_path(@repository.user, @repository, @campaign), notice: 'Campaign updated successfully!'
+      else
+        render :edit
+      end
     end
   end
 
@@ -84,16 +88,18 @@ class CampaignsController < ApplicationController
   end
 
   def set_repository
-    @repository = 
-      if action_name == 'new' || action_name == 'create' || !@campaign
-        current_user.repositories.find(params[:repository_id])
-      else
-        @campaign.repository
+    if action_name == 'new' || action_name == 'create'
+      @repository = current_user.repositories.find(params[:repository_id])
+    else
+      @campaign = Campaign.find_by(id: params[:id])
+      if @campaign.nil?
+        redirect_to root_path, alert: "Campaign not found with id: #{params[:id]}."
+        return
       end
+    end
 
-      Rails.logger.debug "Repository set in #{action_name} action: #{@repository.inspect}"
-    @campaign = Campaign.find_by(id: params[:id])
-    redirect_to root_path, alert: "Campaign not found with id: #{params[:id]}." unless @campaign
+    @repository = @campaign.repository
+    Rails.logger.debug "Repository set in #{action_name} action: #{@repository.inspect}"
   end
 
   # def set_repository

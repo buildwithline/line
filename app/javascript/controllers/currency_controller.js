@@ -9,7 +9,10 @@ export default class extends Controller {
   ];
 
   connect() {
-    this.selectedCurrencies = [];
+    this.selectedCurrencies = this.currencyButtonTargets
+      .filter((button) => button.classList.contains("bg-blue-500"))
+      .map((button) => button.dataset.currencyValue);
+
     this.updateAcceptedCurrenciesField();
     this.updateSelectAllState();
   }
@@ -21,8 +24,11 @@ export default class extends Controller {
 
     button.classList.toggle("bg-blue-500");
     button.classList.toggle("text-white");
+    button.classList.toggle("bg-white");
+    button.classList.toggle("text-black");
 
     const isSelected = button.classList.contains("bg-blue-500");
+
     if (isSelected) {
       if (!this.selectedCurrencies.includes(currency)) {
         this.selectedCurrencies.push(currency);
@@ -46,14 +52,15 @@ export default class extends Controller {
     this.currencyButtonTargets.forEach((button) => {
       button.classList.toggle("bg-blue-500", isChecked);
       button.classList.toggle("text-white", isChecked);
+      button.classList.toggle("bg-white", !isChecked);
+      button.classList.toggle("text-black", !isChecked);
       const currency = button.dataset.currencyValue;
       if (isChecked && !this.selectedCurrencies.includes(currency)) {
         this.selectedCurrencies.push(currency);
       } else if (!isChecked) {
-        const index = this.selectedCurrencies.indexOf(currency);
-        if (index !== -1) {
-          this.selectedCurrencies.splice(index, 1);
-        }
+        this.selectedCurrencies = this.selectedCurrencies.filter(
+          (c) => c !== currency
+        );
       }
     });
     this.updateAcceptedCurrenciesField();
@@ -61,6 +68,7 @@ export default class extends Controller {
 
   updateAcceptedCurrenciesField() {
     this.acceptedCurrenciesTarget.value = this.selectedCurrencies.join(",");
+    console.log(this.selectedCurrencies);
   }
 
   updateSelectAllState() {

@@ -21,21 +21,16 @@ class CampaignsController < ApplicationController
   end
 
   def create
-    @campaign = @repository.build_campaign(campaign_params)
-    @campaign.receiving_wallet = current_user.wallet
-
-    respond_to do |format|
-      if @campaign.save
-        format.html { redirect_to user_repository_campaign_path(@repository.user, @repository, @campaign), notice: 'Campaign was successfully created.' }
-        format.json { render json: @campaign, status: :created }
-      else
-        log_errors(@campaign)
-        Rails.logger.error(@campaign.errors.full_messages.to_sentence)
-        format.html { render :new, alert: @campaign.errors.full_messages.join('. ') }
-        format.json { render json: { errors: @campaign.errors.full_messages }, status: :unprocessable_entity }
+    if params[:campaign][:accepted_currencies].is_a?(Array)
+      params[:campaign][:accepted_currencies].each_with_index do |currency, index|
+        if currency.is_a?(String) && currency.include?(',')
+          params[:campaign][:accepted_currencies][index] = currency.split(',').map(&:strip)
+        end
       end
+      params[:campaign][:accepted_currencies] = params[:campaign][:accepted_currencies].flatten
+      params[:campaign][:accepted_currencies].reject!(&:blank?)
     end
-  
+
     @campaign = @repository.build_campaign(campaign_params)
     @campaign.receiving_wallet = current_user.wallet
   
@@ -60,26 +55,40 @@ class CampaignsController < ApplicationController
     @accepted_currencies = @campaign.accepted_currencies
   end
 
+
   def update
-    def update
-      currencies_param = params[:campaign][:accepted_currencies]
-      currencies_param = [currencies_param] if currencies_param.is_a?(String)
-    
-      existing_currencies = @campaign.accepted_currencies || []
-    
-      currencies_param.each do |currency|
-        existing_currencies << currency unless existing_currencies.include?(currency)
-      end
-    
-      @campaign.accepted_currencies = existing_currencies
-    
-      if @campaign.save
-        redirect_to user_repository_campaign_path(@repository.user, @repository, @campaign), notice: 'Campaign updated successfully!'
-      else
-        render :edit
-      end
+    currencies_param = params[:campaign][:accepted_currencies]
+  
+    currencies_param = currencies_param.split(",").reject(&:blank?)
+  
+    existing_currencies = @campaign.accepted_currencies || []
+  
+    @campaign.accepted_currencies = currencies_param
+  
+    if @campaign.save
+      redirect_to user_repository_campaign_path(@repository.user, @repository, @campaign), notice: 'Campaign updated successfully!'
+    else
+      render :edit
     end
   end
+  
+    # currencies_param = params[:campaign][:accepted_currencies]
+    # currencies_param = [currencies_param] if currencies_param.is_a?(String)
+  
+    # existing_currencies = @campaign.accepted_currencies || []
+  
+    # currencies_param.each do |currency|
+    #   existing_currencies << currency unless existing_currencies.include?(currency)
+    # end
+  
+    # @campaign.accepted_currencies = existing_currencies
+  
+    # if @campaign.save
+    #   redirect_to user_repository_campaign_path(@repository.user, @repository, @campaign), notice: 'Campaign updated successfully!'
+    # else
+    #   render :edit
+    # end
+  # end
 
   private
 
@@ -96,16 +105,17 @@ class CampaignsController < ApplicationController
         redirect_to root_path, alert: "Campaign not found with id: #{params[:id]}."
         return
       end
+      @repository = @campaign.repository
     end
 
-    @repository = @campaign.repository
     Rails.logger.debug "Repository set in #{action_name} action: #{@repository.inspect}"
   end
 
-  # def set_repository
-  #   @repository = Repository.find(params[:repository_id])
-  #   redirect_to root_path, alert: 'Repository not found.' unless @repository
-  # end
+  def find_wallet_for_repo_owner(repository)
+    owner = User.find_by(uid: repository.owner_login)
+    owner&.wallet
+  end
+
 
   def check_repository_ownership!
     return if current_user == @repository.user

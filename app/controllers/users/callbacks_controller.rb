@@ -10,6 +10,7 @@ module Users
         Rails.logger.debug "User persisted: #{@user.inspect}"
         sign_in_and_redirect @user, event: :authentication
         set_flash_message(:notice, :success, kind: 'GitHub') if is_navigational_format?
+        SyncReposJob.perform_later(@user.id)
       else
         Rails.logger.debug "User could not be persisted: #{@user.errors.full_messages.join(', ')}"
         # session['devise.github_data'] = request.env['omniauth.auth'].except('extra')

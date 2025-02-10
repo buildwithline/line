@@ -21,26 +21,12 @@ class CampaignsController < ApplicationController
   end
 
   def create
-    if params[:campaign][:accepted_currencies].is_a?(Array)
-      params[:campaign][:accepted_currencies].each_with_index do |currency, index|
-        if currency.is_a?(String) && currency.include?(',')
-          params[:campaign][:accepted_currencies][index] = currency.split(',').map(&:strip)
-        end
-      end
-      params[:campaign][:accepted_currencies] = params[:campaign][:accepted_currencies].flatten
-      params[:campaign][:accepted_currencies].reject!(&:blank?)
-    end
+    process_accepted_currencies
 
     @campaign = @repository.build_campaign(campaign_params)
     @campaign.receiving_wallet = current_user.wallet
   
-    Rails.logger.debug "Creating campaign for repository: #{@repository.inspect}"
-    Rails.logger.debug "Campaign attributes before save: #{@campaign.inspect}"
-  
-    puts "Currencies before save: #{params[:campaign][:accepted_currencies]}"
-    
     if @campaign.save
-      puts "Currencies after save: #{params[:campaign][:accepted_currencies]}"
       redirect_to user_repository_campaign_path(current_user, @repository, @campaign), notice: 'Campaign was successfully created.'
     else
       log_errors(@campaign)
@@ -55,40 +41,15 @@ class CampaignsController < ApplicationController
     @accepted_currencies = @campaign.accepted_currencies
   end
 
-
   def update
-    currencies_param = params[:campaign][:accepted_currencies]
-  
-    currencies_param = currencies_param.split(",").reject(&:blank?)
-  
-    existing_currencies = @campaign.accepted_currencies || []
-  
-    @campaign.accepted_currencies = currencies_param
-  
+    process_accepted_currencies
+
     if @campaign.save
       redirect_to user_repository_campaign_path(@repository.user, @repository, @campaign), notice: 'Campaign updated successfully!'
     else
       render :edit
     end
   end
-  
-    # currencies_param = params[:campaign][:accepted_currencies]
-    # currencies_param = [currencies_param] if currencies_param.is_a?(String)
-  
-    # existing_currencies = @campaign.accepted_currencies || []
-  
-    # currencies_param.each do |currency|
-    #   existing_currencies << currency unless existing_currencies.include?(currency)
-    # end
-  
-    # @campaign.accepted_currencies = existing_currencies
-  
-    # if @campaign.save
-    #   redirect_to user_repository_campaign_path(@repository.user, @repository, @campaign), notice: 'Campaign updated successfully!'
-    # else
-    #   render :edit
-    # end
-  # end
 
   private
 
@@ -98,7 +59,12 @@ class CampaignsController < ApplicationController
 
   def set_repository
     if action_name == 'new' || action_name == 'create'
-      @repository = current_user.repositories.find(params[:repository_id])
+      @repository = current_user.repositories.find_by(id: params[:repository_id])
+
+      if @repository.nil?
+        redirect_to root_path, alert: "Repository not found or does not belong to you."
+        return
+      end
     else
       @campaign = Campaign.find_by(id: params[:id])
       if @campaign.nil?
@@ -116,12 +82,17 @@ class CampaignsController < ApplicationController
     owner&.wallet
   end
 
-
   def check_repository_ownership!
     return if current_user == @repository.user
 
     flash[:alert] = 'You are not authorized to create a campaign for this repository'
     redirect_to root_path
+  end
+
+  def process_accepted_currencies
+    currencies_param = params[:campaign][:accepted_currencies]
+    currencies_param = currencies_param.split(",").reject(&:blank?)
+    params[:campaign][:accepted_currencies] = currencies_param
   end
 
   def log_errors(campaign)

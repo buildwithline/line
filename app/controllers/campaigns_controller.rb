@@ -25,17 +25,16 @@ class CampaignsController < ApplicationController
 
     @campaign = @repository.build_campaign(campaign_params)
     @campaign.receiving_wallet = current_user.wallet
-  
+
     if @campaign.save
       redirect_to user_repository_campaign_path(current_user, @repository, @campaign), notice: 'Campaign was successfully created.'
     else
-      log_errors(@campaign)
       flash.now[:alert] = @campaign.errors.full_messages.join('. ')
       Rails.logger.debug "Campaign save failed. Errors: #{@campaign.errors.full_messages}"
       render :new
     end
   end
-  
+
   def edit
     @repo_name = @campaign.repository
     @accepted_currencies = @campaign.accepted_currencies
@@ -47,6 +46,7 @@ class CampaignsController < ApplicationController
     if @campaign.save
       redirect_to user_repository_campaign_path(@repository.user, @repository, @campaign), notice: 'Campaign updated successfully!'
     else
+      flash.now[:alert] = @campaign.errors.full_messages.join('. ')
       render :edit
     end
   end
@@ -62,7 +62,7 @@ class CampaignsController < ApplicationController
       @repository = current_user.repositories.find_by(id: params[:repository_id])
 
       if @repository.nil?
-        redirect_to root_path, alert: "Repository not found or does not belong to you."
+        redirect_to root_path, alert: 'Repository not found or does not belong to you.'
         return
       end
     else
@@ -91,7 +91,7 @@ class CampaignsController < ApplicationController
 
   def process_accepted_currencies
     currencies_param = params[:campaign][:accepted_currencies]
-    currencies_param = currencies_param.split(",").reject(&:blank?)
+    currencies_param = currencies_param.split(',').reject(&:blank?)
     params[:campaign][:accepted_currencies] = currencies_param
   end
 
@@ -100,6 +100,8 @@ class CampaignsController < ApplicationController
   end
 
   def campaign_params
-    params.require(:campaign).permit(:title, :description, :tier_amount, :tier_name, :contribution_cadence, :repository_id, :receiving_wallet_id, accepted_currencies: [])
+    params.require(:campaign).permit(:repository_id, :receiving_wallet_id, :title, :description, :contribution_cadence).tap do |whitelisted|
+      whitelisted[:accepted_currencies] = params[:campaign][:accepted_currencies].is_a?(String) ? params[:campaign][:accepted_currencies].split(',') : params[:campaign][:accepted_currencies]
+    end
   end
 end

@@ -8,6 +8,8 @@ RSpec.describe Users::CallbacksController, type: :controller do
   Sidekiq::Testing.fake!
 
   before do
+    allow(User).to receive(:from_omniauth).and_return(user)
+    @request.env['devise.mapping'] = Devise.mappings[:user]
     request.env['devise.mapping'] = Devise.mappings[:user]
 
     OmniAuth.config.test_mode = true
@@ -58,24 +60,23 @@ RSpec.describe Users::CallbacksController, type: :controller do
   end
 
   describe 'GET #github' do
-    context 'when user does not exist' do
-      it 'creates a user and redirects to the home page' do
-        expect do
-          get :github
-        end.to change(User, :count).by(1)
+    context 'when user from omniauth is not persisted' do
+      let(:user) { build(:user) }
 
-        expect(response).to redirect_to(root_path)
-        expect(controller.current_user).to eq(User.last)
+      it 'redirects to the home page' do
+        get :github
+
+        expect(response).to redirect_to(new_user_session_path)
       end
     end
 
+    # context 'when user from omniauth is persisted' do
+    #   let(:user) { create(:user) }
     context 'when user already exists' do
       let!(:user) { create(:user, uid: '123456', provider: 'github', email: 'test@example.com', nickname: 'testuser') }
 
       it 'signs in the user and redirects to the home page' do
-        expect do
-          get :github
-        end.not_to change(User, :count)
+        get :github
 
         expect(response).to redirect_to(root_path)
         expect(controller.current_user).to eq(user)

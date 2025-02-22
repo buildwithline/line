@@ -43,7 +43,7 @@ class CampaignsController < ApplicationController
   def update
     process_accepted_currencies
 
-    if @campaign.save
+    if @campaign.update(campaign_params)
       redirect_to user_repository_campaign_path(@repository.user, @repository, @campaign), notice: 'Campaign updated successfully!'
     else
       flash.now[:alert] = @campaign.errors.full_messages.join('. ')
@@ -91,8 +91,8 @@ class CampaignsController < ApplicationController
 
   def process_accepted_currencies
     currencies_param = params[:campaign][:accepted_currencies]
-    currencies_param = currencies_param.split(',').reject(&:blank?)
-    params[:campaign][:accepted_currencies] = currencies_param
+    currencies_param = currencies_param.split(',').reject(&:blank?) if currencies_param.is_a?(String)
+    @campaign.accepted_currencies = currencies_param
   end
 
   def log_errors(campaign)

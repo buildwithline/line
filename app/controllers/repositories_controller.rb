@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
 class RepositoriesController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, only: %i[index show]
 
   def index
     @repositories = current_user.repositories.includes(:campaigns)
-    pp @repositories
-    pp @repositories.first.campaign
     # prepare_campaigns_mapping
   end
 
@@ -20,7 +18,7 @@ class RepositoriesController < ApplicationController
     logger.debug "Campaigns by Repo Identifier: #{@campaigns_by_repository_id.inspect}"
 
     @respositories_with_campaigns = @repositories.map do |repository|
-      { repository: repository, campaign: @campaigns_by_repository_id[repository.id] }
+      { repository:, campaign: @campaigns_by_repository_id[repository.id] }
     end
   end
 end

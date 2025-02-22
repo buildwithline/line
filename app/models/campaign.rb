@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 class Campaign < ApplicationRecord
-  #  Callbacks
-  before_save :process_accepted_currencies
-
   # Associations
   belongs_to :receiving_wallet, class_name: 'Wallet', foreign_key: 'receiving_wallet_id'
   belongs_to :repository
@@ -16,22 +13,15 @@ class Campaign < ApplicationRecord
   # Constants
   ALL_CURRENCIES = %w[USDC BTC ETH].freeze
 
-  # Optional association indicator for UI logic or elsewhere
-  # def repo_centric?
-  #   repo_identifier.present?
-  # end
-
   private
 
   def process_accepted_currencies
-    puts "accepted_currencies class: #{accepted_currencies.class}"
-    puts "Accepted currencies before processing: #{accepted_currencies.is_a?(String)}"
-    if accepted_currencies.is_a?(String)
-      logger.debug "Accepted currencies before processing: #{accepted_currencies}"
-  
-      self.accepted_currencies = accepted_currencies.gsub(/[{}"]/, '').split(',').map(&:strip)
-  
-      logger.debug "Accepted currencies after processing: #{accepted_currencies}"
-    end
+    currencies_param = params[:campaign][:accepted_currencies]
+
+    return unless currencies_param.is_a?(String)
+
+    processed_currencies = currencies_param.gsub(/[{}"]/, '').split(',').map(&:strip).reject(&:empty?)
+
+    params[:campaign][:accepted_currencies] = processed_currencies
   end
 end

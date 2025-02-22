@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class CampaignsController < ApplicationController
+  before_action :authenticate_user!, only: %i[new create edit update]
   before_action :set_repository, only: %i[new create edit update]
   before_action :check_repository_ownership!, only: %i[new create edit]
   before_action :set_campaign, only: %i[edit update]
@@ -21,10 +22,10 @@ class CampaignsController < ApplicationController
   end
 
   def create
-    process_accepted_currencies
-
     @campaign = @repository.build_campaign(campaign_params)
     @campaign.receiving_wallet = current_user.wallet
+
+    process_accepted_currencies(@campaign)
 
     if @campaign.save
       redirect_to user_repository_campaign_path(current_user, @repository, @campaign), notice: 'Campaign was successfully created.'
@@ -41,7 +42,7 @@ class CampaignsController < ApplicationController
   end
 
   def update
-    process_accepted_currencies
+    process_accepted_currencies(@campaign)
 
     if @campaign.update(campaign_params)
       redirect_to user_repository_campaign_path(@repository.user, @repository, @campaign), notice: 'Campaign updated successfully!'
@@ -83,16 +84,26 @@ class CampaignsController < ApplicationController
   end
 
   def check_repository_ownership!
+    Rails.logger.debug "Current user: #{current_user.inspect}"
+    Rails.logger.debug "Repository user: #{@repository.user.inspect}"
     return if current_user == @repository.user
 
     flash[:alert] = 'You are not authorized to create a campaign for this repository'
     redirect_to root_path
   end
 
-  def process_accepted_currencies
+  def process_accepted_currencies(campaign)
     currencies_param = params[:campaign][:accepted_currencies]
-    currencies_param = currencies_param.split(',').reject(&:blank?) if currencies_param.is_a?(String)
-    @campaign.accepted_currencies = currencies_param
+
+    return unless currencies_param.is_a?(String)
+
+    logger.debug "Accepted currencies before processing: #{currencies_param}"
+
+    processed_currencies = currencies_param.gsub(/[{}"]/, '').split(',').map(&:strip).reject(&:empty?)
+
+    logger.debug "Accepted currencies after processing: #{processed_currencies}"
+
+    campaign.accepted_currencies = processed_currencies
   end
 
   def log_errors(campaign)

@@ -7,14 +7,21 @@ class Campaign < ApplicationRecord
 
   # Validations
   validates :title, presence: { message: 'must be provided and cannot be blank.' }
-  validates :description, presence: { message: 'must be provided and cannot be blank.' }
-  validates :accepted_currencies, length: { minimum: 1, message: 'must include at least one currency.' }
+  validates :accepted_currencies, length: { minimum: 1, message: 'must include at least one currency.' }, if: -> { accepted_currencies.present? }
+  validates :repository_id, uniqueness: { message: 'A campaign for this repository already exists' }
 
   # Constants
   ALL_CURRENCIES = %w[USDC BTC ETH].freeze
 
-  # Optional association indicator for UI logic or elsewhere
-  # def repo_centric?
-  #   repo_identifier.present?
-  # end
+  private
+
+  def process_accepted_currencies
+    currencies_param = params[:campaign][:accepted_currencies]
+
+    return unless currencies_param.is_a?(String)
+
+    processed_currencies = currencies_param.gsub(/[{}"]/, '').split(',').map(&:strip).reject(&:empty?)
+
+    params[:campaign][:accepted_currencies] = processed_currencies
+  end
 end

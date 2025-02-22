@@ -1,3 +1,7 @@
-<div class="mt-5">
-  <%= render 'form', campaign: @campaign, repository: @repository %>
+<div class="mb-4">
+  <h1 class="text-xl font-bold">Create a new Campaign for <%= @repository.name %></h1>
+  <div class="mt-5">
+    <%= render 'form', campaign: @campaign %>
+  </div>
 </div>
+

@@ -111,7 +111,7 @@ class CampaignsController < ApplicationController
   end
 
   def campaign_params
-    params.require(:campaign).permit(:repository_id, :receiving_wallet_id, :title, :description, :contribution_cadence).tap do |whitelisted|
+    params.require(:campaign).permit(:repository_id, :receiving_wallet_id, :title, :description).tap do |whitelisted|
       whitelisted[:accepted_currencies] = params[:campaign][:accepted_currencies].is_a?(String) ? params[:campaign][:accepted_currencies].split(',') : params[:campaign][:accepted_currencies]
     end
   end

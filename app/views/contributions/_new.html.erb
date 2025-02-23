@@ -2,16 +2,9 @@
   <div class="mb-4">
     <strong>Support Campaign:</strong>
   </div>
-  <div class="mb-4">
-    <select class="block w-full p-2 border rounded" data-contribution-target="cadence">
-      <option>One-Time</option>
-      <option>Monthly</option>
-      <option>Yearly</option>
-    </select>
-  </div>
   <div class="modal hidden" data-contribution-target="customAmountModal">
     <div class="modal-content">
-      <input type="number" min="0" step="1" placeholder="Enter amount" data-contribution-target="customAmountInput">
+      <input autocomplete="off" type="number" min="0" step="1" placeholder="Enter amount" data-contribution-target="customAmountInput">
       <button data-action="click->contribution#confirmCustomAmount">OK</button>
       <button data-action="click->contribution#cancelCustomAmount">Cancel</button>
     </div>

@@ -45,6 +45,6 @@ class ContributionsController < ApplicationController
   private
 
   def contributions_params
-    params.require(:contribution).permit(:contribution_cadence, :repo_identifier, :receiving_wallet_id, accepted_currencies: [])
+    params.require(:contribution).permit(:repo_identifier, :receiving_wallet_id, accepted_currencies: [])
   end
 end
